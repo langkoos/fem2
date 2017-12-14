@@ -4,3 +4,4 @@
 *.jpg filter=fat -crlf
 *.bz2 filter=fat -crlf
 *.csv filter=fat -crlf
+*.tgz filter=fat -crlf

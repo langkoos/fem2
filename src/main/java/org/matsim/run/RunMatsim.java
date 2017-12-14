@@ -36,7 +36,7 @@ public class RunMatsim {
 	public static void main(String[] args) {
 		
 		Config config ;
-		if ( args.length==0 || args[0]=="" ) {
+		if ( args==null || args.length==0 || args[0]=="" ) {
 			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
 			config.controler().setLastIteration(1);
 			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
