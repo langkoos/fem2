@@ -23,6 +23,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
+import org.matsim.core.network.algorithms.NetworkCleaner;
+import org.matsim.core.network.algorithms.NetworkSimplifier;
 import org.matsim.core.scenario.ScenarioUtils;
 
 /**
@@ -35,7 +37,7 @@ public class RunMatsim {
 		
 		Config config ;
 		if ( args.length==0 || args[0]=="" ) {
-			config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" ) ;
+			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
 			config.controler().setLastIteration(1);
 			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 		} else {
@@ -43,6 +45,9 @@ public class RunMatsim {
 		}
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
+
+		new NetworkCleaner().run(scenario.getNetwork());
+		new NetworkSimplifier().run(scenario.getNetwork());
 
 		Controler controler = new Controler( scenario ) ;
 
