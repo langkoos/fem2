@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+
+ 	<module name="global">
+	
+		<!-- "global" number of threads.  This number is used, e.g., for replanning, but NOT in the mobsim.  This can typically be set to as many cores as you have available, or possibly even slightly more. -->
+		<param name="numberOfThreads" value="4" />   <!-- *** -->
+		
+		<param name="randomSeed" value="4711" />
+		
+		<param name="coordinateSystem" value="EPSG:32754" />  <!-- *** -->
+	</module>
+
+	<module name="network">
+		<!-- <param name="inputNetworkFile" value="../SCS1/input/network1.xml" -->
+		<param name="inputNetworkFile" value="/Users/kainagel/git/au-flood-evacuation/workspace-csiro/proj1/wsnetwork.xml.gz" />  <!-- *** -->
+	</module>
+
+	<module name="plans">
+    <!-- <param name="inputPlansFile" value="&INBASE;popn5.xml" -->  
+		<param name="inputPlansFile" value="/Users/kainagel/git/au-flood-evacuation/workspace-csiro/proj1/wsplan.xml.gz" /> <!-- *** -->
+	</module>
+
+	<module name="controler" >
+
+		<!-- Sets whether graphs showing some analyses should automatically be generated during the simulation. The generation of graphs usually takes a small amount of time that does not have any weight in big simulations, but add a significant overhead in smaller runs or in test cases where the graphical output is not even requested. -->
+		<param name="createGraphs" value="true" />
+
+		<!-- true if at the end of a run, plans, network, config etc should be dumped to a file -->
+		<param name="dumpDataAtEnd" value="true" />
+
+		<!-- Default=false;  -->
+		<param name="enableLinkToLinkRouting" value="false" />
+
+		<!-- Default=xml; Specifies the file format for writing events. Currently supported: txt, xml.
+		Multiple values can be specified separated by commas (','). -->
+		<param name="eventsFileFormat" value="xml" />
+
+		<!-- Default=0;  -->
+		<param name="firstIteration" value="0" />
+
+		<!-- Default=1000;  -->
+		<param name="lastIteration" value="1" /> <!-- *** -->
+
+		<!-- Defines which mobility simulation will be used. Currently supported: qsim JDEQSim 
+		Depending on the chosen mobsim, you'll have to add additional config modules to configure the corresponding mobsim.
+		For 'qsim', add a module 'qsim' to the config. -->
+		<param name="mobsim" value="qsim" />   <!-- *** -->
+
+		<param name="outputDirectory" value="/Users/kainagel/git/au-flood-evacuation/workspace-csiro/proj1/output" />
+
+		<!-- Possible values: failIfDirectoryExists, overwriteExistingFiles, deleteDirectoryIfExists -->
+		<param name="overwriteFiles" value="overwriteExistingFiles" />
+
+		<!-- The type of routing (least cost path) algorithm used, may have the values: Dijkstra, FastDijkstra, AStarLandmarks or FastAStarLandmarks -->
+		<param name="routingAlgorithmType" value="Dijkstra" />
+
+		<!-- An identifier for the current run which is used as prefix for output files and mentioned in output xml files etc. -->
+		<param name="runId" value="null" />
+
+		<!-- Comma-separated list of visualizer output file formats. `transims', `googleearth', and `otfvis'. -->
+		<param name="snapshotFormat" value="" />
+
+		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
+		<param name="writeEventsInterval" value="1" />
+
+		<!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->
+		<param name="writePlansInterval" value="1" />
+
+		<!-- iterationNumber % writeSnapshotsInterval == 0 defines in which iterations snapshots are written to a file. `0' disables snapshots writing completely -->
+		<param name="writeSnapshotsInterval" value="1" />
+	</module>
+	
+	<module name="qsim">
+		<param name="startTime" value="00:00:00"/>
+		<param name="endTime" value="06:00:00"/>
+		<param name="flowCapacityFactor" value="1.0"/>
+		<param name="storageCapacityFactor" value="1.0"/>
+	</module>
+  
+  <module name="planCalcScore">
+		<param name="learningRate" value="1.0" />
+		<param name="BrainExpBeta" value="1.0" />
+
+		<param name="lateArrival" value="-18" />
+		<param name="earlyDeparture" value="-0" />
+		<param name="performing" value="+6" />
+		<param name="traveling" value="-6" />
+		<param name="waiting" value="-0" />
+
+		<param name="activityType_0"            value="h" /> <!-- *** -->
+		<param name="activityPriority_0"        value="1" />
+		<param name="activityTypicalDuration_0" value="00:01:00" />
+	
+		<param name="activityType_1"            value="e" /> <!-- *** -->
+		<param name="activityPriority_1"        value="1" />
+		<param name="activityTypicalDuration_1" value="01:00:00" />
+	</module>
+  
+  <module name="strategy">
+		<param name="maxAgentPlanMemorySize" value="5" /> <!-- 0 means unlimited -->
+
+		<param name="ModuleProbability_1" value="0.9" />
+		<param name="Module_1" value="BestScore" />
+
+		<param name="ModuleProbability_2" value="0.1" />
+		<param name="Module_2" value="ReRoute" />
+	</module>
+
+	<module name="parallelEventHandling" >
+
+		<!-- Estimated number of events during mobsim run. An optional optimization hint for the framework. -->
+		<param name="estimatedNumberOfEvents" value="null" />
+		<!-- param name="estimatedNumberOfEvents" value="1000" / this one has no effect -->
+
+		<!-- Number of threads for parallel events handler. 0 or null means the framework decides by itself. -->
+		<param name="numberOfThreads" value="null" />
+		<!-- param name="numberOfThreads" value="10" /-->
+
+		<!-- If enabled, each event handler is assigned to its own thread. Note that enabling this feature disabled the numberOfThreads option! This feature is still experimental! -->
+		<param name="oneThreadPerHandler" value="false" />
+		<!-- param name="oneThreadPerHandler" value="true" /  this one has no effect -->
+
+		<!-- If enabled, it is ensured that all events that are created during a time step of the mobility simulation are processed before the next time step is simulated. E.g. neccessary when within-day replanning is used. -->
+		<param name="synchronizeOnSimSteps" value="true" />
+		<!-- param name="synchronizeOnSimSteps" value="false" /-->
+    
+	</module>
+
+</config>
