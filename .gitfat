@@ -1,0 +1,4 @@
+[rsync]
+# vsp 20171214
+remote = fatp22u5ibow@cnode00.vsp.tu-berlin.de:/srv/vsp-gitfat
+#port = 22
