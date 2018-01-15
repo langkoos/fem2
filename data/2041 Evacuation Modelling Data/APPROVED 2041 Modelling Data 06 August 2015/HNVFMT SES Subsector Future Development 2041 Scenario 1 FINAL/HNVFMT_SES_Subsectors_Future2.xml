@@ -1,0 +1,276 @@
+﻿<metadata>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <title>HNVFMT SES Subsectors FutureDevelopment 2041 Scenario 1 FINAL</title>
+        <geoform>vector digital data</geoform>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>Please note that the total number of vehicles for each subsector has the attribute ‘2041_ ALLVSS’.Assumption:An assumption was made for Eastern Creek A1 subsector given that 13,840 vehicles were predicted, only 6000 have been considered due to this been an industrial/commercial area with a low percentage of residential area.Attributes Definitions:HHNVFMT SES Subsector Future Development 2041 Scenario 1 Final 20 July 2015 Scenario 1 TOTALS: Ultimate development with 'upper level' infillSector No = Sector IDSubsector No = Subsector IDSECTOR = Sector NameSubsector = Subsector NameFLOODAREAT = Flood Area TypeFloodPlain = Flood PlainArea_ha_SS = Subsector Area in HectareFloodCatSS = Flood Category SubsectorULT_PMFDSS =Dwellings below PMF (Note 4)ULT_isoDSS =Isolated dwellings (Note 5)ULT_TotDSS =Total dwellings for evacuation planning (Note 6)ULT_PMFPSS =Population below PMF (Note 7)ULT_isoPSS =Population in isolated dwellings (Note 7)ULT_TotPSS =Total population requiring evacuation planning (Note 8)ULT_PMFVSS =Vehicles below PMF (Note 9)ULT_isoVSS =Vehicles in isolated house-holds (Note 9)ULT_TotVSS =Total vehicles requiring evacuation planning (Note 10) 2041TJobSS =Total jobs per sub-sector 2041 (Note 12)2041EV05SS = Estimate of vehicles from employment lands 2041 (Note 12 and Note 13)2041_ALLVSS =Total vehicles from residential and employments lands (Note 14)ULTIMATE DEVELOPMENT (2041) from Future Development AreasULT_PMFD_1 =Dwellings below PMF (Note 4)ULT_isoD_1 =Isolated dwellings (Note 5)ULT_TotD_1 =Total dwellings for evacuation planning (Note 6)ULT_PMFP_1 =Population below PMF (Note 7)ULT_isoP_1 =Population in isolated dwellings (Note 7)ULT_TotP_1 =Total population requiring evacuation planning (Note 8)ULT_PMFV_1 =Vehicles below PMF (Note 9)ULT_isoV_1 =Vehicles in isolated house-holds (Note 9)ULT_TotV_1 =Total vehicles requiring evacuation planning (Note 10) INFILL Development (2041): Permissible Infill Development (Upper level)2041iHiDSS =Adopted (upper level) additional infill development below probable maximum flood(Note 1)2041isHDSS = Adopted (upper level) additional isolated dwellings from infill development (Note 2)2041THiDSS =Total additional dwellings from infill development for evacuation planning (Note 3)2041iHiPSS = Population from additional infill development below PMF (Note 5)2041isHPSS = Population in isolated dwellings from additional infill development (Note 5)2041THiPSS = Total additional population from infill development for evacuation planning (Note 6)2041iHiVSS = Vehicles from additional infill development below PMF (Note 8)2041isHVSS = Vehicles in isolated dwellings from additional infill development (Note 8)2041THiVSS = Total additional vehicles from infill development for evacuation planning (Note 9)EXISTING Development (2011)Ex11PMFDSS = Dwellings below PMF (Note 4)Ex11IsoDSS = Isolated dwellings (Note 5)Ex11TotDSS = Total dwellings for evacuation planning (Note 6)Ex11PMFPSS = Population below PMF (Note 7)Ex11IsoPSS = Population in isolated dwellings (Note 7)Ex11TotPSS = Total population requiring evacuation planning (Note 8)Ex11PMFVSS = Vehicles below PMF (Note 9)Ex11IsoVSS = Vehicles in isolated house-holds (Note 9)Ex11TotVSS = Total vehicles requiring evacuation planning (Note 10)Employment Lands1141TJobSS = Increase (2011 to 2041) in total jobs per subsector (note 12)1141EV05SS = Increase (2011 to 2041) estimate of vehicles from employment lands (Note 12 &amp; 13)OccR_2041 = Occupancy Ratio (note 15)VhDw_ABS11 = Vehicles per Dwellings (Mote 16)NOTESNote 1:For 'future' development scenarios, the following SES subsectors have been split to ensure a maximum of 6,000 vehicles per subsector: 4.0 South Creek A (split into 6 subsectors); 6.5 Penrith (split into 4 subsectors); 8.5 Castlereagh (split into 4 subsectors); 11 South Creek B (split into 4 subsectors); 13 Eastern Creek A (split into 5 subsectors); 14 Eastern Creek B (split into 3 subsectors); 16.1 Bligh Park West (split into 2 subsectors; 17.3 Hobartville (split into 2 subsectors); 17.7 Richmond A (split into 3 subsectors). This creates 33 new subsectors for a total of 135 subsectors. Minor boundary change have been made to subsectors 4-South Creek A and 10.4-Llandilo so that all of St Marys Central lies within subsector 4-South Creek A. Minor boundary changes have also been made to subsectors 16.1-Bligh Park West, 16.2-Bligh Park East and 20.1-South Windsor to provide more realistic evacuation options for Bligh Park North (which originally was located entirely within subsector 20.1 South Windsor).Note 2:Occupancy Ratio = Number of people per dwelling: Source of 2011 data: Molino Stewart Data Collection Project (2011). Based on 2011 census data on a suburb basis and converted to a subsector basis by Molino Stewart. Occupancy Ratios for 2041 were based on 2041 population and dwelling data from Bureau of Transport Statistics. Given the differences between the occupancy ratios for ABS Census 2011 and BTS 2011, the occupancy ratios for BTS 2041 have not been used directly. The adopted occupancy ratios for 2041 have been based on the original 2011 values and scaled by the difference between the BTS values from 2011 to 2041.Note 3:Vehicles per dwelling: Source: Molino Stewart Data Collection Project (2011). Based on 2011 census data on a suburb basis and converted to a subsector basis by Molino Stewart. Research indicates that an increase in car ownership per dwelling in not likely to increase over time. Therefore, the value of vehicles per dwelling for 2011 has been retained for all future development areas.Note 4:Dwellings below PMF for Future Development Areas have been calculated from a variety of sources. For more information see separate spreadsheet: HNVFMT-FutDevAreas-Summary-FINAL-170615.xlsx.Sources of data for dwelling count below probable maximum flood for future development areas include: Source 1: MS-Ex2011: Molino Stewart count of existing dwellings (2011) (ANU residential + 'new 1988-1991 residential'); Source 2: MS-2011-Future: Molino Stewart count of 'future' dwellings from 2011; Source 3: DP&amp;E: 01 April 2015: Table from Haley Rich of the Release Area Delivery Team summarising number of future dwellings below the PMF within the North West Growth Centre; Source 4: INSW 2015: dwelling count of future development below PMF undertaken by INSW based on various DP&amp;E data from January to June 2015; Source 5: DP&amp;E: UFM 7 May 2015: count of future dwellings outside North West Growth Centre on land already zoned but outside the Metropolitan Development Program prepared by Geoff Thompson of DP&amp;E; Source 6: Council Nov14 to Jun15: information received directly from Councils between November 2014 an June 2105.Source 7: Other sources of data: - Bligh Park North from Hawkesbury Floodplain Risk Management Study and Plan (Bewsher Consulting, 2012) (adopted by Hawkesbury City Council December 2012)- St Marys Eastern Precinct (Ropes Crossing and Ropes Creek) from Ropes Creek Precinct - Precinct Plan and Development Control Strategy (JBA Urban Planning Consultants, September 2010)Note 5:Isolated dwellings are those dwellings above the probable maximum flood that would be isolated by public road. For 'future development areas', the location of future roads may not be determined at this stage. Therefore, isolated dwellings for 'future development areas' has been based on the existing road network combined with the land use surrounding and adjacent to the isolated area. It is acknowledged that refinement of the future road network in the future may allow these isolated dwellings to be no longer isolated.Note 6:Total dwellings for evacuation planning = Dwellings below probable maximum flood + Isolated dwellingsNote 7:Population below probable maximum flood (or isolated) = Dwellings below probable maximum flood (or isolated) x occupancy ratioNote 8:Total population requiring evacuation planning = Population below probable maximum flood + population in isolated dwellingsNote 9:Vehicles below probable maximum flood (or isolated) = Dwellings below probable maximum flood (or isolated) x 'vehicles per dwelling'Note 10:Total residential vehicles requiring evacuation planning = Vehicles below probable maximum flood + vehicles from isolated dwellingsNote 11:These categories have been discussed and endorsed with the Taskforce to assist with scenario modelling: (i) permissible development: all future development areas that are zoned for development or have develops approved as at May 2015; (ii) potential development: all future development areas that have been formally identified or 'announced' and/or in the planning process but have not yet been rezoned as at May 2015; (iii) possible development: all future development areas that have been identified as longer term, more speculative options, including those with evacuation constraints.Note 12:The Bureau of Transport Statistics calculates employment numbers (that is, jobs) on a Travel Zone scale for each census year from 2011 until 2041. The number of jobs is split across 34 industry categories. The BTS employment data are spatial only at a Travel Zone scale. For each BTS Travel Zone, the numbers of jobs from the 34 categories were aggregated into four categories: business, industrial, rural and education / health /recreation. Then, for each Travel Zone, the currently zoned employment-related zones were also aggregated into the same four categories. The aggregated BTS employment data were then spatially assigned to one of the four aggregated employment-related zones (Zoned Land Data). In some Travel Zones, there was no zoned land that matched the BTS aggregated data. This included proposed future employment lands within the North West Growth Centre and other releases areas across the valley. For the purposes of the current data set to be used for evacuation modelling, the aggregated BTS data has been assigned to the Travel Zone as 'No Zoned Land Data'. It is proposed to better spatially locate this data for input into the flood damages assessment modelling.These data were then apportioned from a Travel Zone basis to an SES subsector basis.Note 13:The estimate of the number of vehicles from employment lands that would require evacuation planning has been determined from an overview of BTS Journey-to-Work data. The most conservative assumption is that there would be 1 vehicle for each job. Based on the BTS Journey-to-Work data, a conservative estimate has been used: 1 job = 0.5 vehicle. This value can be varied to test the sensitivity of the impact of the number of vehicles evacuating from employment lands. It has been assumed that there would be no change in this value in 2041.Note 14:Total vehicles requiring evacuation planning = Vehicles from residential lands + vehicles from employment landsNote 15: Occupancy Ratio = Number of people per dwelling: Source of 2011 data: Molino Stewart Data Collection Project (2011). Based on 2011 census data on a suburb basis and converted to a subsector basis by Molino Stewart. Occupancy Ratios for 2041 were based on 2041 population and dwelling data from Bureau of Transport Statistics. Given the differences between the occupancy ratios for ABS Census 2011 and BTS 2011, the occupancy ratios for BTS 2041 have not been used directly. The adopted occupancy ratios for 2041 have been based on the original 2011 values and scaled by the difference between the BTS values from 2011 to 2041.Note 16: Vehicles per dwelling: Source: Molino Stewart Data Collection Project (2011). Based on 2011 census data on a suburb basis and converted to a subsector basis by Molino Stewart. Research indicates that an increase in car ownership per dwelling in not likely to increase over time. Therefore, the value of vehicles per dwelling for 2011 has been retained for all future development areas.The ‘HNVFMT SES Subsector Future Development 2041 Scenario 1’ layer have been modified some subsector boundaries, which supersede those provided for ‘HNVFMT SES Subsectors Scenario 1 Ultimate Development (2041)’. Several Subsectors boundaries have been moved/changed spatially for NICTA modelling to allow for the limited modelling capacity of 6000 vehicles or less in order to generate the results for the 2041 scenario. The Subsectors that have been divided for the above requirement are as follow:CountOld SubsectorNew Subsector18.6 Castlereagh B8.6 Castlereagh B28.8 Castlereagh D317.3 Hobartville17.3 Hobartville A417.9 Hobartville B517.7 Richmond A17.7 Richmond A West617.11 Richmond A Central717.8 Richmond A East820.1 South Windsor20.1 South Windsor East9 20.6South Windsor West1016.1 Bligh Park West 16.1 Bligh Park West1116.3 Bligh Park Central1213 Eastern Creek A13.1 Eastern Creek A 11313.2 Eastern Creek A 21413.3 Eastern Creek A 31513.4 Eastern Creek A 41613.5 Eastern Creek A 51714 Eastern Creek B14.1 Eastern Creek B West1814.2 Eastern Creek B Central1914.3 Eastern Creek B East204 South Creek A4.1 South Creek A1214.2 South Creek A2224.3 South Creek A3234.4 South Creek A4244.5 South Creek A5254.6 South Creek A6266.5 Penrith6.5 Penrith A276.9 Penrith B286.11 Penrith C296.12 Penrith D3011 South Creek B11.1 South Creek B13111.2 South Creek B23211.3 South Creek B33311.4 South Creek B4</abstract>
+      <purpose>The ‘2041 Splitting Subsector’ layer have been modified some subsector boundaries, which supersede those provided for ‘HNVFMT SES Subsectors Scenario 1 Ultimate Development (2041)’. 
+
+Several Subsectors boundaries have been moved/changed spatially for NICTA modelling to allow for the limited modelling capacity of 6000 vehicles or less in order to generate the results for the 2041 scenario. 
+
+In conclusion, the ‘2041 Splitting Subsector’ layer has a total of 135 subsectors for the Hawkesbury-Nepean Valley with the incorporation of 33 new subsectors. This is only for the purpose of NICTA modelling to maintain the number of vehicles to 6000 or less.
+
+Please note that the total number of vehicles for each subsector has the attribute ‘2041_ ALLVSS’.
+</purpose>
+    </descript>
+    <spdom>
+      <bounding>
+        <westbc>150.585289</westbc>
+        <eastbc>151.268198</eastbc>
+        <northbc>-33.189461</northbc>
+        <southbc>-33.969647</southbc>
+      </bounding>
+    </spdom>
+    <keywords>
+      <theme>
+        <themekt>None</themekt>
+        <themekey>Roads</themekey>
+        <themekey>Modellin</themekey>
+        <themekey>Subscetor</themekey>
+      </theme>
+    </keywords>
+    <accconst>None</accconst>
+    <useconst>None</useconst>
+    <datacred>Infrastructure NSW</datacred>
+    <native>Microsoft Windows 7 Version 6.1 (Build 7601) Service Pack 1; Esri ArcGIS 10.2.2.3552</native>
+  </idinfo>
+  <spdoinfo>
+    <direct>Vector</direct>
+    <ptvctinf>
+      <sdtsterm>
+        <sdtstype>GT-polygon composed of chains</sdtstype>
+        <ptvctcnt>135</ptvctcnt>
+      </sdtsterm>
+    </ptvctinf>
+  </spdoinfo>
+  <spref>
+    <horizsys>
+      <planar>
+        <mapproj>
+          <mapprojn>GDA 1994 MGA Zone 56</mapprojn>
+          <transmer>
+            <sfctrmer>0.9996</sfctrmer>
+            <longcm>153.0</longcm>
+            <latprjo>0.0</latprjo>
+            <feast>500000.0</feast>
+            <fnorth>10000000.0</fnorth>
+          </transmer>
+        </mapproj>
+        <planci>
+          <plance>coordinate pair</plance>
+          <coordrep>
+            <absres>0.000000002220024164500956</absres>
+            <ordres>0.000000002220024164500956</ordres>
+          </coordrep>
+          <plandu>meter</plandu>
+        </planci>
+      </planar>
+      <geodetic>
+        <horizdn>D GDA 1994</horizdn>
+        <ellips>GRS 1980</ellips>
+        <semiaxis>6378137.0</semiaxis>
+        <denflat>298.257222101</denflat>
+      </geodetic>
+    </horizsys>
+  </spref>
+  <eainfo>
+    <detailed>
+      <enttyp>
+        <enttypl>HNVFMT_SES_Subsectors_FutureDevelopment2041Scenario1FINAL</enttypl>
+      </enttyp>
+      <attr>
+        <attrlabl>FID</attrlabl>
+        <attrdef>Internal feature number.</attrdef>
+        <attrdefs>Esri</attrdefs>
+        <attrdomv>
+          <udom>Sequential unique whole numbers that are automatically generated.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Shape</attrlabl>
+        <attrdef>Feature geometry.</attrdef>
+        <attrdefs>Esri</attrdefs>
+        <attrdomv>
+          <udom>Coordinates defining the features.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>SubsectNo</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>SECTOR</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>FLOODAREAT</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>EVACROUTEC</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>FloodPlain</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Shape_Leng</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Shape_Area</attrlabl>
+        <attrdef>Area of feature in internal units squared.</attrdef>
+        <attrdefs>Esri</attrdefs>
+        <attrdomv>
+          <udom>Positive real numbers that are automatically generated.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>SectorNo</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Area_ha_SS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>FloodCatSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Subsector</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_PMFDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_isoDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_TotDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_PMFPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_isoPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_TotPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_PMFVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_isoVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_TotVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041TJobSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041EV05SS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041_ALLVS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_PMFD_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_isoD_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_TotD_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_PMFP_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_isoP_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_TotP_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_PMFV_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_isoV_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>ULT_TotV_1</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041iHiDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041isHDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041THiDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041iHiPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041isHPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041THiPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041iHiVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041isHVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>2041THiVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11PMFDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11IsoDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11TotDSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11PMFPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11IsoPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11TotPSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11PMFVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11IsoVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>Ex11TotVSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>1141TJobSS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>1141EV05SS</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>OccR_2041</attrlabl>
+      </attr>
+      <attr>
+        <attrlabl>VhDw_ABS11</attrlabl>
+      </attr>
+    </detailed>
+  </eainfo>
+  <metainfo>
+    <metd>20150720</metd>
+    <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+    <metstdv>FGDC-STD-001-1998</metstdv>
+    <mettc>local time</mettc>
+  </metainfo>
+</metadata>

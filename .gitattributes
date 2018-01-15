@@ -16,3 +16,5 @@
 *.qpj filter=fat -crlf
 *.shx filter=fat -crlf
 *.cpg filter=fat -crlf
+data filter=fat -crlf
+
