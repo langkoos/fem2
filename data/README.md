@@ -1,3 +1,5 @@
+### Notes
+
 Current suspicions, with corroborating evidence:
 * The "hydrograph points" are height points.  They give the terrain height in meters above sea level at that point.  The file `wma_hydrograph_points/wma_hydrograph_points.shp` gives that information.  WMA is, I think, just the name of a consultancy.
 * This can be verified by looking at terrain height in google earth at these locations.
@@ -19,3 +21,13 @@ What we don't have:
 Thoughts:
 * I find a direct mapping of hydrograph points into the network overly heavyweight.  It means that replacing the network is a major effort.  A shape file with flooding boundaries would be much easier to handle.  One could, potentially, derive a shape file from the hydrograph points plus the flood level time series.  We would, however, have to make sure that a flood that covers part of a link but neither of the two nodes will be caught.
 * Given that also the translation of the emme network is not clear, I would probably have a tendency to also construct a network based on OSM.  If one also had the flooding as shape file, then one could at least run lightweight comparison simulations.  But maybe this is too much extra work.
+
+### Conversion of points to polygons
+
+This here http://desktop.arcgis.com/en/arcmap/latest/extensions/production-mapping/converting-points-to-lines-or-polygons.htm is arcgis, but it points to "convex hull".  Feels pretty straightforward: identify all hydrograph points which are below flood level, and do convex hull in geotools.  (Probably returns multiple polygons, as it should.) -- However, interpolation would be better.
+
+Search for something like "contour lines from points", maybe plus "geotools".
+
+Looks like
+* http://docs.geotools.org/latest/javadocs/org/geotools/process/vector/BarnesSurfaceProcess.html has process to convert irregular data points into regular grid, and
+* http://docs.geotools.org/latest/javadocs/org/geotools/process/raster/ContourProcess.html converts the regular grid into contours
