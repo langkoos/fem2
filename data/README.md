@@ -1,3 +1,14 @@
+### New notes 2018-01-24
+
+Subsections evacuate to certain safe nodes.  Questions:
+* Do we have them?  Are they just emme/2 nodes?
+
+There are a lot of diverse input files.  Do we know what all of them mean?  Is there overlapping information?  Can Phil find this out?  Do we need to read in all of these files, or just some of them?
+
+There is some 2041 network information in the 2011 directory.  Is that duplicate?  If so, can we delete it?
+
+There is supposedly better/newer studies "flinders lakes" (?).  --> Where are those input files?
+
 ### Notes
 
 Current suspicions, with corroborating evidence:
