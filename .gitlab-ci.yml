@@ -12,7 +12,7 @@ fat:
     - apt-get install -y python-pip
     - pip install git-fat
 #    - git fat pull # does not work
-    - apt-get install -y sshpass
+    - apt-get install -y sshpass rsync
     - sshpass -p 'matsim' git fat pull
 
 job1:
