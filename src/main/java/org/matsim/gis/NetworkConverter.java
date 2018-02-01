@@ -1,15 +1,18 @@
 package org.matsim.gis;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.*;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.gbl.Gbl;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
@@ -28,7 +31,8 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author sergio
  */
 public class NetworkConverter {
-
+	private static final Logger log = Logger.getLogger( NetworkConverter.class ) ;
+	
     private static final double MIN_DISTANCE = 5.0;
 
     Scenario scenario;
@@ -42,7 +46,11 @@ public class NetworkConverter {
 
 
     private void parseNodes(String fileName) {
-        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
+    	File dataFile = new File(fileName) ;
+		log.info( "will try to read from " + dataFile.getAbsolutePath() ) ;
+		Gbl.assertIf( dataFile.exists() );
+	
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
         NetworkFactory networkFactory = scenario.getNetwork().getFactory();
         for (SimpleFeature feature : features) {
             Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
