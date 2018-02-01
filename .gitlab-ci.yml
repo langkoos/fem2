@@ -11,7 +11,7 @@ fat:
     - apt-get install -y python
     - apt-get install -y python-pip
     - pip install git-fat
-    - git fat pull
+#    - git fat pull # does not work
 
 job1:
   stage: build
