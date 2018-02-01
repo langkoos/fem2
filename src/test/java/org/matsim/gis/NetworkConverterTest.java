@@ -1,5 +1,6 @@
 package org.matsim.gis;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;
@@ -10,6 +11,8 @@ public class NetworkConverterTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 	
 	@Test
+	@Ignore // will for time being not work since gitlab-ci does not support git-fat.
+	// Could put normal file into test input directory, but it somewhat defeats the purpose.
 	public void testMain() throws Exception {
 		String dir = "data/2011_evacuation_network/" ;
 		String basename = "hn_net_ses_emme_2011_" ;
