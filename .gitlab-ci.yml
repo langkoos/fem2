@@ -12,6 +12,8 @@ fat:
     - apt-get install -y python-pip
     - pip install git-fat
 #    - git fat pull # does not work
+    - apt-get install -y sshpass
+    - sshpass -p 'matsim' git fat pull
 
 job1:
   stage: build
