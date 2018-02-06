@@ -2,11 +2,13 @@ package org.matsim.gis;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.geotools.referencing.CRS;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -19,12 +21,15 @@ import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
+import org.matsim.core.utils.io.IOUtils;
 import org.matsim.core.utils.io.MatsimXmlWriter;
 import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 
 /**
@@ -36,21 +41,21 @@ public class NetworkConverter {
     private static final double MIN_DISTANCE = 5.0;
 
     Scenario scenario;
-    CoordinateTransformation transformation;
 
     public NetworkConverter(String nodesFile, String linksFile) {
         scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-        transformation = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, Globals.EPSG3308);
 
     }
 
 
-    private void parseNodes(String fileName) {
+    private void parseNodes(String fileName) throws IOException, FactoryException {
     	File dataFile = new File(fileName) ;
 		log.info( "will try to read from " + dataFile.getAbsolutePath() ) ;
 		Gbl.assertIf( dataFile.exists() );
 	
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
+        String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$","prj")).readLine().toString() ;
+        CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Globals.EPSG28356);
         NetworkFactory networkFactory = scenario.getNetwork().getFactory();
         for (SimpleFeature feature : features) {
             Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
@@ -97,7 +102,7 @@ public class NetworkConverter {
         new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp",Globals.EPSG3308).write();
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException, FactoryException {
         NetworkConverter nwc = new NetworkConverter(args[0], args[1]);
         nwc.parseNodes(args[0]);
         System.out.println("Nodes parsed.");
