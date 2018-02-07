@@ -1,0 +1,1198 @@
+2015-05-01 12:18:04,540  INFO Gbl:57 JVM: 1.8.0_11; Oracle Corporation; mixed mode; 64-bit
+2015-05-01 12:18:04,540  INFO Gbl:61 OS: Mac OS X; 10.10.3; x86_64
+2015-05-01 12:18:04,540  INFO Gbl:64 CPU cores: 8
+2015-05-01 12:18:04,540  INFO Gbl:65 max. Memory: 1820.5MB (1908932608B)
+2015-05-01 12:18:04,540  INFO Gbl:103 MATSim-Build: r30713 (2014-10-23 12:04:13)
+2015-05-01 12:18:04,541  INFO AbstractController:73 Used Controler-Class: org.matsim.core.controler.Controler
+2015-05-01 12:18:04,550  INFO SnapshotWriterRegistrar:41 OTFVis snapshots will not be supported, as OTFVis is not part of the classpath.
+2015-05-01 12:18:04,569  WARN LoggerHelper:213 EvacuationParameters.getParameter: no value associated with key SIMULATION_QUEUE_MODEL, returning default value qsim
+2015-05-01 12:18:04,573  WARN LoggerHelper:213 EvacuationParameters.getParameter: no value associated with key INSTANCE_HORIZON, returning default value -1.0
+2015-05-01 12:18:04,573  INFO EventsManagerImpl:144 adding Event-Handler: nicta.org.dm.evacuation.simulation.matsimAPI.VolumesAnalyzerNICTA
+2015-05-01 12:18:04,573  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:04,574  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:04,574  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:04,575  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:04,575  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:156 
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:144 adding Event-Handler: nicta.org.dm.evacuation.simulation.matsimAPI.VolumesAnalyzerNICTA
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:04,576  INFO EventsManagerImpl:156 
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:144 adding Event-Handler: nicta.org.dm.evacuation.simulation.matsimAPI.AgentStuckEventDetermineCause
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:156 
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:144 adding Event-Handler: nicta.org.dm.evacuation.simulation.matsimAPI.AgentStuckEventDetermineCause
+2015-05-01 12:18:04,578  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:04,579  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:04,579  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:04,579  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:04,579  INFO EventsManagerImpl:156 
+2015-05-01 12:18:04,581  INFO EventsManagerImpl:144 adding Event-Handler: nicta.org.dm.evacuation.simulation.matsimAPI.RetraceEvacuationFromSimEvents
+2015-05-01 12:18:04,581  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.ActivityEndEventHandler
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.ActivityEndEvent
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:04,582  INFO EventsManagerImpl:156 
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:144 adding Event-Handler: nicta.org.dm.evacuation.simulation.matsimAPI.RetraceEvacuationFromSimEvents
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.ActivityEndEventHandler
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.ActivityEndEvent
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:04,583  INFO EventsManagerImpl:156 
+2015-05-01 12:18:04,588  INFO ScenarioLoaderImpl:141 loading scenario from base directory: /Users/ceven/Projects/org-evacuations/nicta-evacuations/
+2015-05-01 12:18:04,588  INFO ScenarioLoaderImpl:175 loading network from ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/network-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml
+2015-05-01 12:18:04,588  INFO ScenarioLoaderImpl:178 use TimeVariantLinks in NetworkFactory.
+2015-05-01 12:18:04,591  INFO MatsimXmlParser:149 starting to parse xml from file ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/network-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml ...
+2015-05-01 12:18:04,594  INFO MatsimNetworkReader:83 using network_v1-reader.
+2015-05-01 12:18:04,594  INFO MatsimXmlParser:255 Trying to load http://www.matsim.org/files/dtd/network_v1.dtd. In some cases (e.g. network interface up but no connection), this may take a bit.
+2015-05-01 12:18:05,390  INFO NetworkImpl:134  node # 1
+2015-05-01 12:18:05,390  INFO NetworkImpl:134  node # 2
+2015-05-01 12:18:05,391  INFO NetworkImpl:134  node # 4
+2015-05-01 12:18:05,391  INFO NetworkImpl:134  node # 8
+2015-05-01 12:18:05,392  INFO NetworkImpl:134  node # 16
+2015-05-01 12:18:05,393  INFO NetworkImpl:134  node # 32
+2015-05-01 12:18:05,394  INFO NetworkImpl:134  node # 64
+2015-05-01 12:18:05,397  INFO NetworkImpl:134  node # 128
+2015-05-01 12:18:05,402  INFO NetworkImpl:134  node # 256
+2015-05-01 12:18:05,405  INFO NetworkImpl:130  link # 1
+2015-05-01 12:18:05,405  INFO NetworkImpl:130  link # 2
+2015-05-01 12:18:05,406  INFO NetworkImpl:130  link # 4
+2015-05-01 12:18:05,406  INFO NetworkImpl:130  link # 8
+2015-05-01 12:18:05,406  INFO NetworkImpl:130  link # 16
+2015-05-01 12:18:05,407  INFO NetworkImpl:130  link # 32
+2015-05-01 12:18:05,409  INFO NetworkImpl:130  link # 64
+2015-05-01 12:18:05,414  INFO NetworkImpl:130  link # 128
+2015-05-01 12:18:05,423  INFO NetworkImpl:130  link # 256
+2015-05-01 12:18:05,436  INFO NetworkImpl:130  link # 512
+2015-05-01 12:18:05,439  INFO ScenarioLoaderImpl:186 loading network change events from ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/change-events-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml
+2015-05-01 12:18:05,441  INFO MatsimXmlParser:149 starting to parse xml from file ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/change-events-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml ...
+2015-05-01 12:18:05,442  INFO MatsimXmlParser:255 Trying to load http://www.matsim.org/files/dtd/networkChangeEvents.xsd. In some cases (e.g. network interface up but no connection), this may take a bit.
+2015-05-01 12:18:05,816  INFO MatsimXmlParser:255 Trying to load http://www.matsim.org/files/dtd/matsimCommon.xsd. In some cases (e.g. network interface up but no connection), this may take a bit.
+2015-05-01 12:18:06,201  INFO ScenarioLoaderImpl:203 loading facilities from ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/facilities-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml
+2015-05-01 12:18:06,203  INFO MatsimXmlParser:149 starting to parse xml from file ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/facilities-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml ...
+2015-05-01 12:18:06,205  INFO MatsimFacilitiesReader:98 using facilities_v1-reader.
+2015-05-01 12:18:06,206  INFO MatsimXmlParser:255 Trying to load http://www.matsim.org/files/dtd/facilities_v1.dtd. In some cases (e.g. network interface up but no connection), this may take a bit.
+2015-05-01 12:18:06,605  INFO ScenarioLoaderImpl:205 loaded 85 facilities from ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/facilities-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml
+2015-05-01 12:18:06,605  INFO ScenarioLoaderImpl:216 no facility-attributes file set in config, not loading any facility attributes
+2015-05-01 12:18:06,605  INFO ScenarioLoaderImpl:229 loading population from ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/optim-plan-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml
+2015-05-01 12:18:06,612  INFO MatsimXmlParser:149 starting to parse xml from file ./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/optim-plan-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml ...
+2015-05-01 12:18:06,617  INFO MatsimPopulationReader:83 using plans_v4-reader.
+2015-05-01 12:18:06,618  INFO MatsimXmlParser:255 Trying to load http://www.matsim.org/files/dtd/plans_v4.dtd. In some cases (e.g. network interface up but no connection), this may take a bit.
+2015-05-01 12:18:07,408  INFO ParallelPopulationReaderMatsimV4:118 Start parallel population reading...
+2015-05-01 12:18:07,414  INFO PopulationImpl:173  person # 1
+2015-05-01 12:18:07,418  INFO PopulationImpl:173  person # 2
+2015-05-01 12:18:07,418  INFO PopulationImpl:173  person # 4
+2015-05-01 12:18:07,420  INFO PopulationImpl:173  person # 8
+2015-05-01 12:18:07,421  INFO PopulationImpl:173  person # 16
+2015-05-01 12:18:07,425  INFO PopulationImpl:173  person # 32
+2015-05-01 12:18:07,431  INFO PopulationImpl:173  person # 64
+2015-05-01 12:18:07,440  INFO PopulationImpl:173  person # 128
+2015-05-01 12:18:07,454  INFO PopulationImpl:173  person # 256
+2015-05-01 12:18:07,479  INFO PopulationImpl:173  person # 512
+2015-05-01 12:18:07,518  INFO PopulationImpl:173  person # 1024
+2015-05-01 12:18:07,586  INFO PopulationImpl:173  person # 2048
+2015-05-01 12:18:07,689  INFO PopulationImpl:173  person # 4096
+2015-05-01 12:18:07,840  INFO PopulationImpl:173  person # 8192
+2015-05-01 12:18:08,070  INFO PopulationImpl:173  person # 16384
+2015-05-01 12:18:08,454  INFO PopulationImpl:173  person # 32768
+2015-05-01 12:18:08,566  INFO ParallelPopulationReaderMatsimV4:168 Finished parallel population reading...
+2015-05-01 12:18:08,566  INFO PopulationImpl:173  person # 38343
+2015-05-01 12:18:08,566  INFO ScenarioLoaderImpl:245 no person-attributes file set in config, not loading any person attributes
+2015-05-01 12:18:08,572  WARN ScenarioImpl:228 no transit schedule, and transit not activated from config. You must first call the create method of ScenarioImpl.
+2015-05-01 12:18:08,577  INFO StrategyManagerConfigLoader:67 global innovation switch off after iteration: 0
+2015-05-01 12:18:08,581  INFO GenericStrategyManager:304 added change request:  iteration=1 newWeight=0.0 strategy=RandomPlanSelector_ReRoute
+2015-05-01 12:18:08,582  INFO GenericStrategyManager:304 added change request:  iteration=1 newWeight=0.0 strategy=RandomPlanSelector_TimeAllocationMutator
+2015-05-01 12:18:08,585  INFO CalcLinkStats:148  resetting `count' to zero.  This info is here since we want to check when this is happening during normal simulation runs.  kai, jan'11
+2015-05-01 12:18:08,587  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.analysis.VolumesAnalyzer
+2015-05-01 12:18:08,587  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:08,587  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:08,587  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,588  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.analysis.VolumesAnalyzer
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,589  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,590  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.analysis.CalcLegTimes
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.ActivityEndEventHandler
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.ActivityEndEvent
+2015-05-01 12:18:08,591  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.ActivityStartEventHandler
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.ActivityStartEvent
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.analysis.CalcLegTimes
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:08,592  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.ActivityEndEventHandler
+2015-05-01 12:18:08,593  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.ActivityEndEvent
+2015-05-01 12:18:08,593  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.ActivityStartEventHandler
+2015-05-01 12:18:08,593  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.ActivityStartEvent
+2015-05-01 12:18:08,593  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,600  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.analysis.LegHistogram
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.analysis.LegHistogram
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,601  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,602  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:08,602  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:08,602  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:08,602  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:08,602  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,605  INFO ControlerListenerManager:108 calling notifyStartup on org.matsim.analysis.ScoreStatsControlerListener
+2015-05-01 12:18:08,605  INFO ControlerListenerManager:111 all ControlerStartupListeners called.
+2015-05-01 12:18:08,606  INFO AbstractController:305 config dump before iterations start
+2015-05-01 12:18:08,607  INFO AbstractController:309 
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+
+<!-- ====================================================================== -->
+
+	<module name="TimeAllocationMutator" >
+		<param name="mutationAffectsDuration" value="true" />
+
+		<!-- Default:1800.0; Defines how many seconds a time mutation can maximally shift a time. -->
+		<param name="mutationRange" value="1800.0" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="controler" >
+
+		<!-- Default=false;  -->
+		<param name="enableLinkToLinkRouting" value="false" />
+
+		<!-- Default=xml; Specifies the file format for writing events. Currently supported: txt, xml.
+		Multiple values can be specified separated by commas (','). -->
+		<param name="eventsFileFormat" value="xml" />
+
+		<!-- Default=0;  -->
+		<param name="firstIteration" value="0" />
+
+		<!-- Default=1000;  -->
+		<param name="lastIteration" value="0" />
+
+		<!-- Defines which mobility simulation will be used. Currently supported: qsim JDEQSim 
+		Depending on the chosen mobsim, you'll have to add additional config modules to configure the corresponding mobsim.
+		For 'qsim', add a module 'qsim' to the config. -->
+		<param name="mobsim" value="qsim" />
+
+		<param name="outputDirectory" value="./matsim/output/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/" />
+
+		<!-- The type of routing (least cost path) algorithm used, may have the values: Dijkstra, FastDijkstra, AStarLandmarks or FastAStarLandmarks -->
+		<param name="routingAlgorithmType" value="Dijkstra" />
+
+		<!-- An identifier for the current run which is used as prefix for output files and mentioned in output xml files etc. -->
+		<param name="runId" value="run0" />
+
+		<!-- Comma-separated list of visualizer output file formats. `transims', `googleearth', and `otfvis'. -->
+		<param name="snapshotFormat" value="" />
+
+		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
+		<param name="writeEventsInterval" value="10" />
+
+		<!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->
+		<param name="writePlansInterval" value="1" />
+
+		<!-- iterationNumber % writeSnapshotsInterval == 0 defines in which iterations snapshots are written to a file. `0' disables snapshots writing completely -->
+		<param name="writeSnapshotsInterval" value="10" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="counts" >
+
+		<!-- Transport modes that will be respected for the counts comparison. 'car' is default, which includes also bussed from the pt simulation module. Use this parameter in combination with 'filterModes' = true! -->
+		<param name="analyzedModes" value="car" />
+
+		<!-- Specifies over how many iterations the link volumes should be averaged that are used for the counts comparison. Use 1 or 0 to only use the link volumes of a single iteration. This values cannot be larger than the value specified for writeCountsInterval -->
+		<param name="averageCountsOverIterations" value="5" />
+
+		<!-- factor by which to re-scale the simulated values.  necessary when simulation runs with something different from 100%.  needs to be adapted manually -->
+		<param name="countsScaleFactor" value="1.0" />
+
+		<!-- distance to distanceFilterCenterNode to include counting stations. The unit of distance is the Euclidean distance implied by the coordinate system -->
+		<param name="distanceFilter" value="12000.0" />
+
+		<!-- node id for center node of distance filter -->
+		<param name="distanceFilterCenterNode" value="2531" />
+
+		<!-- If true, link counts from legs performed on modes not included in the 'analyzedModes' parameter are ignored. -->
+		<param name="filterModes" value="false" />
+
+		<!-- input file name to counts package -->
+		<param name="inputCountsFile" value="null" />
+
+		<!-- possible values: `html', `kml', `txt', `all' -->
+		<param name="outputformat" value="all" />
+
+		<!-- Specifies how often the counts comparison should be calculated and written. -->
+		<param name="writeCountsInterval" value="10" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="facilities" >
+		<param name="inputFacilitiesFile" value="./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/facilities-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml" />
+		<param name="inputFacilityAttributesFile" value="null" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="global" >
+		<param name="coordinateSystem" value="Atlantis" />
+
+		<!-- "global" number of threads.  This number is used, e.g., for replanning, but NOT in the mobsim.  This can typically be set to as many cores as you have available, or possibly even slightly more. -->
+		<param name="numberOfThreads" value="8" />
+
+		<param name="randomSeed" value="4711" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="households" >
+		<param name="inputFile" value="null" />
+		<param name="inputHouseholdAttributesFile" value="null" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="linkStats" >
+
+		<!-- Specifies over how many iterations the link volumes should be averaged that are used for the link statistics. Use 1 or 0 to only use the link volumes of a single iteration. This values cannot be larger than the value specified for writeLinkStatsInterval -->
+		<param name="averageLinkStatsOverIterations" value="5" />
+
+		<!-- Specifies how often the link stats should be calculated and written. Use 0 to disable the generation of link stats. -->
+		<param name="writeLinkStatsInterval" value="10" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="locationchoice" >
+		<param name="algorithm" value="random" />
+		<param name="analysisBinSize" value="20000.0" />
+		<param name="analysisBoundary" value="200000.0" />
+		<param name="centerNode" value="null" />
+		<param name="destinationSamplePercent" value="100.0" />
+		<param name="epsilonDistribution" value="gumbel" />
+		<param name="epsilonScaleFactors" value="null" />
+		<param name="fAttributesFileName" value="null" />
+		<param name="fkValuesFile" value="null" />
+		<param name="flexible_types" value="null" />
+		<param name="idExclusion" value="2147483647" />
+		<param name="maxDCScoreFile" value="null" />
+		<param name="maxDistanceDCScore" value="-1.0" />
+		<param name="maxRecursions" value="1" />
+		<param name="pBetasFileName" value="null" />
+		<param name="pkValuesFile" value="null" />
+		<param name="planSelector" value="SelectExpBeta" />
+		<param name="prefsFile" value="null" />
+		<param name="probChoiceSetSize" value="5" />
+		<param name="radius" value="null" />
+		<param name="randomSeed" value="221177" />
+		<param name="recursionTravelSpeedChange" value="0.1" />
+		<param name="restraintFcnExp" value="0.0" />
+		<param name="restraintFcnFactor" value="0.0" />
+		<param name="scaleFactor" value="1" />
+		<param name="travelSpeed_car" value="8.5" />
+		<param name="travelSpeed_pt" value="5.0" />
+		<param name="tt_approximationLevel" value="0" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="network" >
+		<param name="inputChangeEventsFile" value="./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/change-events-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml" />
+		<param name="inputNetworkFile" value="./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/network-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml" />
+		<param name="laneDefinitionsFile" value="null" />
+		<param name="timeVariantNetwork" value="true" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="parallelEventHandling" >
+
+		<!-- Estimated number of events during mobsim run. An optional optimization hint for the framework. -->
+		<param name="estimatedNumberOfEvents" value="null" />
+
+		<!-- Number of threads for parallel events handler. 0 or null means the framework decides by itself. -->
+		<param name="numberOfThreads" value="null" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="planCalcScore" >
+
+		<!-- logit model scale parameter. default: 2.  Has name and default value for historical reasons (see Bryan Raney's phd thesis). -->
+		<param name="BrainExpBeta" value="10.0" />
+
+		<param name="PathSizeLogitBeta" value="1.0" />
+
+		<!-- [utils/hr] utility for departing early (i.e. before the earliest end time).  Normally negative.  Probably implemented correctly, but not tested. -->
+		<param name="earlyDeparture" value="-18.0" />
+
+		<!-- [utils/hr] utility for arriving late (i.e. after the latest start time).  normally negative -->
+		<param name="lateArrival" value="0.0" />
+
+		<!-- new_score = (1-learningRate)*old_score + learningRate * score_from_mobsim.  learning rates close to zero emulate score averaging, but slow down initial convergence -->
+		<param name="learningRate" value="1.0" />
+
+		<!-- [utils/unit_of_money] conversion of money (e.g. toll, distance cost) into utils. Normall positive (i.e. toll/cost/fare are processed as negative amounts of money). -->
+		<param name="marginalUtilityOfMoney" value="1.0" />
+
+		<!-- [utils/hr] marginal utility of doing an activity.  normally positive.  also the opportunity cost of time if agent is doing nothing.  MATSim separates the resource value of time from the direct (dis)utility of travel time, see, e.g., Boerjesson and Eliasson, TR-A 59 (2014) 144-158. -->
+		<param name="performing" value="1000.0" />
+
+		<!-- There used to be a plateau between duration=0 and duration=zeroUtilityDuration. This caused durations to evolve to zero once they were below zeroUtilityDuration, causing problems.  Only use this switch if you need to be backwards compatible with some old results.  (changed nov'13) -->
+		<param name="usingOldScoringBelowZeroUtilityDuration" value="false" />
+
+		<!-- [utils] utility of switching a line (= transfer penalty).  Normally negative -->
+		<param name="utilityOfLineSwitch" value="-1.0" />
+
+		<!-- [utils/hr] additional marginal utility for waiting. normally negative. this comes on top of the opportunity cost of time.  Probably implemented correctly, but not tested. -->
+		<param name="waiting" value="-6.0" />
+
+		<!-- write a plans file in each iteration directory which contains what each agent actually did, and the score it received. -->
+		<param name="writeExperiencedPlans" value="true" />
+
+		<parameterset type="activityParams" >
+			<param name="activityType" value="Evacuation" />
+			<param name="closingTime" value="-Infinity" />
+			<param name="earliestEndTime" value="-Infinity" />
+			<param name="latestStartTime" value="-Infinity" />
+			<param name="minimalDuration" value="-Infinity" />
+			<param name="openingTime" value="-Infinity" />
+			<param name="priority" value="1.0" />
+			<param name="scoringThisActivityAtAll" value="true" />
+			<param name="typicalDuration" value="3600.0" />
+		</parameterset>
+
+		<parameterset type="activityParams" >
+			<param name="activityType" value="Safe" />
+			<param name="closingTime" value="-Infinity" />
+			<param name="earliestEndTime" value="-Infinity" />
+			<param name="latestStartTime" value="-Infinity" />
+			<param name="minimalDuration" value="-Infinity" />
+			<param name="openingTime" value="-Infinity" />
+			<param name="priority" value="1.0" />
+			<param name="scoringThisActivityAtAll" value="true" />
+			<param name="typicalDuration" value="7200.0" />
+		</parameterset>
+
+		<parameterset type="modeParams" >
+
+			<!-- [utils] alternative-specific constant.  no guarantee that this is used anywhere. default=0 to be backwards compatible for the time being -->
+			<param name="constant" value="0.0" />
+
+			<!-- [utils/m] utility of walking per m, normally negative.  this is on top of the time (dis)utility. -->
+			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+
+			<!-- [utils/hr] additional marginal utility of traveling.  normally negative.  this comes on top of the opportunity cost of time -->
+			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+
+			<param name="mode" value="car" />
+
+			<!-- [unit_of_money/m] conversion of distance into money. Probably needs to be negative to work. -->
+			<param name="monetaryDistanceCostRate" value="0.0" />
+		</parameterset>
+
+		<parameterset type="modeParams" >
+
+			<!-- [utils] alternative-specific constant.  no guarantee that this is used anywhere. default=0 to be backwards compatible for the time being -->
+			<param name="constant" value="0.0" />
+
+			<!-- [utils/m] utility of walking per m, normally negative.  this is on top of the time (dis)utility. -->
+			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+
+			<!-- [utils/hr] additional marginal utility of traveling.  normally negative.  this comes on top of the opportunity cost of time -->
+			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+
+			<param name="mode" value="pt" />
+
+			<!-- [unit_of_money/m] conversion of distance into money. Probably needs to be negative to work. -->
+			<param name="monetaryDistanceCostRate" value="0.0" />
+		</parameterset>
+
+		<parameterset type="modeParams" >
+
+			<!-- [utils] alternative-specific constant.  no guarantee that this is used anywhere. default=0 to be backwards compatible for the time being -->
+			<param name="constant" value="0.0" />
+
+			<!-- [utils/m] utility of walking per m, normally negative.  this is on top of the time (dis)utility. -->
+			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+
+			<!-- [utils/hr] additional marginal utility of traveling.  normally negative.  this comes on top of the opportunity cost of time -->
+			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+
+			<param name="mode" value="walk" />
+
+			<!-- [unit_of_money/m] conversion of distance into money. Probably needs to be negative to work. -->
+			<param name="monetaryDistanceCostRate" value="0.0" />
+		</parameterset>
+
+		<parameterset type="modeParams" >
+
+			<!-- [utils] alternative-specific constant.  no guarantee that this is used anywhere. default=0 to be backwards compatible for the time being -->
+			<param name="constant" value="0.0" />
+
+			<!-- [utils/m] utility of walking per m, normally negative.  this is on top of the time (dis)utility. -->
+			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+
+			<!-- [utils/hr] additional marginal utility of traveling.  normally negative.  this comes on top of the opportunity cost of time -->
+			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+
+			<param name="mode" value="bike" />
+
+			<!-- [unit_of_money/m] conversion of distance into money. Probably needs to be negative to work. -->
+			<param name="monetaryDistanceCostRate" value="0.0" />
+		</parameterset>
+
+		<parameterset type="modeParams" >
+
+			<!-- [utils] alternative-specific constant.  no guarantee that this is used anywhere. default=0 to be backwards compatible for the time being -->
+			<param name="constant" value="0.0" />
+
+			<!-- [utils/m] utility of walking per m, normally negative.  this is on top of the time (dis)utility. -->
+			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+
+			<!-- [utils/hr] additional marginal utility of traveling.  normally negative.  this comes on top of the opportunity cost of time -->
+			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+
+			<param name="mode" value="other" />
+
+			<!-- [unit_of_money/m] conversion of distance into money. Probably needs to be negative to work. -->
+			<param name="monetaryDistanceCostRate" value="0.0" />
+		</parameterset>
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="plans" >
+
+		<!-- String: minOfDurationAndEndTime tryEndTimeThenDuration endTimeOnly. Anything besides minOfDurationAndEndTime will internally use a different (simpler) version of the TimeAllocationMutator. -->
+		<param name="activityDurationInterpretation" value="tryEndTimeThenDuration" />
+
+		<!-- Path to a file containing person attributes (required file format: ObjectAttributes). -->
+		<param name="inputPersonAttributesFile" value="null" />
+
+		<param name="inputPlansFile" value="./matsim/input/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/optim-plan-hn_pop80_2011_safe5_netcf_flood1867-i1.0.xml" />
+
+		<!-- Defines how routes are stored in memory. Currently supported: LinkNetworkRoute, CompressedNetworkRoute. -->
+		<param name="networkRouteType" value="LinkNetworkRoute" />
+
+		<!-- Name of the (Object)Attribute defining the subpopulation to which pertains a Person (as freight, through traffic, etc.). The attribute must be of String type. -->
+		<param name="subpopulationAttributeName" value="subpopulation" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="planscalcroute" >
+
+		<!-- factor with which beeline distances (and therefore times) are multiplied in order to obtain an estimate of the network distances/times.  Default is something like 1.3 -->
+		<param name="beelineDistanceFactor" value="1.3" />
+
+		<!-- All the modes for which the router is supposed to generate network routes (like car) -->
+		<param name="networkModes" value="car,ride" />
+
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="bike" />
+
+			<!-- Free-speed factor for a teleported mode. Travel time = teleportedModeFreespeedFactor * <freespeed car travel time>. Insert a line like this for every such mode. Please do not set teleportedModeFreespeedFactor as well as teleportedModeSpeed for the same mode, but if you do, +teleportedModeFreespeedFactor wins over teleportedModeSpeed. -->
+			<param name="teleportedModeFreespeedFactor" value="null" />
+
+			<!-- Speed for a teleported mode. Travel time = (<beeline distance> * beelineDistanceFactor) / teleportedModeSpeed. Insert a line like this for every such mode. -->
+			<param name="teleportedModeSpeed" value="4.166666666666667" />
+		</parameterset>
+
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="walk" />
+
+			<!-- Free-speed factor for a teleported mode. Travel time = teleportedModeFreespeedFactor * <freespeed car travel time>. Insert a line like this for every such mode. Please do not set teleportedModeFreespeedFactor as well as teleportedModeSpeed for the same mode, but if you do, +teleportedModeFreespeedFactor wins over teleportedModeSpeed. -->
+			<param name="teleportedModeFreespeedFactor" value="null" />
+
+			<!-- Speed for a teleported mode. Travel time = (<beeline distance> * beelineDistanceFactor) / teleportedModeSpeed. Insert a line like this for every such mode. -->
+			<param name="teleportedModeSpeed" value="0.8333333333333333" />
+		</parameterset>
+
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="undefined" />
+
+			<!-- Free-speed factor for a teleported mode. Travel time = teleportedModeFreespeedFactor * <freespeed car travel time>. Insert a line like this for every such mode. Please do not set teleportedModeFreespeedFactor as well as teleportedModeSpeed for the same mode, but if you do, +teleportedModeFreespeedFactor wins over teleportedModeSpeed. -->
+			<param name="teleportedModeFreespeedFactor" value="null" />
+
+			<!-- Speed for a teleported mode. Travel time = (<beeline distance> * beelineDistanceFactor) / teleportedModeSpeed. Insert a line like this for every such mode. -->
+			<param name="teleportedModeSpeed" value="13.88888888888889" />
+		</parameterset>
+
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="pt" />
+
+			<!-- Free-speed factor for a teleported mode. Travel time = teleportedModeFreespeedFactor * <freespeed car travel time>. Insert a line like this for every such mode. Please do not set teleportedModeFreespeedFactor as well as teleportedModeSpeed for the same mode, but if you do, +teleportedModeFreespeedFactor wins over teleportedModeSpeed. -->
+			<param name="teleportedModeFreespeedFactor" value="2.0" />
+
+			<!-- Speed for a teleported mode. Travel time = (<beeline distance> * beelineDistanceFactor) / teleportedModeSpeed. Insert a line like this for every such mode. -->
+			<param name="teleportedModeSpeed" value="null" />
+		</parameterset>
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="ptCounts" >
+
+		<!-- factor by which to re-scale the simulated values.  necessary when simulation runs with something different from 100%.  needs to be adapted manually -->
+		<param name="countsScaleFactor" value="1.0" />
+
+		<!-- distance to distanceFilterCenterNode to include counting stations. The unit of distance is the Euclidean distance implied by the coordinate system -->
+		<param name="distanceFilter" value="null" />
+
+		<!-- node id for center node of distance filter -->
+		<param name="distanceFilterCenterNode" value="null" />
+
+		<!-- input file containing the alighting (getting off) counts for pt -->
+		<param name="inputAlightCountsFile" value="null" />
+
+		<!-- input file containing the boarding (getting on) counts for pt -->
+		<param name="inputBoardCountsFile" value="null" />
+
+		<!-- input file containing the occupancy counts for pt -->
+		<param name="inputOccupancyCountsFile" value="null" />
+
+		<!-- possible values: `html', `kml', `txt', `all' -->
+		<param name="outputformat" value="null" />
+
+		<!-- every how many iterations (starting with 0) counts comparisons are generated -->
+		<param name="ptCountsInterval" value="10" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="qsim" >
+		<param name="endTime" value="09:00:00" />
+		<param name="flowCapacityFactor" value="1.0" />
+
+		<!-- decides if waiting vehicles enter the network after or before the already driving vehicles were moved. Default: false -->
+		<param name="insertingWaitingVehiclesBeforeDrivingVehicles" value="false" />
+
+		<!-- default: FIFO; options: FIFO PassingQ -->
+		<param name="linkDynamics" value="FIFO" />
+
+		<!-- The (initial) width of the links of the network. Use positive floating point values. -->
+		<param name="linkWidth" value="30.0" />
+
+		<!-- Defines which modes are congested modes. Technically, these are the modes that the departure handler of the netsimengine handles.  Effective cell size, effective lane width, flow capacity factor, and storage capacity factor need to be set with diligence.  Need to be vehicular modes to make sense. -->
+		<param name="mainMode" value="car" />
+
+		<!-- Shortens a link in the visualization, i.e. its start and end point are moved into towards the center. Does not affect traffic flow.  -->
+		<param name="nodeOffset" value="0.0" />
+
+		<!-- Number of threads used for the QSim.  Note that this setting is independent from the "global" threads setting.  In contrast to earlier versions, the non-parallel special version is no longer there. -->
+		<param name="numberOfThreads" value="1" />
+
+		<!-- Boolean. `true': stuck vehicles are removed, aborting the plan; `false': stuck vehicles are forced into the next link. `false' is probably the better choice. -->
+		<param name="removeStuckVehicles" value="false" />
+
+		<!-- `maxOfStarttimeAndEarliestActivityEnd' (default behavior) or `onlyUseStarttime' -->
+		<param name="simStarttimeInterpretation" value="maxOfStarttimeAndEarliestActivityEnd" />
+
+		<!-- snapshotStyle. One of: equiDist (vehicles equidistant on link) or queue (vehicles queued at end of link) or withHoles (experimental!!) -->
+		<param name="snapshotStyle" value="equiDist" />
+
+		<param name="snapshotperiod" value="00:00:00" />
+		<param name="startTime" value="undefined" />
+		<param name="storageCapacityFactor" value="1.0" />
+
+		<!-- time in seconds.  Time after which the frontmost vehicle on a link is called `stuck' if it does not move. -->
+		<param name="stuckTime" value="10.0" />
+
+		<param name="timeStepSize" value="00:00:01" />
+
+		<!-- `queue' for the standard queue model, `withHoles' (experimental!!) for the queue model with holes -->
+		<param name="trafficDynamics" value="queue" />
+
+		<!-- If this is true, we do not expect (or use) vehicles from the vehicles database, but create vehicles on the fly with default properties. -->
+		<param name="useDefaultVehicles" value="true" />
+
+		<!-- If a route does not reference a vehicle, agents will use the vehicle with the same id as their own. -->
+		<param name="usePersonIdForMissingVehicleId" value="true" />
+
+		<!-- Defines what happens if an agent wants to depart, but the specified vehicle is not available. One of: teleport, wait, exception -->
+		<param name="vehicleBehavior" value="teleport" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="scenario" >
+
+		<!-- Set this parameter to true if households should be used, false if not. -->
+		<param name="useHouseholds" value="false" />
+
+		<!-- Set this parameter to true if lanes should be used, false if not. -->
+		<param name="useLanes" value="false" />
+
+		<!-- Set this parameter to true if signal systems should be used, false if not. -->
+		<param name="useSignalsystems" value="false" />
+
+		<!-- Set this parameter to true if transit should be simulated, false if not. -->
+		<param name="useTransit" value="false" />
+
+		<!-- Set this parameter to true if vehicles should be used, false if not. -->
+		<param name="useVehicles" value="false" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="signalsystems" >
+		<param name="ambertimes" value="null" />
+		<param name="intergreentimes" value="null" />
+		<param name="signalcontrol" value="null" />
+		<param name="signalgroups" value="null" />
+		<param name="signalsystems" value="null" />
+		<param name="useAmbertimes" value="false" />
+		<param name="useIntergreentimes" value="false" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="strategy" >
+
+		<!-- the external executable will be called with a config file as argument.  This is the pathname to a possible skeleton config, to which additional information will be added.  Can be null. -->
+		<param name="ExternalExeConfigTemplate" value="null" />
+
+		<!-- time out value (in seconds) after which matsim will consider the external module as failed -->
+		<param name="ExternalExeTimeOut" value="3600" />
+
+		<!-- root directory for temporary files generated by the external executable. Provided as a service; I don't think this is used by MATSim. -->
+		<param name="ExternalExeTmpFileRootDir" value="null" />
+
+		<!-- fraction of iterations where innovative strategies are switched off.  Something link 0.8 should be good.  E.g. if you run from iteration 400 to iteration 500, innovation is switched off at iteration 480 -->
+		<param name="fractionOfIterationsToDisableInnovation" value="Infinity" />
+
+		<!-- maximum number of plans per agent.  ``0'' means ``infinity''.  Currently (2010), ``5'' is a good number -->
+		<param name="maxAgentPlanMemorySize" value="5" />
+
+		<!-- name of PlanSelector for plans removal.  If not full class name, resolved in StrategyManagerConfigLoader.  default is `null', which eventually calls SelectWorstPlan. This is not a good choice from a discrete choice theoretical perspective. Alternatives, however, have not been systematically tested. kai, feb'12 -->
+		<param name="planSelectorForRemoval" value="null" />
+
+		<parameterset type="strategysettings" >
+
+			<!-- iteration after which module will be disabled.  most useful for ``innovative'' strategies (new routes, new times, ...) -->
+			<param name="disableAfterIteration" value="-1" />
+
+			<!-- path to external executable (if applicable) -->
+			<param name="executionPath" value="null" />
+
+			<!-- name of strategy (if not full class name, resolved in StrategyManagerConfigLoader) -->
+			<param name="moduleName" value="ReRoute" />
+
+			<!-- probability that a strategy is applied to a given a person.  despite its name, this really is a ``weight'' -->
+			<param name="probability" value="0.2" />
+
+			<!-- subpopulation to which the module applies. "null" refers to the default population, that is, the set of persons for which no explicit subpopulation is defined (ie no subpopulation attribute) -->
+			<param name="subpopulation" value="null" />
+		</parameterset>
+
+		<parameterset type="strategysettings" >
+
+			<!-- iteration after which module will be disabled.  most useful for ``innovative'' strategies (new routes, new times, ...) -->
+			<param name="disableAfterIteration" value="-1" />
+
+			<!-- path to external executable (if applicable) -->
+			<param name="executionPath" value="null" />
+
+			<!-- name of strategy (if not full class name, resolved in StrategyManagerConfigLoader) -->
+			<param name="moduleName" value="TimeAllocationMutator" />
+
+			<!-- probability that a strategy is applied to a given a person.  despite its name, this really is a ``weight'' -->
+			<param name="probability" value="0.8" />
+
+			<!-- subpopulation to which the module applies. "null" refers to the default population, that is, the set of persons for which no explicit subpopulation is defined (ie no subpopulation attribute) -->
+			<param name="subpopulation" value="null" />
+		</parameterset>
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="subtourModeChoice" >
+
+		<!-- Defines the chain-based modes, seperated by commas -->
+		<param name="chainBasedModes" value="car,bike" />
+
+		<!-- Defines whether car availability must be considered or not. A agent has no car only if it has no license, or never access to a car -->
+		<param name="considerCarAvailability" value="false" />
+
+		<!-- Defines all the modes available, including chain-based modes, seperated by commas -->
+		<param name="modes" value="car,pt,bike,walk" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="transit" >
+
+		<!-- Comma-separated list of transportation modes that are handled as transit. Defaults to 'pt'. -->
+		<param name="transitModes" value="pt" />
+
+		<!-- Input file containing the transit schedule to be simulated. -->
+		<param name="transitScheduleFile" value="null" />
+
+		<!-- Input file containing the vehicles used by the departures in the transit schedule. -->
+		<param name="vehiclesFile" value="null" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="transitRouter" >
+
+		<!-- additional time the router allocates when a line switch happens. Can be interpreted as a 'safety' time that agents need to safely transfer from one line to another -->
+		<param name="additionalTransferTime" value="0.0" />
+
+		<!-- step size to increase searchRadius if no stops are found -->
+		<param name="extensionRadius" value="200.0" />
+
+		<!-- maximum beeline distance between stops that agents could transfer to by walking -->
+		<param name="maxBeelineWalkConnectionDistance" value="100.0" />
+
+		<!-- the radius in which stop locations are searched, given a start or target coordinate -->
+		<param name="searchRadius" value="1000.0" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="travelTimeCalculator" >
+
+		<!-- Transport modes that will be respected by the travel time collector. 'car' is default, which includes also bussed from the pt simulation module. Use this parameter in combination with 'filterModes' = true! -->
+		<param name="analyzedModes" value="car" />
+
+		<param name="calculateLinkToLinkTravelTimes" value="false" />
+		<param name="calculateLinkTravelTimes" value="true" />
+
+		<!-- If true, link travel times from legs performed on modes not included in the 'analyzedModes' parameter are ignored. -->
+		<param name="filterModes" value="false" />
+
+		<!-- How to deal with congested time bins that have no link entry events. `optimistic' assumes free speed (too optimistic); 'experimental_LastMile' is experimental and probably too pessimistic. -->
+		<param name="travelTimeAggregator" value="optimistic" />
+
+		<!-- The size of the time bin (in sec) into which the link travel times are aggregated for the router -->
+		<param name="travelTimeBinSize" value="900" />
+
+		<!-- possible values: nullTravelTimeCalculatorArray TravelTimeCalculatorHashMap  -->
+		<param name="travelTimeCalculator" value="TravelTimeCalculatorArray" />
+
+		<!-- How to deal with link entry times at different positions during the time bin. Currently supported: average, linearinterpolation -->
+		<param name="travelTimeGetter" value="average" />
+	</module>
+
+<!-- ====================================================================== -->
+
+	<module name="vspExperimental" >
+
+		<!-- (do not use) set chainBasedModes for subTourModeChoice by Yu. E.g. "car,bike", "car" -->
+		<param name="chainBasedModes" value="car" />
+
+		<!-- fraction of iterations at which MSA score averaging is started. The matsim theory department suggests to use this together with switching off choice set innovation (where a similar switch exists), but it has not been tested yet. -->
+		<param name="fractionOfIterationsToStartScoreMSA" value="null" />
+
+		<!-- (do not use) Set this filename of MZ05 daily analysis -->
+		<param name="inputMZ05File" value="" />
+
+		<!-- (do not use except of you have to) There was a problem with pt interaction scoring.  Some people solved it by overwriting the parameters of the pt interaction activity type.  Doing this now throws an Exception.  If you still insist on doing this, set the following to true. -->
+		<param name="isAbleToOverwritePtInteractionParams" value="false" />
+
+		<param name="isGeneratingBoardingDeniedEvent" value="false" />
+
+		<!-- if an approximation of the opportunity cost of time is included into the radius calculation for location choice.`true' will be faster, but it is an approximation.  Default is `true'; `false' is available for backwards compatibility. -->
+		<param name="isUsingOpportunityCostOfTimeForLocationChoice" value="true" />
+
+		<param name="logitScaleParamForPlansRemoval" value="1.0" />
+
+		<!-- changes MATSim's global time format used in output files. Can be used to enforce writing fractional seconds e.g. in output_plans.  default is `hh:mm:ss' (because of backwards compatibility). see Time.java for possible formats -->
+		<param name="matsimGlobalTimeformat" value="HH:mm:ss" />
+
+		<!-- (do not use) set the traffic mode option for subTourModeChoice by Yu -->
+		<param name="modes" value="car, pt" />
+
+		<!-- (not tested) will remove plan attributes that are presumably not used, such as activityStartTime. default=false -->
+		<param name="removingUnnecessaryPlanAttributes" value="false" />
+
+		<!-- (deprecated, use fractionOfIterationsToStartScoreMSA) first iteration of MSA score averaging. The matsim theory department suggests to use this together with switching of choice set innovation, but it has not been tested yet. -->
+		<param name="scoreMSAStartsAtIteration" value="null" />
+
+		<!-- Options: `ignore', `warn', `abort'.  Default: either `ignore' or `warn'.
+		When violating VSP defaults, this results in nothing, warnings, or aborts.  Members of VSP should use `abort' or talk to kai. -->
+		<param name="vspDefaultsCheckingLevel" value="ignore" />
+
+		<!-- if true then writes output_events in output directory.  default is `false'. Will only work when lastIteration is multiple of events writing interval -->
+		<param name="writingOutputEvents" value="false" />
+	</module>
+
+<!-- ====================================================================== -->
+
+</config>
+
+2015-05-01 12:18:08,608  INFO AbstractController:310 Complete config dump done.
+2015-05-01 12:18:08,608  INFO AbstractController:311 Checking consistency of config...
+2015-05-01 12:18:08,608  INFO PlanCalcScoreConfigGroup:386 NO OPENING OR CLOSING TIMES DEFINED!
+
+
+There is no activity type that has an opening *and* closing time (or opening time and late penalty) defined.
+This usually means that the activity chains can be shifted by an arbitrary
+number of hours without having an effect on the score of the plans, and thus
+resulting in wrong results / traffic patterns.
+If you are using MATSim without time adaptation, you can ignore this warning.
+
+
+
+2015-05-01 12:18:08,608  WARN PlanCalcScoreConfigGroup:394 marginal utl of wait set to: -6.0. Setting this different from zero is discouraged. The parameter was also abused for pt routing; if you did that, consider setting the new parameter waitingPt instead.
+2015-05-01 12:18:08,609  INFO VspConfigConsistencyCheckerImpl:48 NOT running vsp config consistency check because vsp defaults checking level is set to IGNORE
+2015-05-01 12:18:08,609  INFO VspConfigConsistencyCheckerImpl:48 NOT running vsp config consistency check because vsp defaults checking level is set to IGNORE
+2015-05-01 12:18:08,609  INFO AbstractController:313 Checking consistency of config done.
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.core.trafficmonitoring.TravelTimeCalculator
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:08,615  INFO EventsManagerImpl:148   org.matsim.core.api.experimental.events.handler.VehicleArrivesAtFacilityEventHandler
+2015-05-01 12:18:08,616  INFO EventsManagerImpl:207     > org.matsim.core.api.experimental.events.VehicleArrivesAtFacilityEvent
+2015-05-01 12:18:08,616  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.TransitDriverStartsEventHandler
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.TransitDriverStartsEvent
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.core.trafficmonitoring.TravelTimeCalculator
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkEnterEventHandler
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkEnterEvent
+2015-05-01 12:18:08,617  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.LinkLeaveEvent
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonDepartureEvent
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonArrivalEvent
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:148   org.matsim.core.api.experimental.events.handler.VehicleArrivesAtFacilityEventHandler
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:207     > org.matsim.core.api.experimental.events.VehicleArrivesAtFacilityEvent
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.TransitDriverStartsEventHandler
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.TransitDriverStartsEvent
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:148   org.matsim.api.core.v01.events.handler.PersonStuckEventHandler
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.PersonStuckEvent
+2015-05-01 12:18:08,618  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,649  INFO Counter:51 [PersonPrepareForSim] handled person # 1
+2015-05-01 12:18:08,649  INFO Counter:51 [PersonPrepareForSim] handled person # 2
+2015-05-01 12:18:08,650  INFO Counter:51 [PersonPrepareForSim] handled person # 32
+2015-05-01 12:18:08,651  INFO Counter:51 [PersonPrepareForSim] handled person # 128
+2015-05-01 12:18:08,651  INFO Counter:51 [PersonPrepareForSim] handled person # 256
+2015-05-01 12:18:08,652  INFO Counter:51 [PersonPrepareForSim] handled person # 512
+2015-05-01 12:18:08,649  INFO Counter:51 [PersonPrepareForSim] handled person # 16
+2015-05-01 12:18:08,653  INFO Counter:51 [PersonPrepareForSim] handled person # 1024
+2015-05-01 12:18:08,655  INFO Counter:51 [PersonPrepareForSim] handled person # 2048
+2015-05-01 12:18:08,660  INFO Counter:51 [PersonPrepareForSim] handled person # 4096
+2015-05-01 12:18:08,649  INFO Counter:51 [PersonPrepareForSim] handled person # 8
+2015-05-01 12:18:08,668  INFO Counter:51 [PersonPrepareForSim] handled person # 8192
+2015-05-01 12:18:08,649  INFO Counter:51 [PersonPrepareForSim] handled person # 4
+2015-05-01 12:18:08,650  INFO Counter:51 [PersonPrepareForSim] handled person # 64
+2015-05-01 12:18:08,675  INFO Counter:51 [PersonPrepareForSim] handled person # 16384
+2015-05-01 12:18:08,686  INFO Counter:51 [PersonPrepareForSim] handled person # 32768
+2015-05-01 12:18:08,693  INFO Counter:57 [PersonPrepareForSim] handled person # 38343
+2015-05-01 12:18:08,694  INFO AbstractController:195 ###################################################
+2015-05-01 12:18:08,694  INFO AbstractController:196 ### ITERATION 0 BEGINS
+2015-05-01 12:18:08,696  INFO ControlerListenerManager:141 calling notifyIterationStarts on org.matsim.core.controler.corelisteners.PlansScoring
+2015-05-01 12:18:08,844  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.core.scoring.EventsToScore
+2015-05-01 12:18:08,844  INFO EventsManagerImpl:148   org.matsim.core.events.handler.BasicEventHandler
+2015-05-01 12:18:08,844  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.Event
+2015-05-01 12:18:08,845  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,845  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.core.scoring.EventsToScore
+2015-05-01 12:18:08,845  INFO EventsManagerImpl:148   org.matsim.core.events.handler.BasicEventHandler
+2015-05-01 12:18:08,845  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.Event
+2015-05-01 12:18:08,845  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,845  INFO ControlerListenerManager:146 calling notifyIterationStarts on org.matsim.core.controler.corelisteners.LinkStatsControlerListener
+2015-05-01 12:18:08,845  INFO ControlerListenerManager:146 calling notifyIterationStarts on org.matsim.core.controler.corelisteners.LegHistogramListener
+2015-05-01 12:18:08,845  INFO ControlerListenerManager:149 [it.0] all ControlerIterationStartsListeners called.
+2015-05-01 12:18:08,846  INFO ControlerListenerManager:225 calling notifyBeforeMobsim on org.matsim.core.controler.corelisteners.EventsHandling
+2015-05-01 12:18:08,846  INFO EventsManagerImpl:170 resetting Event-Handlers
+2015-05-01 12:18:08,846  INFO EventsManagerImpl:177   nicta.org.dm.evacuation.simulation.matsimAPI.VolumesAnalyzerNICTA
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   nicta.org.dm.evacuation.simulation.matsimAPI.AgentStuckEventDetermineCause
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   nicta.org.dm.evacuation.simulation.matsimAPI.RetraceEvacuationFromSimEvents
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   org.matsim.core.trafficmonitoring.TravelTimeCalculator
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   org.matsim.analysis.VolumesAnalyzer
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   org.matsim.analysis.LegHistogram
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   org.matsim.analysis.CalcLegTimes
+2015-05-01 12:18:08,847  INFO EventsManagerImpl:177   org.matsim.core.scoring.EventsToScore
+2015-05-01 12:18:08,911  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.core.events.algorithms.EventWriterXML
+2015-05-01 12:18:08,911  INFO EventsManagerImpl:148   org.matsim.core.events.algorithms.EventWriter
+2015-05-01 12:18:08,911  INFO EventsManagerImpl:148   org.matsim.core.events.handler.BasicEventHandler
+2015-05-01 12:18:08,911  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.Event
+2015-05-01 12:18:08,912  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,912  INFO EventsManagerImpl:144 adding Event-Handler: org.matsim.core.events.algorithms.EventWriterXML
+2015-05-01 12:18:08,912  INFO EventsManagerImpl:148   org.matsim.core.events.algorithms.EventWriter
+2015-05-01 12:18:08,912  INFO EventsManagerImpl:148   org.matsim.core.events.handler.BasicEventHandler
+2015-05-01 12:18:08,912  INFO EventsManagerImpl:207     > org.matsim.api.core.v01.events.Event
+2015-05-01 12:18:08,912  INFO EventsManagerImpl:156 
+2015-05-01 12:18:08,914  INFO ControlerListenerManager:225 calling notifyBeforeMobsim on org.matsim.core.controler.corelisteners.PlansDumping
+2015-05-01 12:18:08,914  INFO PlansDumping:77 dumping plans...
+2015-05-01 12:18:08,931  INFO Counter:51 [PopulationWriter] dumped person # 1
+2015-05-01 12:18:08,931  INFO Counter:51 [PopulationWriter] dumped person # 2
+2015-05-01 12:18:08,931  INFO Counter:51 [PopulationWriter] dumped person # 4
+2015-05-01 12:18:08,932  INFO Counter:51 [PopulationWriter] dumped person # 8
+2015-05-01 12:18:08,932  INFO Counter:51 [PopulationWriter] dumped person # 16
+2015-05-01 12:18:08,932  INFO Counter:51 [PopulationWriter] dumped person # 32
+2015-05-01 12:18:08,933  INFO Counter:51 [PopulationWriter] dumped person # 64
+2015-05-01 12:18:08,935  INFO Counter:51 [PopulationWriter] dumped person # 128
+2015-05-01 12:18:08,938  INFO Counter:51 [PopulationWriter] dumped person # 256
+2015-05-01 12:18:08,944  INFO Counter:51 [PopulationWriter] dumped person # 512
+2015-05-01 12:18:08,952  INFO Counter:51 [PopulationWriter] dumped person # 1024
+2015-05-01 12:18:08,965  INFO Counter:51 [PopulationWriter] dumped person # 2048
+2015-05-01 12:18:08,991  INFO Counter:51 [PopulationWriter] dumped person # 4096
+2015-05-01 12:18:09,037  INFO Counter:51 [PopulationWriter] dumped person # 8192
+2015-05-01 12:18:09,124  INFO Counter:51 [PopulationWriter] dumped person # 16384
+2015-05-01 12:18:09,290  INFO Counter:51 [PopulationWriter] dumped person # 32768
+2015-05-01 12:18:09,342  INFO PopulationWriter:95 Population written to: ./matsim/output/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/ITERS/it.0/run0.0.plans.xml.gz
+2015-05-01 12:18:09,343  INFO Counter:57 [PopulationWriter] dumped person # 38343
+2015-05-01 12:18:09,343  INFO PlansDumping:79 finished plans dump.
+2015-05-01 12:18:09,343  INFO ControlerListenerManager:230 calling notifyBeforeMobsim on org.matsim.population.VspPlansCleaner
+2015-05-01 12:18:09,372  INFO ControlerListenerManager:233 [it.0] all ControlerBeforeMobsimListeners called.
+2015-05-01 12:18:09,726  INFO MobsimListenerManager:49 calling addQueueSimulationListener
+2015-05-01 12:18:09,726  INFO MobsimListenerManager:53   assigned class org.matsim.core.mobsim.framework.listeners.MobsimListener to interface org.matsim.core.mobsim.framework.listeners.MobsimListener
+2015-05-01 12:18:09,726  INFO MobsimListenerManager:53   assigned class org.matsim.core.mobsim.framework.listeners.MobsimListener to interface org.matsim.vis.snapshotwriters.SnapshotWriterManager
+2015-05-01 12:18:09,726  INFO MobsimListenerManager:53   assigned class org.matsim.core.mobsim.framework.listeners.MobsimListener to interface org.matsim.core.mobsim.framework.listeners.MobsimInitializedListener
+2015-05-01 12:18:09,726  INFO MobsimListenerManager:53   assigned class org.matsim.core.mobsim.framework.listeners.MobsimListener to interface org.matsim.core.mobsim.framework.listeners.MobsimAfterSimStepListener
+2015-05-01 12:18:09,726  INFO MobsimListenerManager:53   assigned class org.matsim.core.mobsim.framework.listeners.MobsimListener to interface org.matsim.core.mobsim.framework.listeners.MobsimBeforeCleanupListener
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,773  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,774  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,774  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,774  WARN QVehicle:74 No VehicleCapacity set in Vehicle. Using default value of 4.
+2015-05-01 12:18:09,774  WARN QVehicle:77  Future occurences of this logging statement are suppressed.
+2015-05-01 12:18:09,829  INFO QNetsimEngine:466 Assigned 269 nodes and 585 links to QSimEngineRunner #0
+2015-05-01 12:18:09,873  INFO EventsManagerImpl:134  event # 1
+2015-05-01 12:18:09,876  INFO EventsManagerImpl:134  event # 2
+2015-05-01 12:18:09,877  INFO EventsManagerImpl:134  event # 4
+2015-05-01 12:18:09,877  INFO EventsManagerImpl:134  event # 8
+2015-05-01 12:18:09,878  INFO EventsManagerImpl:134  event # 16
+2015-05-01 12:18:09,878  INFO EventsManagerImpl:134  event # 32
+2015-05-01 12:18:09,879  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 00:00:00 : #links=14 #nodes=14
+2015-05-01 12:18:09,880  INFO EventsManagerImpl:134  event # 64
+2015-05-01 12:18:09,880  INFO QSim:410 SIMULATION (NEW QSim) AT 00:00:00 : #Veh=38343 lost=0 simT=0.0s realT=0s; (s/r): 0.0
+2015-05-01 12:18:09,880  INFO Gbl:52 used RAM: 147322080B = 143869kB = 140MB  free: 180882208B = 172MB  total: 328204288B = 313MB
+2015-05-01 12:18:09,881  INFO EventsManagerImpl:134  event # 128
+2015-05-01 12:18:09,884  INFO EventsManagerImpl:134  event # 256
+2015-05-01 12:18:09,888  INFO EventsManagerImpl:134  event # 512
+2015-05-01 12:18:09,904  INFO EventsManagerImpl:134  event # 1024
+2015-05-01 12:18:09,929  INFO EventsManagerImpl:134  event # 2048
+2015-05-01 12:18:09,970  INFO EventsManagerImpl:134  event # 4096
+2015-05-01 12:18:10,029  INFO EventsManagerImpl:134  event # 8192
+2015-05-01 12:18:10,106  INFO EventsManagerImpl:134  event # 16384
+2015-05-01 12:18:10,254  INFO EventsManagerImpl:134  event # 32768
+2015-05-01 12:18:10,529  INFO EventsManagerImpl:134  event # 65536
+2015-05-01 12:18:10,945  INFO EventsManagerImpl:134  event # 131072
+2015-05-01 12:18:11,405  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 01:00:00 : #links=114 #nodes=54
+2015-05-01 12:18:11,405  INFO QSim:410 SIMULATION (NEW QSim) AT 01:00:00 : #Veh=34077 lost=0 simT=3600.0s realT=2s; (s/r): 1800.0
+2015-05-01 12:18:11,405  INFO Gbl:52 used RAM: 157182872B = 153498kB = 149MB  free: 187274344B = 178MB  total: 344457216B = 328MB
+2015-05-01 12:18:11,670  INFO EventsManagerImpl:134  event # 262144
+2015-05-01 12:18:13,443  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 02:00:00 : #links=86 #nodes=53
+2015-05-01 12:18:13,443  INFO QSim:410 SIMULATION (NEW QSim) AT 02:00:00 : #Veh=27198 lost=0 simT=7200.0s realT=4s; (s/r): 1800.0
+2015-05-01 12:18:13,443  INFO Gbl:52 used RAM: 152267776B = 148699kB = 145MB  free: 259298304B = 247MB  total: 411566080B = 392MB
+2015-05-01 12:18:13,856  INFO EventsManagerImpl:134  event # 524288
+2015-05-01 12:18:14,411  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 03:00:00 : #links=87 #nodes=47
+2015-05-01 12:18:14,411  INFO QSim:410 SIMULATION (NEW QSim) AT 03:00:00 : #Veh=22249 lost=0 simT=10800.0s realT=5s; (s/r): 2160.0
+2015-05-01 12:18:14,411  INFO Gbl:52 used RAM: 279593288B = 273040kB = 266MB  free: 131972792B = 125MB  total: 411566080B = 392MB
+2015-05-01 12:18:15,747  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 04:00:00 : #links=69 #nodes=32
+2015-05-01 12:18:15,747  INFO QSim:410 SIMULATION (NEW QSim) AT 04:00:00 : #Veh=17727 lost=0 simT=14400.0s realT=6s; (s/r): 2400.0
+2015-05-01 12:18:15,747  INFO Gbl:52 used RAM: 202974776B = 198217kB = 193MB  free: 235854280B = 224MB  total: 438829056B = 418MB
+2015-05-01 12:18:16,569  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 05:00:00 : #links=61 #nodes=32
+2015-05-01 12:18:16,569  INFO QSim:410 SIMULATION (NEW QSim) AT 05:00:00 : #Veh=13406 lost=0 simT=18000.0s realT=7s; (s/r): 2571.4285714285716
+2015-05-01 12:18:16,569  INFO Gbl:52 used RAM: 309905920B = 302642kB = 295MB  free: 128923136B = 122MB  total: 438829056B = 418MB
+2015-05-01 12:18:17,108  INFO EventsManagerImpl:134  event # 1048576
+2015-05-01 12:18:17,261  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 06:00:00 : #links=47 #nodes=19
+2015-05-01 12:18:17,261  INFO QSim:410 SIMULATION (NEW QSim) AT 06:00:00 : #Veh=9100 lost=0 simT=21600.0s realT=7s; (s/r): 3085.714285714286
+2015-05-01 12:18:17,261  INFO Gbl:52 used RAM: 208301960B = 203419kB = 198MB  free: 227381368B = 216MB  total: 435683328B = 415MB
+2015-05-01 12:18:17,806  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 07:00:00 : #links=27 #nodes=18
+2015-05-01 12:18:17,806  INFO QSim:410 SIMULATION (NEW QSim) AT 07:00:00 : #Veh=5120 lost=0 simT=25200.0s realT=8s; (s/r): 3150.0
+2015-05-01 12:18:17,806  INFO Gbl:52 used RAM: 277306376B = 270807kB = 264MB  free: 158376952B = 151MB  total: 435683328B = 415MB
+2015-05-01 12:18:18,194  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 08:00:00 : #links=10 #nodes=6
+2015-05-01 12:18:18,194  INFO QSim:410 SIMULATION (NEW QSim) AT 08:00:00 : #Veh=2448 lost=0 simT=28800.0s realT=8s; (s/r): 3600.0
+2015-05-01 12:18:18,194  INFO Gbl:52 used RAM: 325377256B = 317751kB = 310MB  free: 110306072B = 105MB  total: 435683328B = 415MB
+2015-05-01 12:18:18,427  INFO QNetsimEngine:310 SIMULATION (QNetsimEngine) AT 09:00:00 : #links=6 #nodes=4
+2015-05-01 12:18:18,428  INFO QSim:410 SIMULATION (NEW QSim) AT 09:00:00 : #Veh=1171 lost=0 simT=32400.0s realT=9s; (s/r): 3600.0
+2015-05-01 12:18:18,428  INFO Gbl:52 used RAM: 347095624B = 338960kB = 331MB  free: 88587704B = 84MB  total: 435683328B = 415MB
+2015-05-01 12:18:18,432  INFO Gbl:185 Thread performance: Thread=QNetsimEngineRunner_0  cpu-time=1.596013sec
+2015-05-01 12:18:18,445  INFO AbstractController$9:268 ### ITERATION 0 fires after mobsim event
+2015-05-01 12:18:18,446  INFO ControlerListenerManager:244 calling notifyAfterMobsim on org.matsim.core.controler.corelisteners.EventsHandling
+2015-05-01 12:18:18,446  INFO ControlerListenerManager:244 calling notifyAfterMobsim on org.matsim.core.controler.corelisteners.LegTimesListener
+2015-05-01 12:18:18,446  INFO Gbl:185 Thread performance: Thread=class org.matsim.core.events.SimStepParallelEventsManagerImpl$ProcessEventsRunnable0  cpu-time=6.547908sec
+2015-05-01 12:18:18,447  INFO LegTimesListener:48 [0] average trip (probably: leg) duration is: 2130 seconds = 00:35:30
+2015-05-01 12:18:18,447  INFO ControlerListenerManager:252 [it.0] all ControlerAfterMobsimListeners called.
+2015-05-01 12:18:18,448  INFO AbstractController$5:221 ### ITERATION 0 fires scoring event
+2015-05-01 12:18:18,448  INFO ControlerListenerManager:184 calling notifyScoring on org.matsim.core.controler.corelisteners.PlansScoring
+2015-05-01 12:18:18,448  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:21:00][facilityId=9]
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:11:30][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:21:00][facilityId=9]
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:11:41][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:21:00][facilityId=9]
+2015-05-01 12:18:18,449  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:11:36][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:10:25][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:10:20][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,450  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:10:14][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:10:09][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:10:03][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,451  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:09:58][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:09:52][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:300 The first and the last activity do not have the same type. Will score the first activity from midnight to its end, and the last activity from its start to midnight.  Because of the nonlinear function, this is not the same as scoring from start to end.
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:303 first activity: [type=Evacuation][coord=null][linkId=433][startTime=undefined][endTime=04:20:00][facilityId=9]
+2015-05-01 12:18:18,452  WARN CharyparNagelActivityScoring:304 last activity: [type=Safe][coord=null][linkId=355][startTime=05:09:47][endTime=undefined][facilityId=81]
+2015-05-01 12:18:18,453  WARN CharyparNagelActivityScoring:305 This may also happen when plans are not completed when the simulation ends.
+2015-05-01 12:18:18,453  WARN CharyparNagelActivityScoring:307 Additional warnings of this type are suppressed.
+2015-05-01 12:18:18,459  WARN CharyparNagelActivityScoring:212 encountering duration < zeroUtilityDuration; the logic for this was changed around mid-nov 2013.
+2015-05-01 12:18:18,459  WARN CharyparNagelActivityScoring:213 your final score thus will be different from earlier runs; set usingOldScoringBelowZeroUtilityDuration to true if you absolutely need the old version.  See https://matsim.atlassian.net/browse/MATSIM-191.
+2015-05-01 12:18:18,459  WARN CharyparNagelActivityScoring:215  This message given only once.
+2015-05-01 12:18:18,564  INFO EventsToScore:192 it: 0 msaStart: null
+2015-05-01 12:18:18,592  INFO ControlerListenerManager:195 [it.0] all ControlerScoringListeners called.
+2015-05-01 12:18:18,593  INFO AbstractController$6:229 ### ITERATION 0 fires iteration end event
+2015-05-01 12:18:18,593  INFO ControlerListenerManager:161 calling notifyIterationEnds on org.matsim.core.controler.corelisteners.EventsHandling
+2015-05-01 12:18:18,608  INFO EventsManagerImpl:161 removing Event-Handler: org.matsim.core.events.algorithms.EventWriterXML
+2015-05-01 12:18:18,608  INFO EventsManagerImpl:161 removing Event-Handler: org.matsim.core.events.algorithms.EventWriterXML
+2015-05-01 12:18:18,608  INFO ControlerListenerManager:161 calling notifyIterationEnds on org.matsim.core.controler.corelisteners.PlansScoring
+2015-05-01 12:18:18,608  INFO EventsManagerImpl:161 removing Event-Handler: org.matsim.core.scoring.EventsToScore
+2015-05-01 12:18:18,609  INFO EventsManagerImpl:161 removing Event-Handler: org.matsim.core.scoring.EventsToScore
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 1
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 2
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 4
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 8
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 16
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 32
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 64
+2015-05-01 12:18:18,609  INFO PopulationImpl:173  person # 128
+2015-05-01 12:18:18,610  INFO PopulationImpl:173  person # 256
+2015-05-01 12:18:18,610  INFO PopulationImpl:173  person # 512
+2015-05-01 12:18:18,611  INFO PopulationImpl:173  person # 1024
+2015-05-01 12:18:18,612  INFO PopulationImpl:173  person # 2048
+2015-05-01 12:18:18,614  INFO PopulationImpl:173  person # 4096
+2015-05-01 12:18:18,619  INFO PopulationImpl:173  person # 8192
+2015-05-01 12:18:18,626  INFO PopulationImpl:173  person # 16384
+2015-05-01 12:18:18,643  INFO PopulationImpl:173  person # 32768
+2015-05-01 12:18:18,660  INFO Counter:51 [PopulationWriter] dumped person # 1
+2015-05-01 12:18:18,660  INFO Counter:51 [PopulationWriter] dumped person # 2
+2015-05-01 12:18:18,660  INFO Counter:51 [PopulationWriter] dumped person # 4
+2015-05-01 12:18:18,660  INFO Counter:51 [PopulationWriter] dumped person # 8
+2015-05-01 12:18:18,661  INFO Counter:51 [PopulationWriter] dumped person # 16
+2015-05-01 12:18:18,661  INFO Counter:51 [PopulationWriter] dumped person # 32
+2015-05-01 12:18:18,662  INFO Counter:51 [PopulationWriter] dumped person # 64
+2015-05-01 12:18:18,663  INFO Counter:51 [PopulationWriter] dumped person # 128
+2015-05-01 12:18:18,665  INFO Counter:51 [PopulationWriter] dumped person # 256
+2015-05-01 12:18:18,668  INFO Counter:51 [PopulationWriter] dumped person # 512
+2015-05-01 12:18:18,675  INFO Counter:51 [PopulationWriter] dumped person # 1024
+2015-05-01 12:18:18,686  INFO Counter:51 [PopulationWriter] dumped person # 2048
+2015-05-01 12:18:18,706  INFO Counter:51 [PopulationWriter] dumped person # 4096
+2015-05-01 12:18:18,759  INFO Counter:51 [PopulationWriter] dumped person # 8192
+2015-05-01 12:18:18,880  INFO Counter:51 [PopulationWriter] dumped person # 16384
+2015-05-01 12:18:19,061  INFO Counter:51 [PopulationWriter] dumped person # 32768
+2015-05-01 12:18:19,116  INFO PopulationWriter:95 Population written to: ./matsim/output/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/ITERS/it.0/run0.0.experienced_plans.xml.gz
+2015-05-01 12:18:19,117  INFO Counter:57 [PopulationWriter] dumped person # 38343
+2015-05-01 12:18:19,323  INFO TravelDistanceStats:122 [TravelDistanceStats] using 8 thread(s).
+2015-05-01 12:18:19,336  INFO TravelDistanceStats:135 [TravelDistanceStats] all threads finished.
+2015-05-01 12:18:19,337  INFO TravelDistanceStats:155 -- average of the average leg distance per plan (executed plans only): 33761.51836149482
+2015-05-01 12:18:19,337  INFO TravelDistanceStats:156 (TravelDistanceStats takes an average over all legs where the simulation reports travelled distances. These are car legs, pt legs,
+2015-05-01 12:18:19,337  INFO TravelDistanceStats:157 (and teleported legs whose route contains a distance.)
+2015-05-01 12:18:19,337  INFO ControlerListenerManager:168 calling notifyIterationEnds on org.matsim.core.controler.corelisteners.LinkStatsControlerListener
+2015-05-01 12:18:19,337  INFO ControlerListenerManager:168 calling notifyIterationEnds on org.matsim.analysis.ScoreStatsControlerListener
+2015-05-01 12:18:19,363  INFO ScoreStatsControlerListener:185 -- avg. score of the executed plan of each agent: 23901.561519016173
+2015-05-01 12:18:19,363  INFO ScoreStatsControlerListener:191 -- avg. score of the worst plan of each agent: 23901.561519016173
+2015-05-01 12:18:19,363  INFO ScoreStatsControlerListener:192 -- avg. of the avg. plan score per agent: 23901.561519016173
+2015-05-01 12:18:19,364  INFO ScoreStatsControlerListener:193 -- avg. score of the best plan of each agent: 23901.561519016173
+2015-05-01 12:18:19,364  INFO ControlerListenerManager:168 calling notifyIterationEnds on org.matsim.core.controler.corelisteners.LegHistogramListener
+2015-05-01 12:18:19,370  INFO LegHistogramListener:80 number of legs:	37647	100%
+2015-05-01 12:18:19,370  INFO LegHistogramListener:87 number of car legs:	37647	100.0%
+2015-05-01 12:18:19,370  INFO LegHistogramListener:89 (car legs include legs by pt vehicles)
+2015-05-01 12:18:20,819  INFO ControlerListenerManager:172 [it.0] all ControlerIterationEndsListeners called.
+2015-05-01 12:18:21,091  INFO AbstractController:239 ### ITERATION 0 ENDS
+2015-05-01 12:18:21,091  INFO AbstractController:240 ###################################################
+2015-05-01 12:18:21,091  INFO AbstractController:175 S H U T D O W N   ---   start shutdown.
+2015-05-01 12:18:21,092  INFO ControlerListenerManager:122 calling notifyShutdown on org.matsim.core.controler.corelisteners.EventsHandling
+2015-05-01 12:18:21,092  INFO ControlerListenerManager:122 calling notifyShutdown on org.matsim.core.controler.corelisteners.PlansScoring
+2015-05-01 12:18:21,092  INFO ControlerListenerManager:122 calling notifyShutdown on org.matsim.core.controler.corelisteners.DumpDataAtEnd
+2015-05-01 12:18:21,105  INFO Counter:51 [PopulationWriter] dumped person # 1
+2015-05-01 12:18:21,105  INFO Counter:51 [PopulationWriter] dumped person # 2
+2015-05-01 12:18:21,105  INFO Counter:51 [PopulationWriter] dumped person # 4
+2015-05-01 12:18:21,105  INFO Counter:51 [PopulationWriter] dumped person # 8
+2015-05-01 12:18:21,105  INFO Counter:51 [PopulationWriter] dumped person # 16
+2015-05-01 12:18:21,106  INFO Counter:51 [PopulationWriter] dumped person # 32
+2015-05-01 12:18:21,106  INFO Counter:51 [PopulationWriter] dumped person # 64
+2015-05-01 12:18:21,107  INFO Counter:51 [PopulationWriter] dumped person # 128
+2015-05-01 12:18:21,108  INFO Counter:51 [PopulationWriter] dumped person # 256
+2015-05-01 12:18:21,111  INFO Counter:51 [PopulationWriter] dumped person # 512
+2015-05-01 12:18:21,116  INFO Counter:51 [PopulationWriter] dumped person # 1024
+2015-05-01 12:18:21,127  INFO Counter:51 [PopulationWriter] dumped person # 2048
+2015-05-01 12:18:21,147  INFO Counter:51 [PopulationWriter] dumped person # 4096
+2015-05-01 12:18:21,191  INFO Counter:51 [PopulationWriter] dumped person # 8192
+2015-05-01 12:18:21,277  INFO Counter:51 [PopulationWriter] dumped person # 16384
+2015-05-01 12:18:21,451  INFO Counter:51 [PopulationWriter] dumped person # 32768
+2015-05-01 12:18:21,507  INFO PopulationWriter:95 Population written to: ./matsim/output/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/run0.output_plans.xml.gz
+2015-05-01 12:18:21,509  INFO Counter:57 [PopulationWriter] dumped person # 38343
+2015-05-01 12:18:21,513  INFO NetworkWriter:46 Writing network to file: ./matsim/output/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/run0.output_network.xml.gz...
+2015-05-01 12:18:21,524  INFO NetworkWriter:49 done.
+2015-05-01 12:18:21,530  INFO ControlerListenerManager:127 calling notifyShutdown on org.matsim.analysis.ScoreStatsControlerListener
+2015-05-01 12:18:21,531  INFO ControlerListenerManager:130 all ControlerShutdownListeners called.
+2015-05-01 12:18:21,531  INFO AbstractController:184 S H U T D O W N   ---   shutdown completed.
+2015-05-01 12:18:21,531  INFO OutputDirectoryLogging:165 closing the logfile, i.e. messages sent to the logger after this message are not written to the logfile.

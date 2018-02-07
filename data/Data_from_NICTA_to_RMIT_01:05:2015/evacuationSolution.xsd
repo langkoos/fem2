@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns="http://www.w3schools.com" 
+targetNamespace="http://www.example.org/evacuationSolution/" 
+xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
+jaxb:version="1.0" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified">
+
+<xs:element name="EvacuationSolution">
+<xs:complexType>
+<xs:sequence>
+
+    <xs:element name="EvacuationRun" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+            <xs:attribute name="ResultsSheet" type="xs:string" use="optional"/>
+            <xs:attribute name="RunId" type="xs:string" use="optional" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="EvacuationParameters">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="InstanceName" type="xs:string" />
+                <xs:element name="Horizon" type="xs:double"/>
+                <xs:element name="TimeStep" type="xs:double" />
+                <xs:element name="FloodSpeed" type="xs:double"/>
+                <xs:element name="FloodOffset" type="xs:double" />
+                <xs:element name="AllParameters" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Reports the total number of evacuees, evacuation start and end time -->
+    <xs:element name="EvacuationSummary">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- The total number of evacuated vehicles -->
+                <xs:element name="TotalFlow" type="xs:double"/>
+                <!-- The time at which the evacuation starts (first evacuee departure) -->
+                <xs:element name="EvacuationStartTime" type="xs:double"/>
+                <!-- The time at which the evacuation ends (last evacuee departure) -->
+                <xs:element name="EvacuationEndTime" type="xs:double"/>
+                <!-- The earliest time at which a safe zone is reached (first evacuee safe) -->
+                <xs:element name="SafeStartTime" type="xs:double"/>
+                <!-- The latest time at which a safe zone is reached (last evacuee safe) -->
+                <xs:element name="SafeEndTime" type="xs:double"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Reports the evacuation routes as a series of links for each evacuated area, 
+    the total flow of evacuees and the evacuation start and end per area-->
+    <xs:element name="EvacuationPlanPerArea">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+	            <xs:sequence>
+	                <xs:element name="EvacuatedArea">
+	                    <xs:complexType>
+	                        <xs:sequence>
+	                            <xs:element name="EvacuationStart" type="xs:double"/>
+	                            <xs:element name="EvacuationEnd" type="xs:double"/>
+	                            <xs:element name="TotalFlow" type="xs:double"/>
+	                            <!-- Can accept several evacuation plans of one route each. -->
+	                            <xs:element name="EvacuationPlan" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                        <!-- Restrict the EvacuationRoute to be a series of links ID e.g. 1;2;3; and so on.  -->
+                                            <xs:element name="EvacuationRoute">
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                        <xs:pattern value="((\d+)(;{1}))*"/>
+                                                    </xs:restriction>
+                                                 </xs:simpleType>
+                                             </xs:element>
+                                             <xs:element name="RouteClosedTime" type="xs:double"/>
+                                             <xs:element name="SafeNode">
+                                                <xs:complexType>
+                                                    <xs:attribute name="NodeIdentifier" type="xs:int"/>
+                                                    <xs:attribute name="x" type="xs:double" use="required"/>
+                                                    <xs:attribute name="y" type="xs:double" use="required"/>  
+                                                    <xs:attribute name="AreaName" type="xs:string"/>  
+                                                </xs:complexType>
+                                             </xs:element>
+                                             <xs:element name="EvacuationTimeline">
+                                                <xs:complexType>
+                                                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                                        <xs:sequence>
+                                                            <xs:element name="DepartingFlow">
+                                                                <xs:complexType>
+                                                                    <xs:attribute name="Time" type="xs:double" use="required"/>
+                                                                    <xs:attribute name="Flow" type="xs:double" use="required"/>
+                                                                </xs:complexType>
+                                                            </xs:element>
+                                                        </xs:sequence>
+                                                    </xs:choice>
+                                                </xs:complexType>
+                                             </xs:element>
+                                        </xs:sequence>
+                                        <xs:attribute name="Flow" type="xs:double" use="required"/>
+                                    </xs:complexType>
+	                            </xs:element>
+	                        </xs:sequence>
+	                        <xs:attribute name="NodeIdentifier" type="xs:int" use="required"/>
+	                        <xs:attribute name="x" type="xs:double" use="required"/>
+                            <xs:attribute name="y" type="xs:double" use="required"/>	                        
+	                        <xs:attribute name="AreaName" type="xs:string" use="optional"/>
+	                        <xs:attribute name="Demand" type="xs:double" use="optional"/>
+	                    </xs:complexType>
+	                </xs:element>
+	            </xs:sequence>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Reports the flow per time edge (make it efficient -> only report the flow when it is strictly positive). 
+    Currently optional (minOccurs=0).-->
+    <xs:element name="EvacuationTimeline" minOccurs="0">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:sequence>
+                    <xs:element name="TimeEdge">
+                        <xs:complexType>
+                            <xs:attribute name="Name" type="xs:string"/>
+                            <xs:attribute name="Id" type="xs:int" use="required"/>
+                            <xs:attribute name="Flow" type="xs:double" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="EdgesInContraflow">
+    	<xs:complexType>
+        	<xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:sequence>
+                    <xs:element name="Edge">
+                        <xs:complexType>
+                            <xs:attribute name="Name" type="xs:string"/>
+                            <xs:attribute name="Id" type="xs:int" use="required"/>
+                            <xs:attribute name="IdOpposite" type="xs:int" use="required"/>
+                            <xs:attribute name="ContraflowCapacity" type="xs:double" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:choice>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema>
