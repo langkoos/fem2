@@ -1,23 +1,23 @@
 image: maven:3-jdk-8
 
 stages:
-  # - prepare
+  - prepare
   - build
 
-# fat:
-#   stage: prepare
-#   script:
-
-job1:
-  stage: build
-  script: 
+fat:
+  stage: prepare
+  script:
     - apt-get update
     - apt-get install -y python
     - apt-get install -y python-pip
     - pip install git-fat
-    - apt-get install -y sshpass rsync
 #    - git fat pull # does not work
+#    - apt-get install -y sshpass rsync
 #    - sshpass -p 'secret' git fat pull # error: Host key verification failed.
+
+job1:
+  stage: build
+  script: 
     - mvn install -B --fail-at-end -Dmatsim.preferLocalDtds=true
 
 #-Dmaven.test.redirectTestOutputToFile 
