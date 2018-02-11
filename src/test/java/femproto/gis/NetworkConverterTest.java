@@ -1,5 +1,6 @@
 package femproto.gis;
 
+import femproto.network.NetworkConverter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;
