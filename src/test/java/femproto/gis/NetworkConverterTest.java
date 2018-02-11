@@ -1,11 +1,8 @@
-package org.matsim.gis;
+package femproto.gis;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;
-
-import static org.junit.Assert.*;
 
 public class NetworkConverterTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;

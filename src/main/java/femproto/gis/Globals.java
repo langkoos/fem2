@@ -1,4 +1,4 @@
-package org.matsim.gis;
+package femproto.gis;
 
 public class Globals {
     public static String EPSG3308 = "EPSG:3308"; //NSW Lambert state mapping
