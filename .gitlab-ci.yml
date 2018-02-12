@@ -4,11 +4,10 @@ stages:
   - all
 
 before_script:
-  script:
-    - apt-get update
-    - apt-get install -y python
-    - apt-get install -y python-pip
-    - pip install git-fat
+  - apt-get update
+  - apt-get install -y python
+  - apt-get install -y python-pip
+  - pip install git-fat
 #    - git fat pull # does not work
 #    - apt-get install -y sshpass rsync
 #    - sshpass -p 'secret' git fat pull # error: Host key verification failed.
