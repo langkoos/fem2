@@ -11,15 +11,20 @@ public class NetworkConverterTest {
 	@Test
 	//@Ignore // will for time being not work since gitlab-ci does not support git-fat.
 	// Could put normal file into test input directory, but it somewhat defeats the purpose.
+	// Have now done exactly that.  kai, feb'18
 	public void testMain() throws Exception {
-//		String dir = "data/2011_evacuation_network/shapefiles/" ;
-		String dir = "data/2041 Evacuation Modelling Data/2041_evacuation_network/" ;
-//		String basename = "hn_net_ses_emme_2011_" ;
+
+		String dir = utils.getPackageInputDirectory() ;
+
 		String basename = "hn_net_ses_emme_2041_" ;
+
 		String testOutputDir = utils.getOutputDirectory() ;
+
 		final String nodesFilename = dir + basename + "nodes.shp";
 		final String linksFilename = dir + basename + "links.shp";
-		final String outputFilePrefix = testOutputDir + "/netconvert";
+		final String outputFilePrefix = testOutputDir + "/" + basename + "network" ;
+
 		NetworkConverter.main(new String[]{nodesFilename, linksFilename, outputFilePrefix}) ;
+
 	}
 }
