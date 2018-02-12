@@ -90,6 +90,7 @@ public class RunMatsim4FloodEvacuation {
 			}
 			
 		} else {
+			log.info( "found an argument, thus loading config from file ...") ;
 			config = ConfigUtils.loadConfig(args[0]) ;
 		}
 		

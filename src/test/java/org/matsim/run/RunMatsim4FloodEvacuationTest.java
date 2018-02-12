@@ -8,7 +8,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.testcases.MatsimTestUtils;
 
 public class RunMatsim4FloodEvacuationTest {
-	@Rule MatsimTestUtils utils = new MatsimTestUtils() ;
+	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 	
 	@Test
 	public void test() {
@@ -16,9 +16,10 @@ public class RunMatsim4FloodEvacuationTest {
 		
 		String scenarioBase = "test/input/scenarios/initial-2041-scenario/" ;
 		
-		config.network().setInputFile( scenarioBase + "hn_net_ses_emme_2041_network.xml.gz ");
+		final String prefix = "../../../../"; // this is because the root for input files is where the config file resides.  kai, feb'18
+		config.network().setInputFile( prefix + scenarioBase + "hn_net_ses_emme_2041_network.xml.gz ");
 		
-		config.plans().setInputFile( scenarioBase + "pop.xml.gz" ) ;
+		config.plans().setInputFile( prefix + scenarioBase + "pop.xml.gz" ) ;
 		
 		String configFilename = utils.getOutputDirectory() + "inputConfig.xml" ;
 		
