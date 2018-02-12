@@ -1,0 +1,19 @@
+2018-02-12 16:07:27,973  WARN QueueWithBuffer:331 Link 10161-2653 too small: enlarge storage capacity from: 64.0 Vehicles to: 240.0000000000048 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,974  WARN QueueWithBuffer:331 Link 10169-2079 too small: enlarge storage capacity from: 54.666666666666664 Vehicles to: 205.0000000000041 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,974  WARN QueueWithBuffer:331 Link 10174-2086 too small: enlarge storage capacity from: 73.33333333333333 Vehicles to: 275.0000000000055 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,974  WARN QueueWithBuffer:331 Link 10175-2080 too small: enlarge storage capacity from: 50.666666666666664 Vehicles to: 190.0000000000038 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,975  WARN QueueWithBuffer:331 Link 10175-2085 too small: enlarge storage capacity from: 50.666666666666664 Vehicles to: 190.0000000000038 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,976  WARN QueueWithBuffer:331 Link 10352-1790 too small: enlarge storage capacity from: 42.666666666666664 Vehicles to: 160.00000000000318 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,976  WARN QueueWithBuffer:331 Link 10360-2038 too small: enlarge storage capacity from: 97.33333333333333 Vehicles to: 365.0000000000073 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,976  WARN QueueWithBuffer:331 Link 10363-1796 too small: enlarge storage capacity from: 48.0 Vehicles to: 180.00000000000358 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,976  WARN QueueWithBuffer:331 Link 10393-2036 too small: enlarge storage capacity from: 184.0 Vehicles to: 690.0000000000138 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,977  WARN QueueWithBuffer:331 Link 10398-1792 too small: enlarge storage capacity from: 21.333333333333332 Vehicles to: 80.00000000000159 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,977  WARN QueueWithBuffer:331 Link 10404-2030 too small: enlarge storage capacity from: 108.0 Vehicles to: 405.00000000000813 Vehicles.  This is not fatal, but modifies the traffic flow dynamics.
+2018-02-12 16:07:27,977  WARN QueueWithBuffer:334 Additional warnings of this type are suppressed.
+2018-02-12 16:07:34,508  WARN CharyparNagelActivityScoring:252 The first and the last activity do not have the same type. 
+2018-02-12 16:07:34,513  WARN CharyparNagelActivityScoring:253 Will score the first activity from midnight to its end, and the last activity from its start to midnight.
+2018-02-12 16:07:34,513  WARN CharyparNagelActivityScoring:254 Because of the nonlinear function, this is not the same as scoring from start to end.
+2018-02-12 16:07:34,514  WARN CharyparNagelActivityScoring:255 first activity: [type=home][coord=null][linkId=18248-1928][startTime=undefined][endTime=00:00:00][duration=undefined][facilityId=null]
+2018-02-12 16:07:34,514  WARN CharyparNagelActivityScoring:256 last activity: [type=safe][coord=null][linkId=15136-24070][startTime=02:09:18][endTime=undefined][duration=undefined][facilityId=null]
+2018-02-12 16:07:34,514  WARN CharyparNagelActivityScoring:257 This may also happen when plans are not completed when the simulation ends.
+2018-02-12 16:07:34,514  WARN CharyparNagelActivityScoring:259 Additional warnings of this type are suppressed.
