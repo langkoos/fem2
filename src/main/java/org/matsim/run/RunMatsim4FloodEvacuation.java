@@ -33,7 +33,6 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.algorithms.NetworkSimplifier;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -49,8 +48,8 @@ import static org.matsim.core.network.NetworkUtils.*;
  * @author nagel
  *
  */
-public class RunMatsim {
-	private static final Logger log = Logger.getLogger(RunMatsim.class) ;
+public class RunMatsim4FloodEvacuation {
+	private static final Logger log = Logger.getLogger(RunMatsim4FloodEvacuation.class) ;
 	
 	public static void main(String[] args) {
 		Set<String> set = new HashSet<>();

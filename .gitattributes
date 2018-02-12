@@ -1,5 +1,5 @@
 *.zip filter=fat -crlf
-*.gz filter=fat -crlf
+# *.gz filter=fat -crlf
 *.png filter=fat -crlf
 *.jpg filter=fat -crlf
 *.bz2 filter=fat -crlf
@@ -10,12 +10,12 @@
 *.pdf filter=fat -crlf
 *.xlsx filter=fat -crlf
 # shapefiles:
-*.shp filter=fat -crlf
-*.shp.xml filter=fat -crlf
-*.prj filter=fat -crlf
-*.dbf filter=fat -crlf
-*.qpj filter=fat -crlf
-*.shx filter=fat -crlf
-*.cpg filter=fat -crlf
+# *.shp filter=fat -crlf
+# *.shp.xml filter=fat -crlf
+# *.prj filter=fat -crlf
+# *.dbf filter=fat -crlf
+# *.qpj filter=fat -crlf
+# *.shx filter=fat -crlf
+# *.cpg filter=fat -crlf
 data filter=fat -crlf
 

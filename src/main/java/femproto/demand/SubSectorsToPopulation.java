@@ -38,25 +38,28 @@ public class SubSectorsToPopulation {
 	
 	Scenario scenario;
 	
-	public SubSectorsToPopulation() {
+	private SubSectorsToPopulation() {
 //		log.setLevel(Level.DEBUG);
 		this.scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 	}
 	
 	public static void main(String[] args) throws IOException {
-		throw new RuntimeException("repair the stuff below from the test case. kai, feb'18") ;
-		
-//		SubSectorsToPopulation subSectorsToPopulation = new SubSectorsToPopulation();
-//		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
-//		subSectorsToPopulation.writePopulation(args[1]);
-		
+		SubSectorsToPopulation subSectorsToPopulation = new SubSectorsToPopulation();
+		subSectorsToPopulation.readNetwork(args[1]);
+		subSectorsToPopulation.readEvacAndSafeNodes(args[2]);
+		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
+		subSectorsToPopulation.writePopulation(args[3]);
+		// TODO if we really want to leave it like this, then put in a more expressive
+		// command passing syntax (see bdi-abm-integration project).  kai, feb'18
 	}
 	
-	void readNetwork(String fileName) {
+	private void readNetwork(String fileName) {
+		log.info( "entering readNetwork with fileName=" + fileName ) ;
 		new MatsimNetworkReader(scenario.getNetwork()).readFile(fileName);
 	}
 	
-	public void readSubSectorsShapeFile(String fileName) throws IOException {
+	private void readSubSectorsShapeFile(String fileName) throws IOException {
+		log.info( "entering readSubSectorsShapeFile with fileName=" + fileName ) ;
 		
 		// population factory:
 		PopulationFactory pf = scenario.getPopulation().getFactory();
@@ -160,7 +163,9 @@ public class SubSectorsToPopulation {
 	
 	Map<String,Record> subsectorToEvacAndSafeNodes = new LinkedHashMap<>() ;
 	
-	void readEvacAndSafeNodes(String fileName) {
+	private void readEvacAndSafeNodes(String fileName) {
+		log.info( "entering readEvacAndSafeNodes with fileName=" + fileName ) ;
+
 		try (final FileReader reader = new FileReader(fileName)) {
 			
 			// construct the csv reader:
@@ -184,7 +189,9 @@ public class SubSectorsToPopulation {
 		
 	}
 	
-	void writePopulation(String filename) {
+	private void writePopulation(String filename) {
+		log.info( "entering writePopulation with fileName=" + filename ) ;
+
 		PopulationWriter populationWriter = new PopulationWriter(scenario.getPopulation());
 		populationWriter.write(filename);
 	}

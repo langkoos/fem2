@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;
 
 public class NetworkConverterTest {
+	public static final String basename = "hn_net_ses_emme_2041_" ;
+	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 	
 	@Test
@@ -15,8 +17,6 @@ public class NetworkConverterTest {
 	public void testMain() throws Exception {
 
 		String dir = utils.getPackageInputDirectory() ;
-
-		String basename = "hn_net_ses_emme_2041_" ;
 
 		String testOutputDir = utils.getOutputDirectory() ;
 
