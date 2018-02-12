@@ -5,16 +5,17 @@
 *.bz2 filter=fat -crlf
 *.csv filter=fat -crlf
 *.tgz filter=fat -crlf
-# supplied data in shapeiles, excel and pdf
+# boxnote, excel, pdf:
 *.boxnote filter=fat -crlf
 *.pdf filter=fat -crlf
 *.xlsx filter=fat -crlf
-*.shp filter=fat -crlf
-*.shp.xml filter=fat -crlf
-*.prj filter=fat -crlf
-*.dbf filter=fat -crlf
-*.qpj filter=fat -crlf
-*.shx filter=fat -crlf
-*.cpg filter=fat -crlf
+# shapefiles:
+# *.shp filter=fat -crlf
+# *.shp.xml filter=fat -crlf
+# *.prj filter=fat -crlf
+# *.dbf filter=fat -crlf
+# *.qpj filter=fat -crlf
+# *.shx filter=fat -crlf
+# *.cpg filter=fat -crlf
 data filter=fat -crlf
 

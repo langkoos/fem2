@@ -3,3 +3,4 @@
 /target
 **/output
 **/*.tar
+/pop.xml.gz

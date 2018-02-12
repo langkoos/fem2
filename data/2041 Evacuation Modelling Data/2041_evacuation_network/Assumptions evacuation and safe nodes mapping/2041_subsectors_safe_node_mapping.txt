@@ -134,9 +134,9 @@ Eastern Creek A 4;11093;11139;NA;NA
 Eastern Creek A 5;15929;11139;NA;NA
 Richmond A East;10979;11119, 15136;11119, 15136;13082, 11119, 15136
 Richmond A Central;2037;11119, 15136;11119, 15136;13082, 11119, 15136
-NA;NA;NA;NA;NA
-NA;NA;NA;NA;NA
-* In case of infra upgrades B/C the Bligh Park subsectors must not use Richmond Road to evacuate
-The following edge links are removed from evacuation paths from subsectors Bligh Park East, Bligh Park Central, and Bligh Park West:
-11068-18441, 18441-11068, 18441-14000, 14000-18441, 14000-11854, 11854-14000
-;NA;NA;NA;NA
+# NA;NA;NA;NA;NA
+# NA;NA;NA;NA;NA
+# * In case of infra upgrades B/C the Bligh Park subsectors must not use Richmond Road to evacuate
+# The following edge links are removed from evacuation paths from subsectors Bligh Park East, Bligh Park Central, and Bligh Park West:
+# 11068-18441, 18441-11068, 18441-14000, 14000-18441, 14000-11854, 11854-14000
+# ;NA;NA;NA;NA

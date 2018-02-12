@@ -19,7 +19,9 @@
 package org.matsim.run;
 
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
@@ -27,15 +29,19 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
+import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.algorithms.NetworkSimplifier;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.matsim.core.network.NetworkUtils.*;
 
@@ -45,21 +51,78 @@ import static org.matsim.core.network.NetworkUtils.*;
  */
 public class RunMatsim {
 	private static final Logger log = Logger.getLogger(RunMatsim.class) ;
-
+	
 	public static void main(String[] args) {
+		Set<String> set = new HashSet<>();
+		set.add(TransportMode.car ) ;
 		
 		Config config ;
 		if ( args==null || args.length==0 || args[0]=="" ) {
+			config = ConfigUtils.createConfig() ;
+			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
+			config.plans().setInputFile("pop.xml.gz");
+
 //			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
-			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config.xml" ) ;
-			config.controler().setLastIteration(1);
+//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config.xml" ) ;
+			
+			
+			config.controler().setLastIteration(0);
 			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
+			
+			config.plansCalcRoute().setNetworkModes(set);
+			
+			config.qsim().setMainModes(set);
+			
+			config.qsim().setEndTime(36*3600);
+			{
+				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("home") ;
+				params.setScoringThisActivityAtAll(false);
+				config.planCalcScore().addActivityParams(params);
+			}
+			{
+				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("start") ;
+				params.setScoringThisActivityAtAll(false);
+				config.planCalcScore().addActivityParams(params);
+			}
+			{
+				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
+				params.setScoringThisActivityAtAll(false);
+				config.planCalcScore().addActivityParams(params);
+			}
+			
 		} else {
 			config = ConfigUtils.loadConfig(args[0]) ;
 		}
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
 		
+		for ( Link link : scenario.getNetwork().getLinks().values() ) {
+			link.setAllowedModes(  set ); // yyyyyy fix in network generator; needs to be comma separated!!
+			link.setCapacity( link.getCapacity() * 60.); // yyyyyy seems to be capacity per minute; correct in netconvert
+			link.setLength( link.getLength()*1000. ); // yyyyyy correct in netconvert
+		}
+		
+		// yyyyyy reduce to 10% for debugging:
+		List<Id<Person>> list = new ArrayList<>() ;
+		for ( Id<Person> personId : scenario.getPopulation().getPersons().keySet() ) {
+			if (MatsimRandom.getRandom().nextDouble() < 0.9 ) {
+				list.add( personId) ;
+			}
+		}
+		for ( Id<Person> toBeRemoved : list ) {
+			scenario.getPopulation().removePerson( toBeRemoved ) ;
+		}
+
+		
+		//		preparationsForRmitHawkesburyScenario();
+		
+		Controler controler = new Controler( scenario ) ;
+		
+		controler.run();
+		
+	}
+	
+	private static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {
 		for ( Person person : scenario.getPopulation().getPersons().values() ) {
 			List<PlanElement> toRemove = new ArrayList<>() ;
 			boolean justRemoved = false ;
@@ -91,7 +154,7 @@ public class RunMatsim {
 			double euclid = getEuclideanDistance(link.getFromNode().getCoord(), link.getToNode().getCoord());
 			if ( euclid > link.getLength() ) {
 				log.warn("linkId=" + link.getId() +  "; length=" + link.getLength()
-						+ "; EuclideanLength=" + euclid ) ;
+								 + "; EuclideanLength=" + euclid ) ;
 				link.setLength(euclid);
 			}
 			double maxSpeed = 100./3.6 ; // m/s
@@ -100,11 +163,6 @@ public class RunMatsim {
 				link.setFreespeed(maxSpeed);
 			}
 		}
-		
-		Controler controler = new Controler( scenario ) ;
-
-		controler.run();
-
 	}
-
+	
 }
