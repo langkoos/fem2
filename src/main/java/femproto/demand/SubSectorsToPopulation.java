@@ -143,7 +143,7 @@ public class SubSectorsToPopulation {
 				
 				Plan plan = pf.createPlan() ;
 				
-				Activity startAct = pf.createActivityFromLinkId("home", startLink.getId() );
+				Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId() );
 				startAct.setEndTime(0); // yyyyyy ????
 				plan.addActivity(startAct);
 				

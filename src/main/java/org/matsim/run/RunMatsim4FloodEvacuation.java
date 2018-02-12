@@ -73,13 +73,9 @@ public class RunMatsim4FloodEvacuation {
 			config.qsim().setMainModes(set);
 			
 			config.qsim().setEndTime(36*3600);
+
 			{
-				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("home") ;
-				params.setScoringThisActivityAtAll(false);
-				config.planCalcScore().addActivityParams(params);
-			}
-			{
-				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("start") ;
+				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
 				params.setScoringThisActivityAtAll(false);
 				config.planCalcScore().addActivityParams(params);
 			}
