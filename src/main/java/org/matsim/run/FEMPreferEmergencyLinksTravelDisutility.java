@@ -42,6 +42,7 @@ package org.matsim.run;
  * #L%
  */
 
+import femproto.network.NetworkConverter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -73,7 +74,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 	private final TravelTime travelTime;
 	
 	private FEMPreferEmergencyLinksTravelDisutility(final TravelTime travelTime, Map<Id<Link>, Double> specialLinks) {
-		log.setLevel(Level.DEBUG);
+//		log.setLevel(Level.DEBUG);
 		this.specialLinks = specialLinks;
 		Gbl.assertNotNull(travelTime);
 		this.travelTime = travelTime;
@@ -81,7 +82,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 	
 	@Override
 	public double getLinkTravelDisutility(final Link link, final double time, final Person person, final Vehicle vehicle) {
-		double factor = 1. ;
+		double factor = 100. ;
 		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
 			factor = result ;
@@ -92,10 +93,10 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 	
 	@Override
 	public double getLinkMinimumTravelDisutility(final Link link) {
-		double factor = 1. ;
+		double factor = 100. ;
 		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
-			log.debug("found link in fire area:" + link.getId() );
+			log.debug("found link being special link:" + link.getId() );
 			factor = result ;
 		}
 		return factor * this.travelTime.getLinkTravelTime(link, Time.UNDEFINED_TIME, null, null);
@@ -106,7 +107,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		
 		public Factory(Network network) {
 			for( Link link : network.getLinks().values() ) {
-				boolean isEvacLink = (boolean) link.getAttributes().getAttribute("evac_ses");
+				boolean isEvacLink = (boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
 				if ( isEvacLink ) {
 					specialLinks.put( link.getId(), 0.01 ) ;
 				}

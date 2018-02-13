@@ -94,6 +94,8 @@ public class RunMatsim4FloodEvacuation {
 			config = ConfigUtils.loadConfig(args[0]) ;
 		}
 		
+		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
+		
 		FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class ) ;
 		
 		// ---
@@ -103,8 +105,8 @@ public class RunMatsim4FloodEvacuation {
 		//
 //		for ( Link link : scenario.getNetwork().getLinks().values() ) {
 //			link.setAllowedModes(  set ); // yyyyyy fix in network generator; needs to be comma separated!!
-//			link.setCapacity( link.getCapacity() * 60.); // yyyyyy seems to be capacity per minute; correct in netconvert
-//			link.setLength( link.getLength()*1000. ); // yyyyyy correct in netconvert
+//			link.setCapacity( link.getCapacity() * 60.); //  seems to be capacity per minute; correct in netconvert
+//			link.setLength( link.getLength()*1000. ); //  correct in netconvert
 //		}
 		
 		// yyyyyy reduce to 10% for debugging:

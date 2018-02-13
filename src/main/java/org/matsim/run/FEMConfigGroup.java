@@ -5,7 +5,7 @@ import org.matsim.core.config.ReflectiveConfigGroup;
 
 import static org.matsim.run.FEMConfigGroup.FEMRoutingMode.preferEvacuationLinks;
 
-class FEMConfigGroup extends ReflectiveConfigGroup{
+public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	
 	private static final String NAME="FEM" ;
 
