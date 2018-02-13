@@ -64,17 +64,17 @@ import java.util.Map;
  *
  * @author cdobler
  */
-public final class FEMTravelDisutility implements TravelDisutility {
+public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisutility {
 	
-	private static final Logger log = Logger.getLogger(FEMTravelDisutility.class) ;
+	private static final Logger log = Logger.getLogger(FEMPreferEmergencyLinksTravelDisutility.class) ;
 	
-	private final Map<Id<Link>, Double> emergencyRoutingLinks;
+	private final Map<Id<Link>, Double> specialLinks;
 	
 	private final TravelTime travelTime;
 	
-	private FEMTravelDisutility(final TravelTime travelTime, Map<Id<Link>, Double> linksInFireArea) {
+	private FEMPreferEmergencyLinksTravelDisutility(final TravelTime travelTime, Map<Id<Link>, Double> specialLinks) {
 		log.setLevel(Level.DEBUG);
-		this.emergencyRoutingLinks = linksInFireArea;
+		this.specialLinks = specialLinks;
 		Gbl.assertNotNull(travelTime);
 		this.travelTime = travelTime;
 	}
@@ -82,7 +82,7 @@ public final class FEMTravelDisutility implements TravelDisutility {
 	@Override
 	public double getLinkTravelDisutility(final Link link, final double time, final Person person, final Vehicle vehicle) {
 		double factor = 1. ;
-		Double result = emergencyRoutingLinks.get(link.getId());;
+		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
 			factor = result ;
 			log.debug("found link in fire area; link=" + link.getId() + "; factor=" + factor ) ;
@@ -93,7 +93,7 @@ public final class FEMTravelDisutility implements TravelDisutility {
 	@Override
 	public double getLinkMinimumTravelDisutility(final Link link) {
 		double factor = 1. ;
-		Double result = emergencyRoutingLinks.get(link.getId());;
+		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
 			log.debug("found link in fire area:" + link.getId() );
 			factor = result ;
@@ -102,19 +102,19 @@ public final class FEMTravelDisutility implements TravelDisutility {
 	}
 	
 	public static final class Factory implements TravelDisutilityFactory {
-		private final Map<Id<Link>, Double> emergencyRoutingLinks = new LinkedHashMap<>() ;
+		private final Map<Id<Link>, Double> specialLinks = new LinkedHashMap<>() ;
 		
 		public Factory(Network network) {
 			for( Link link : network.getLinks().values() ) {
 				boolean isEvacLink = (boolean) link.getAttributes().getAttribute("evac_ses");
 				if ( isEvacLink ) {
-					emergencyRoutingLinks.put( link.getId(), 0.01 ) ;
+					specialLinks.put( link.getId(), 0.01 ) ;
 				}
 			}
 		}
 		@Override
 		public TravelDisutility createTravelDisutility(TravelTime timeCalculator) {
-			return new FEMTravelDisutility(timeCalculator, emergencyRoutingLinks);
+			return new FEMPreferEmergencyLinksTravelDisutility(timeCalculator, specialLinks);
 		}
 	}
 	

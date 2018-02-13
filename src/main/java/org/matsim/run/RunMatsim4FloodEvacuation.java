@@ -40,9 +40,7 @@ import org.matsim.core.router.NetworkRoutingProvider;
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-import org.matsim.withinday.trafficmonitoring.WithinDayTravelTime;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -148,7 +146,7 @@ public class RunMatsim4FloodEvacuation {
 //						addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
 						
 						// define how the travel disutility is computed:
-						TravelDisutilityFactory disutilityFactory = new FEMTravelDisutility.Factory( scenario.getNetwork() );
+						TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory( scenario.getNetwork() );
 						addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
 						
 						break;
