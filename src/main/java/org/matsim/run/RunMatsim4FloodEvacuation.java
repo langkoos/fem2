@@ -91,12 +91,13 @@ public class RunMatsim4FloodEvacuation {
 		}
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
-		
-		for ( Link link : scenario.getNetwork().getLinks().values() ) {
-			link.setAllowedModes(  set ); // yyyyyy fix in network generator; needs to be comma separated!!
-			link.setCapacity( link.getCapacity() * 60.); // yyyyyy seems to be capacity per minute; correct in netconvert
-			link.setLength( link.getLength()*1000. ); // yyyyyy correct in netconvert
-		}
+
+		//
+//		for ( Link link : scenario.getNetwork().getLinks().values() ) {
+//			link.setAllowedModes(  set ); // yyyyyy fix in network generator; needs to be comma separated!!
+//			link.setCapacity( link.getCapacity() * 60.); // yyyyyy seems to be capacity per minute; correct in netconvert
+//			link.setLength( link.getLength()*1000. ); // yyyyyy correct in netconvert
+//		}
 		
 		// yyyyyy reduce to 10% for debugging:
 		List<Id<Person>> list = new ArrayList<>() ;
