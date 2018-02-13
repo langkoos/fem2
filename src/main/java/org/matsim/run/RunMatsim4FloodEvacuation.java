@@ -30,13 +30,19 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.algorithms.NetworkSimplifier;
+import org.matsim.core.router.NetworkRoutingProvider;
+import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
+import org.matsim.withinday.trafficmonitoring.WithinDayTravelTime;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -90,6 +96,10 @@ public class RunMatsim4FloodEvacuation {
 			config = ConfigUtils.loadConfig(args[0]) ;
 		}
 		
+		FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class ) ;
+		
+		// ---
+		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
 
 		//
@@ -114,6 +124,41 @@ public class RunMatsim4FloodEvacuation {
 		//		preparationsForRmitHawkesburyScenario();
 		
 		Controler controler = new Controler( scenario ) ;
+		
+		// ---
+		
+		controler.addOverridingModule(new AbstractModule(){
+			@Override public void install() {
+				switch( femConfig.getFEMRoutingMode() ) {
+					case preferEvacuationLinks:
+						final String routingMode = TransportMode.car ;
+						// (the "routingMode" can be different from the "mode".  useful if, say, different cars should follow different routing
+						// algorithms, but still executed as "car" on the network.  Ask me if this might be useful for this project.  kai, feb'18)
+
+						// register this routing mode:
+						addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(TransportMode.car, routingMode)) ;
+						
+						// define how the travel time is computed:
+						addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+						
+						// congested travel time:
+//						bind(WithinDayTravelTime.class).in(Singleton.class);
+//						addEventHandlerBinding().to(WithinDayTravelTime.class);
+//						addMobsimListenerBinding().to(WithinDayTravelTime.class);
+//						addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
+						
+						// define how the travel disutility is computed:
+						TravelDisutilityFactory disutilityFactory = new FEMTravelDisutility.Factory( scenario.getNetwork() );
+						addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
+						
+						break;
+					default:
+						throw new RuntimeException("not implemented") ;
+				}
+			}
+		});
+		
+		// ---
 		
 		controler.run();
 		
