@@ -40,9 +40,7 @@ import org.matsim.core.router.NetworkRoutingProvider;
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-import org.matsim.withinday.trafficmonitoring.WithinDayTravelTime;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +94,8 @@ public class RunMatsim4FloodEvacuation {
 			config = ConfigUtils.loadConfig(args[0]) ;
 		}
 		
+		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
+		
 		FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class ) ;
 		
 		// ---
@@ -105,8 +105,8 @@ public class RunMatsim4FloodEvacuation {
 		//
 //		for ( Link link : scenario.getNetwork().getLinks().values() ) {
 //			link.setAllowedModes(  set ); // yyyyyy fix in network generator; needs to be comma separated!!
-//			link.setCapacity( link.getCapacity() * 60.); // yyyyyy seems to be capacity per minute; correct in netconvert
-//			link.setLength( link.getLength()*1000. ); // yyyyyy correct in netconvert
+//			link.setCapacity( link.getCapacity() * 60.); //  seems to be capacity per minute; correct in netconvert
+//			link.setLength( link.getLength()*1000. ); //  correct in netconvert
 //		}
 		
 		// yyyyyy reduce to 10% for debugging:
@@ -148,7 +148,7 @@ public class RunMatsim4FloodEvacuation {
 //						addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
 						
 						// define how the travel disutility is computed:
-						TravelDisutilityFactory disutilityFactory = new FEMTravelDisutility.Factory( scenario.getNetwork() );
+						TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory( scenario.getNetwork() );
 						addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
 						
 						break;

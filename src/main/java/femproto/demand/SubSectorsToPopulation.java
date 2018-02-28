@@ -108,7 +108,7 @@ public class SubSectorsToPopulation {
 				// yyyyyy??
 				double maxCap = Double.NEGATIVE_INFINITY;
 				for (Link link : node.getInLinks().values()) {
-					if (link.getCapacity() > maxCap) {
+					if ( link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
 						maxCap = link.getCapacity();
 						startLink = link;
 					}
@@ -125,7 +125,7 @@ public class SubSectorsToPopulation {
 				// yyyyyy??
 				double maxCap = Double.NEGATIVE_INFINITY;
 				for (Link link : node.getOutLinks().values()) {
-					if (link.getCapacity() > maxCap) {
+					if (link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
 						maxCap = link.getCapacity();
 						endLink = link;
 					}
