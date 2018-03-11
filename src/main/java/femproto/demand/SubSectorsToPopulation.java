@@ -117,6 +117,8 @@ public class SubSectorsToPopulation {
 			Link endLink = null ;
 			{
 				// find safeNode in network file:
+				// yoyoyo?? currently we only use the ifrst of the safe nodes,
+				// upodate 2018.3.7 access to these are cordoned off in order as the previous nodes become inaccesssible
 				String safeNodeFromShp = record.safe_nodes.split(",")[0] ;
 				Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(safeNodeFromShp));
 				Gbl.assertNotNull(node);
