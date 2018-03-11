@@ -5,11 +5,13 @@ stages:
 
 before_script:
   - apt-get update
-  - apt-get install -y python
-  - apt-get install -y python-pip
+  - apt-get install -y python python-pip rsync
   - pip install git-fat
-#    - git fat pull # does not work
-#    - apt-get install -y sshpass rsync
+  - apt-get install -y sshpass
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan cnode00.vsp.tu-berlin.de >> ~/.ssh/known_hosts
+  - sshpass -p 'matsim' git fat pull
 #    - sshpass -p 'secret' git fat pull # error: Host key verification failed.
 
 job1:

@@ -5,4 +5,4 @@
 **/*.tar
 /pop.xml.gz
 ._*
-.DS_*
+**/.DS_Store
