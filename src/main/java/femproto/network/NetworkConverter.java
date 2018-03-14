@@ -83,7 +83,7 @@ public class NetworkConverter {
 				link.setLength(Double.parseDouble(feature.getAttribute("LENGTH").toString()) * 1000 );
 				link.setNumberOfLanes(Double.parseDouble(feature.getAttribute("LANES").toString()));
 				link.setFreespeed(Double.parseDouble(feature.getAttribute("SPEED").toString())/3.6);
-				link.setCapacity(Double.parseDouble(feature.getAttribute("CAP_SES'").toString())*60);
+				link.setCapacity(Double.parseDouble(feature.getAttribute("CAP_SES").toString())*60);
 				HashSet<String> modes = new HashSet<>();
 				String emmeModes = feature.getAttribute("MODES").toString().toLowerCase();
 				for (char modeChar : emmeModes.toCharArray()){
@@ -111,7 +111,7 @@ public class NetworkConverter {
 
 	private void writeNetwork(String fileName){
 		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml.gz");
-		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp",Globals.EPSG3308).write();
+		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp",Globals.EPSG28356).write();
 	}
 
 	public static void main(String[] args) throws IOException, FactoryException {
