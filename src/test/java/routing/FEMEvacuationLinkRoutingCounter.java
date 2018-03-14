@@ -7,7 +7,7 @@ import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
 import org.matsim.api.core.v01.network.Network;
 
 /**
- * A test to see to what extent the {@link FEMPreferEmergencyLinksTravelDisutility    }
+ * A test to see to what extent the {@link FEMPreferEmergencyLinksTravelDisutility } makes agents stick to FEM routes
  */
 public class FEMEvacuationLinkRoutingCounter implements LinkEnterEventHandler{
 
