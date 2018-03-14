@@ -1,23 +1,34 @@
 package org.matsim.run;
 
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.events.EventsManagerImpl;
+import org.matsim.core.events.MatsimEventsReader;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.testcases.MatsimTestUtils;
+import routing.FEMEvacuationLinkRoutingCounter;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RunMatsim4FloodEvacuationTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
-	
+
+
 	@Test
-	public void test() {
+	public void testA_startWithFullEvacRun() {
 		Config config = ConfigUtils.createConfig() ;
 		
 		String scenarioBase = "scenarios/initial-2041-scenario/" ;
@@ -69,5 +80,19 @@ public class RunMatsim4FloodEvacuationTest {
 			Assert.fail("something went wrong");
 		}
 	}
-	
+
+	@Test
+	public void testB_FEMEvacuationLinkRouting() {
+		EventsManager eventsManager = new EventsManagerImpl();
+		Network network = NetworkUtils.createNetwork();
+		new MatsimNetworkReader(network).readFile("scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz");
+		FEMEvacuationLinkRoutingCounter counter = new FEMEvacuationLinkRoutingCounter(network);
+		eventsManager.addHandler(counter);
+		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
+		matsimEventsReader.readFile(utils.getOutputDirectory()+"../testA_startWithFullEvacRun/output_events.xml.gz");
+		System.out.println(counter.getBadLinkEnterEventCount() + " out of "+ counter.getTotalLinkEnterEventCount() + " link entries on non-evac links.");
+		if(counter.getBadLinkEnterEventCount()/counter.getTotalLinkEnterEventCount() > 0.1)
+			Assert.fail("Number fo vehicles on non-evac links exceeds 10%");
+
+	}
 }

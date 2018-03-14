@@ -56,8 +56,9 @@ import static org.matsim.core.network.NetworkUtils.*;
  */
 public class RunMatsim4FloodEvacuation {
 	private static final Logger log = Logger.getLogger(RunMatsim4FloodEvacuation.class) ;
-	
-	public static void main(String[] args) {
+	private Controler controler;
+
+	RunMatsim4FloodEvacuation(String[] args) {
 		Set<String> set = new HashSet<>();
 		set.add(TransportMode.car ) ;
 		
@@ -125,7 +126,7 @@ public class RunMatsim4FloodEvacuation {
 		
 		//		preparationsForRmitHawkesburyScenario();
 		
-		Controler controler = new Controler( scenario ) ;
+		controler = new Controler( scenario ) ;
 		
 		// ---
 		
@@ -162,10 +163,17 @@ public class RunMatsim4FloodEvacuation {
 		
 		// ---
 		
-		controler.run();
-		
+
 	}
-	
+
+	public static void main(String[] args) {
+		new RunMatsim4FloodEvacuation(args).run();
+	}
+
+	private void run() {
+		controler.run();
+	}
+
 	private static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {
 		for ( Person person : scenario.getPopulation().getPersons().values() ) {
 			List<PlanElement> toRemove = new ArrayList<>() ;
