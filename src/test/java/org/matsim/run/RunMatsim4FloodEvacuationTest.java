@@ -31,9 +31,9 @@ public class RunMatsim4FloodEvacuationTest {
 	public void testA_startWithFullEvacRun() {
 		Config config = ConfigUtils.createConfig() ;
 		
-		String scenarioBase = "scenarios/initial-2041-scenario/" ;
+		String scenarioBase = "scenarios/fem2016/" ;
 		
-		config.network().setInputFile( "hn_net_ses_emme_2041_network.xml.gz ");
+		config.network().setInputFile( "hn_net_ses_emme_2016_V12_network.xml.gz");
 		// (relative to config file location!)
 		
 		config.plans().setInputFile( "pop.xml.gz" ) ;

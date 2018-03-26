@@ -60,7 +60,7 @@ public class NetworkConverter {
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
 			Coord coord = new Coord(lonlat.x, lonlat.y);
 			coord = transformation.transform(coord);
-			Node node = networkFactory.createNode(Id.createNodeId(Long.parseLong(feature.getAttribute("ID").toString())), coord);
+			Node node = networkFactory.createNode(Id.createNodeId((long) Double.parseDouble(feature.getAttribute("ID").toString())), coord);
 			try {
 				scenario.getNetwork().addNode(node);
 			}catch (IllegalArgumentException e){
@@ -74,8 +74,8 @@ public class NetworkConverter {
 		Map<Id<Node>, ? extends Node> nodes = scenario.getNetwork().getNodes();
 
 		for (SimpleFeature feature : features) {
-			Id<Node> fromNodeId = Id.createNodeId(Long.parseLong(feature.getAttribute("INODE").toString()));
-			Id<Node> toNodeId = Id.createNodeId(Long.parseLong(feature.getAttribute("JNODE").toString()));
+			Id<Node> fromNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute("INODE").toString()));
+			Id<Node> toNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute("JNODE").toString()));
 			try {
 				Node fromNode = nodes.get(fromNodeId);
 				Node toNode = nodes.get(toNodeId);
