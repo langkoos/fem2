@@ -44,7 +44,7 @@ public class HydrographPoint {
 		data.add(new HydrographPointData(time,level_ahd));
 	}
 
-	private class HydrographPointData{
+	class HydrographPointData{
 		private final double time;
 		private final double level_ahd;
 

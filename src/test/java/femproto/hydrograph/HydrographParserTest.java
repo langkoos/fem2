@@ -21,8 +21,8 @@ public class HydrographParserTest {
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", network);
 
-		hydrographParser.readHydrographData(inputDirectory + "/d00045_H_TS1.csv");
-		hydrographParser.readHydrographData(inputDirectory + "/d00045_H_TS2.csv");
+		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS1.csv.gz");
+		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS2.csv.gz");
 		hydrographParser.removeHydrographPointsWithNoData();
 
 		int linkCount = 0;
@@ -34,5 +34,6 @@ public class HydrographParserTest {
 		}
 		System.out.println(linkCount + " out of " + hydrographParser.getHydrographPointMap().size()+ " points are associated with a link.");
 
+		hydrographParser.hydrographToViaXY(utils.getOutputDirectory()+"/hydroxy.txt.gz");
 	}
 }

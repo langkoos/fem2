@@ -12,11 +12,13 @@ import org.matsim.core.utils.io.IOUtils;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.*;
 
 public class HydrographParser {
 
+	double minTime = Double.POSITIVE_INFINITY;
 	public Map<String, HydrographPoint> getHydrographPointMap() {
 		return hydrographPointMap;
 	}
@@ -86,11 +88,12 @@ public class HydrographParser {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if(hydrographPoint != null){
 				for (int j = 0; j < entries.get(i).size(); j++){
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j),entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600,entries.get(i).get(j));
 				}
 			}
 		}
-
+		//find minimum time value
+		minTime = Math.min(entries.get(0).get(0) * 3600,minTime);
 	}
 
 	public void removeHydrographPointsWithNoData(){
@@ -105,7 +108,26 @@ public class HydrographParser {
 		for (String badkey : badkeys) {
 			hydrographPointMap.remove(badkey);
 		}
+	}
 
+	public void hydrographToViaXY(String fileName){
+		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
+		try {
+			writer.write("ID\tX\tY\ttime\tflooded\n");
+
+		for (HydrographPoint point : hydrographPointMap.values()) {
+			List<HydrographPoint.HydrographPointData> pointData = point.getData();
+			for (HydrographPoint.HydrographPointData pointDatum : pointData) {
+				writer.write(String.format("%s\t%f\t%f\t%f\t%d\n",point.pointId,point.coord.getX(),point.coord.getY(),pointDatum.getTime(), pointDatum.getLevel_ahd()-point.ALT_AHD>0 ? 1 : 0));
+			}
+
+		}
+		writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Something went wrong writing the XY plotfile.");
+			throw new RuntimeException();
+		}
 
 	}
 
