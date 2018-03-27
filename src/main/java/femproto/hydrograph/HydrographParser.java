@@ -4,7 +4,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import femproto.gis.Globals;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.network.NetworkChangeEvent;
+import org.matsim.core.network.io.NetworkChangeEventsWriter;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -18,7 +22,7 @@ import java.util.*;
 
 public class HydrographParser {
 
-	double minTime = Double.POSITIVE_INFINITY;
+	private double minTime = Double.POSITIVE_INFINITY;
 	public Map<String, HydrographPoint> getHydrographPointMap() {
 		return hydrographPointMap;
 	}
@@ -118,7 +122,7 @@ public class HydrographParser {
 		for (HydrographPoint point : hydrographPointMap.values()) {
 			List<HydrographPoint.HydrographPointData> pointData = point.getData();
 			for (HydrographPoint.HydrographPointData pointDatum : pointData) {
-				writer.write(String.format("%s\t%f\t%f\t%f\t%d\n",point.pointId,point.coord.getX(),point.coord.getY(),pointDatum.getTime(), pointDatum.getLevel_ahd()-point.ALT_AHD>0 ? 1 : 0));
+				writer.write(String.format("%s\t%f\t%f\t%f\t%d\n",point.pointId,point.coord.getX(),point.coord.getY(),pointDatum.getTime() - minTime, pointDatum.getLevel_ahd()-point.ALT_AHD>0 ? 1 : 0));
 			}
 
 		}
@@ -129,6 +133,37 @@ public class HydrographParser {
 			throw new RuntimeException();
 		}
 
+	}
+
+	public void networkChangeEventsFromHydrographData(Network network, String outputFileName){
+		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
+		for (HydrographPoint point : hydrographPointMap.values()) {
+			if(!point.mappedToNetworkLink())
+				continue;
+			double floodtime = -1;
+			for (HydrographPoint.HydrographPointData pointDatum : point.getData()) {
+				if(pointDatum.getLevel_ahd() - point.ALT_AHD > 0){
+					floodtime = pointDatum.getTime() - minTime;
+					break;
+				}
+			}
+			if (floodtime < 0)
+				continue;
+			NetworkChangeEvent changeEvent = new NetworkChangeEvent(floodtime);
+			NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.00001);
+			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+			changeEvent.setFreespeedChange(speedChange);
+			changeEvent.setFlowCapacityChange(flowChange);
+			for (String linkId : point.linkIds) {
+				Link link = network.getLinks().get(Id.createLinkId(linkId));
+				if(link != null)
+					changeEvent.addLink(link);
+			}
+			if(changeEvent.getLinks().size() > 0)
+				networkChangeEvents.add(changeEvent);
+
+		}
+		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
 
 }

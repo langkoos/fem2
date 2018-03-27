@@ -35,5 +35,7 @@ public class HydrographParserTest {
 		System.out.println(linkCount + " out of " + hydrographParser.getHydrographPointMap().size()+ " points are associated with a link.");
 
 		hydrographParser.hydrographToViaXY(utils.getOutputDirectory()+"/hydroxy.txt.gz");
+
+		hydrographParser.networkChangeEventsFromHydrographData(network,utils.getOutputDirectory()+"/d09693_H_change_events.xml.gz");
 	}
 }
