@@ -21,6 +21,7 @@ import routing.FEMEvacuationLinkRoutingCounter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RunMatsim4FloodEvacuationTest {
@@ -43,13 +44,15 @@ public class RunMatsim4FloodEvacuationTest {
 		config.controler().setOverwriteFileSetting( OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists );
 		
 		config.controler().setLastIteration(0);
+
+		config.network().setChangeEventsInputFile("d09693_H_change_events.xml.gz");
 		
 		Set<String> set = new HashSet<>();
 		set.add(TransportMode.car ) ;
 		config.plansCalcRoute().setNetworkModes(set);
 		config.qsim().setMainModes(set);
 		
-		config.qsim().setEndTime(36*3600);
+//		config.qsim().setEndTime(36*3600);
 
 		{
 			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
@@ -90,7 +93,7 @@ public class RunMatsim4FloodEvacuationTest {
 		eventsManager.addHandler(counter);
 		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
 		matsimEventsReader.readFile(utils.getOutputDirectory()+"../testA_startWithFullEvacRun/output_events.xml.gz");
-		System.out.println(counter.getBadLinkEnterEventCount() + " out of "+ counter.getTotalLinkEnterEventCount() + " link entries on non-evac links.");
+		Logger.getLogger("LOG").info(counter.getBadLinkEnterEventCount() + " out of "+ counter.getTotalLinkEnterEventCount() + " link entries on non-evac links.");
 		if(counter.getBadLinkEnterEventCount()/counter.getTotalLinkEnterEventCount() > 0.1)
 			Assert.fail("Number fo vehicles on non-evac links exceeds 10%");
 

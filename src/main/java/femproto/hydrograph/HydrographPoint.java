@@ -11,11 +11,21 @@ public class HydrographPoint {
 	final Coord coord;
 	String[] linkIds;
 	List<HydrographPointData> data;
+	private String subSector;
+	private double floodTime;
 
 	public HydrographPoint(String pointId, Double alt_ahd, Coord coord) {
 		this.pointId = pointId;
 		ALT_AHD = alt_ahd;
 		this.coord = coord;
+	}
+
+	public String getSubSector() {
+		return subSector;
+	}
+
+	public void setSubSector(String subSector) {
+		this.subSector = subSector;
 	}
 
 	public String[] getLinkIds() {
@@ -42,6 +52,14 @@ public class HydrographPoint {
 		if(data == null)
 			data = new ArrayList<>();
 		data.add(new HydrographPointData(time,level_ahd));
+	}
+
+	public void setFloodTime(double floodTime) {
+		this.floodTime = floodTime;
+	}
+
+	public double getFloodTime() {
+		return floodTime;
 	}
 
 	class HydrographPointData{

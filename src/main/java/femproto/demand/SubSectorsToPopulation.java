@@ -141,7 +141,7 @@ public class SubSectorsToPopulation {
 			int totalVehicles = (int)(double)feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(id++));
-				person.getAttributes().putAttribute("Subsector",subsector);
+				person.getAttributes().putAttribute("SUBSECTOR",subsector);
 				
 				Plan plan = pf.createPlan() ;
 				

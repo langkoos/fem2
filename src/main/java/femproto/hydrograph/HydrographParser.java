@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.*;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -23,6 +24,7 @@ import java.util.*;
 public class HydrographParser {
 
 	private double minTime = Double.POSITIVE_INFINITY;
+
 	public Map<String, HydrographPoint> getHydrographPointMap() {
 		return hydrographPointMap;
 	}
@@ -51,12 +53,14 @@ public class HydrographParser {
 			SimpleFeature feature = iterator.next();
 			String pointID = feature.getAttribute("ID").toString();
 			String linkIDs = feature.getAttribute("links_ids").toString();
+			String subsector = feature.getAttribute("SUBSECTOR").toString();
 			final Double ALT_AHD = Double.valueOf(feature.getAttribute("ALT_AHD").toString());
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
 			Coord coord = new Coord(lonlat.x, lonlat.y);
 			if (transformation != null)
 				coord = transformation.transform(coord);
 			HydrographPoint hydrographPoint = new HydrographPoint(pointID, ALT_AHD, coord);
+			hydrographPoint.setSubSector(subsector);
 			hydrographPointMap.put(pointID, hydrographPoint);
 			if (linkIDs.equals(""))
 				continue;
@@ -90,22 +94,22 @@ public class HydrographParser {
 		}
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
-			if(hydrographPoint != null){
-				for (int j = 0; j < entries.get(i).size(); j++){
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600,entries.get(i).get(j));
+			if (hydrographPoint != null) {
+				for (int j = 0; j < entries.get(i).size(); j++) {
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600, entries.get(i).get(j));
 				}
 			}
 		}
 		//find minimum time value
-		minTime = Math.min(entries.get(0).get(0) * 3600,minTime);
+		minTime = Math.min(entries.get(0).get(0) * 3600, minTime);
 	}
 
-	public void removeHydrographPointsWithNoData(){
+	public void removeHydrographPointsWithNoData() {
 		Set<String> badkeys = new HashSet<>();
 		badkeys.addAll(hydrographPointMap.keySet());
 
 		for (Map.Entry<String, HydrographPoint> pointEntry : hydrographPointMap.entrySet()) {
-			if(pointEntry.getValue().inHydrograph())
+			if (pointEntry.getValue().inHydrograph())
 				badkeys.remove(pointEntry.getKey());
 		}
 
@@ -114,19 +118,19 @@ public class HydrographParser {
 		}
 	}
 
-	public void hydrographToViaXY(String fileName){
+	public void hydrographToViaXY(String fileName) {
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		try {
 			writer.write("ID\tX\tY\ttime\tflooded\n");
 
-		for (HydrographPoint point : hydrographPointMap.values()) {
-			List<HydrographPoint.HydrographPointData> pointData = point.getData();
-			for (HydrographPoint.HydrographPointData pointDatum : pointData) {
-				writer.write(String.format("%s\t%f\t%f\t%f\t%d\n",point.pointId,point.coord.getX(),point.coord.getY(),pointDatum.getTime() - minTime, pointDatum.getLevel_ahd()-point.ALT_AHD>0 ? 1 : 0));
-			}
+			for (HydrographPoint point : hydrographPointMap.values()) {
+				List<HydrographPoint.HydrographPointData> pointData = point.getData();
+				for (HydrographPoint.HydrographPointData pointDatum : pointData) {
+					writer.write(String.format("%s\t%f\t%f\t%f\t%d\n", point.pointId, point.coord.getX(), point.coord.getY(), pointDatum.getTime(), pointDatum.getLevel_ahd() - point.ALT_AHD > 0 ? 1 : 0));
+				}
 
-		}
-		writer.close();
+			}
+			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Something went wrong writing the XY plotfile.");
@@ -135,35 +139,83 @@ public class HydrographParser {
 
 	}
 
-	public void networkChangeEventsFromHydrographData(Network network, String outputFileName){
-		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
+	public void setHydroFloodTimes() {
 		for (HydrographPoint point : hydrographPointMap.values()) {
-			if(!point.mappedToNetworkLink())
-				continue;
 			double floodtime = -1;
 			for (HydrographPoint.HydrographPointData pointDatum : point.getData()) {
-				if(pointDatum.getLevel_ahd() - point.ALT_AHD > 0){
-					floodtime = pointDatum.getTime() - minTime;
+				if (pointDatum.getLevel_ahd() - point.ALT_AHD > 0) {
+					floodtime = pointDatum.getTime();
 					break;
 				}
 			}
-			if (floodtime < 0)
+			point.setFloodTime(floodtime);
+		}
+	}
+
+	public void networkChangeEventsFromHydrographData(Network network, String outputFileName) {
+		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
+		for (HydrographPoint point : hydrographPointMap.values()) {
+			if (!point.mappedToNetworkLink())
 				continue;
-			NetworkChangeEvent changeEvent = new NetworkChangeEvent(floodtime);
+			if (point.getFloodTime() < 0)
+				continue;
+			NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
 			NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.00001);
 			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
 			changeEvent.setFreespeedChange(speedChange);
 			changeEvent.setFlowCapacityChange(flowChange);
 			for (String linkId : point.linkIds) {
 				Link link = network.getLinks().get(Id.createLinkId(linkId));
-				if(link != null)
+				if (link != null)
 					changeEvent.addLink(link);
 			}
-			if(changeEvent.getLinks().size() > 0)
+			if (changeEvent.getLinks().size() > 0)
 				networkChangeEvents.add(changeEvent);
-
 		}
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
 
+	public void triggerPopulationDepartures(Population population, String modifiedPopulationOutputFile, double timeBuffer, double rate) {
+		Set<String> subsectors = null;
+		Set<String> hydroSubsectors = new HashSet<>();
+		boolean subsectorsFilled = false;
+		double paxCounter = 0;
+
+		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
+			hydroSubsectors.add(hydrographPoint.getSubSector());
+			if (hydrographPoint.getSubSector() == null || hydrographPoint.getFloodTime() < 0) {
+				continue;
+			}
+			if (!subsectorsFilled) {
+				subsectors = new HashSet<>();
+
+				for (Person person : population.getPersons().values()) {
+					if (!subsectorsFilled)
+						subsectors.add((String) person.getAttributes().getAttribute("SUBSECTOR"));
+					paxCounter += 1;
+					String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
+					if (subsector == hydrographPoint.getSubSector()) {
+						Activity departure = (Activity) person.getPlans().get(0).getPlanElements().get(0);
+						departure.setEndTime(hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate);
+					}
+				}
+				subsectorsFilled = true;
+			}
+		}
+		subsectors.removeAll(hydroSubsectors);
+		//set the rest to depart at mintime
+		for (String sub : subsectors) {
+			paxCounter = 0;
+			for (Person person : population.getPersons().values()) {
+				subsectors.add((String) person.getAttributes().getAttribute("SUBSECTOR"));
+				paxCounter += 1;
+				String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
+				if (subsector == sub) {
+					Activity departure = (Activity) person.getPlans().get(0).getPlanElements().get(0);
+					departure.setEndTime(minTime - timeBuffer + paxCounter * rate);
+				}
+			}
+		}
+		new PopulationWriter(population).write(modifiedPopulationOutputFile);
+	}
 }
