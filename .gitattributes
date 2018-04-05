@@ -1,3 +1,4 @@
+*.exe filter=fat -crlf
 *.ova filter=fat -crlf
 *.zip filter=fat -crlf
 *.gz filter=fat -crlf
