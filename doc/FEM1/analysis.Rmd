@@ -1,0 +1,52 @@
+---
+title: "FEM1 vs FEM2 travel time, distance comparison"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+```{r echo=FALSE }
+suppressMessages({
+library(dplyr)
+library(ggplot2)
+matsim_trips_fem <- read.delim("data/Data_from_NICTA_to_RMIT_01:05:2015/matsim output/hn_pop80_2011_safe5_netcf_flood1867-i1.0_0_1430446683628/matsim_trips_fem1.txt") %>% mutate(src="FEM1") %>% rbind(read.delim("scenarios/fem2016/matsim_trips_fem2.txt")%>% mutate(src="FEM2"))
+}
+)
+```
+
+# Distances and durations
+
+**Note that FEM2 is a 10% sample for testing purposes**
+
+Each of the histogram plots below compare the FEM1 result versus the latest FEM2 result, but likely not for the same flooding scenario
+
+```{r echo=FALSE}
+
+matsim_trips_fem <- 
+  matsim_trips_fem %>% 
+  mutate(
+    duration = end_time - start_time,
+    speed = 3.6 * distance/duration
+  )
+
+qplot(distance,data = matsim_trips_fem) + facet_grid(src ~ ., scales="free_y") + ggtitle("Distance distribution (m)")
+
+qplot(duration/60,data = matsim_trips_fem) + facet_grid(src ~ ., scales="free_y") + ggtitle("TT distribution (min)")
+
+
+```
+
+# Speed distribution
+
+Current FEM2 has some congestion, whereas the optimisation in FEM1 produces very high average speeds.
+
+```{r echo=FALSE}
+
+qplot(speed, data = matsim_trips_fem) + facet_grid(src ~ ., scales="free_y") + ggtitle("speed distribution (km/h)")
+
+qplot(distance,duration/60,data = matsim_trips_fem,facets = src ~ ., alpha=I(0.01)) + ggtitle("FEM 1 distance v time")
+
+```
+
