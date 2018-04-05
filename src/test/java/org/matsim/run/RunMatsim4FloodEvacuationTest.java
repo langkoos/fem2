@@ -46,6 +46,7 @@ public class RunMatsim4FloodEvacuationTest {
 		config.controler().setLastIteration(0);
 
 		config.network().setChangeEventsInputFile("d09693_H_change_events.xml.gz");
+		config.network().setTimeVariantNetwork(true);
 		
 		Set<String> set = new HashSet<>();
 		set.add(TransportMode.car ) ;
