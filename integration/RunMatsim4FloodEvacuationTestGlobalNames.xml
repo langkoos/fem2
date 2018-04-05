@@ -1,0 +1,7 @@
+<!DOCTYPE serializeddata>
+<operation>
+ <input globalname="PathToJava">C:\Program Files\Java\jdk1.8.0_162\bin\java.exe</input>
+ <input globalname="MATSimConfigTemplate">../scenarios/fem2016/testConfig.xml</input>
+ <input globalname="MATSimJar">E:\target\au-flood-evacuation-0.0.1-SNAPSHOT-jar-with-dependencies.jar</input>
+ <input globalname="OutputDirectory">./RunMatsim4FloodEvacuationTestOutput</input>
+</operation>

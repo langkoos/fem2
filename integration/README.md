@@ -27,11 +27,13 @@ cd /cygdrive/e; mvn clean install
 ```
 (**TODO: automate this  step**)
 
-1. Command to run the integration test:
+1. Finally, to run the automated integration test, open the **Powershell as Admin** terminal from the VM desktop and issue the following command:
 ```
 net use E: \\VBOXSVR\au-flood-evacuation; e:\integration\run.ps1
 ```
- which does the following:
-   * Uninstall CSIRO Workspace if already isntalled
+ The above will do the following:
+   * Map the repository to `E:`; even though we mapped this earlier already, this is required here again for the Admin terminal which does not inherit the user mapped drives.
+   * Uninstall CSIRO Workspace if already installed
    * Install CSIRO Workspace from `./integration/workspace-drops/csiro.au-workspace*.exe`
-   * Run the workflow from `...`
+   * Run the workflow from `./integration/RunMatsim4FloodEvacuationTest.wsx`
+   * *Still to fix issues with windows paths; runs but fails; DS 6/apr/18]**

@@ -33,10 +33,10 @@ function Get-InstalledApps
 #    If not, try 'net use E: \\VBOXSVR\au-flood-evacuation'
 
 ### change to the integration directory
-cd e:\
+cd e:\integration
 
-### silent install CSIRO workspace and wait for it to finish
-$appToMatch = 'CSIRO Workspace'
+### if CSIRO workspace is installed, then first uninstall it
+$appToMatch = "CSIRO Workspace"
 $result = Get-InstalledApps | where {$_.DisplayName -like "*$appToMatch*"}
 If ($result -ne $null) {
   Write-Host "$appToMatch is already installed; found $result"
@@ -45,9 +45,14 @@ If ($result -ne $null) {
   Start-Process cmd -ArgumentList "/c `"$uninst`" /S /quiet /norestart" -NoNewWindow -Wait
   Write-Host "finished uninstalling $appToMatch"
 }
+
+### Install CSIRO workspace
 $result = Get-InstalledApps | where {$_.DisplayName -like "*$appToMatch*"}
 If ($result -eq $null) {
     Write-Host  "installing CSIRO Workspace from $csiroInstallExe ..."
     Invoke-Expression "$csiroInstallExe /S | Out-Null"
     Write-Output "finished installing CSIRO Workspace"
 }
+
+### Run the workflow
+Start-Process cmd -ArgumentList "/c `"C:\Program Files\csiro.au\workspace\bin\workspace-batch.exe`" --globalNameFile .\RunMatsim4FloodEvacuationTestGlobalNames.xml .\RunMatsim4FloodEvacuationTest.wsx" -NoNewWindow -Wait
