@@ -27,14 +27,11 @@ cd /cygdrive/e; mvn clean install
 ```
 (**TODO: automate this  step**)
 
-1. Install CSIRO Workspace that lives in the repository under
+1. Command to run the integration test:
 ```
-./integration/workspace-drops/csiro.au-workspace*.exe
+net use E: \\VBOXSVR\au-flood-evacuation; e:\integration\run.ps1
 ```
-(**TODO: automate this  step**)
-
-1. Finally, run the example workflow as follows:
-```
-...
-```
-(**TODO: automate this  step**)
+ which does the following:
+   * Uninstall CSIRO Workspace if already isntalled
+   * Install CSIRO Workspace from `./integration/workspace-drops/csiro.au-workspace*.exe`
+   * Run the workflow from `...`
