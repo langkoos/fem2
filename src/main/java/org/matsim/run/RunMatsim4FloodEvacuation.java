@@ -113,15 +113,15 @@ public class RunMatsim4FloodEvacuation {
 //		}
 		
 		// yyyyyy reduce to 10% for debugging:
-		List<Id<Person>> list = new ArrayList<>() ;
-		for ( Id<Person> personId : scenario.getPopulation().getPersons().keySet() ) {
-			if (MatsimRandom.getRandom().nextDouble() < 0.9 ) {
-				list.add( personId) ;
-			}
-		}
-		for ( Id<Person> toBeRemoved : list ) {
-			scenario.getPopulation().removePerson( toBeRemoved ) ;
-		}
+//		List<Id<Person>> list = new ArrayList<>() ;
+//		for ( Id<Person> personId : scenario.getPopulation().getPersons().keySet() ) {
+//			if (MatsimRandom.getRandom().nextDouble() < 0.9 ) {
+//				list.add( personId) ;
+//			}
+//		}
+//		for ( Id<Person> toBeRemoved : list ) {
+//			scenario.getPopulation().removePerson( toBeRemoved ) ;
+//		}
 
 		
 		//		preparationsForRmitHawkesburyScenario();

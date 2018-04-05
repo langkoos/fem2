@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;
 
 public class NetworkConverterTest {
-	public static final String basename = "hn_net_ses_emme_2041_" ;
+	public static final String basename = "hn_net_ses_emme_2016_V12_" ;
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 	
