@@ -1,3 +1,4 @@
+*.ova filter=fat -crlf
 *.zip filter=fat -crlf
 *.gz filter=fat -crlf
 *.png filter=fat -crlf
@@ -18,4 +19,3 @@
 *.shx filter=fat -crlf
 *.cpg filter=fat -crlf
 data filter=fat -crlf
-
