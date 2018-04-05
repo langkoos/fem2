@@ -12,9 +12,10 @@ public class SubSectorsToPopulationTest {
 
 	@Test
 	public void readSubSectorsShapeFile() throws Exception {
-		final String networkFile = "scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz" ;
-		final String inputShapeFile = utils.getPackageInputDirectory() + "hn_subsectors_2041_lower.shp" ;
-		final String evacNodesFile = utils.getPackageInputDirectory() + "2041_subsectors_safe_node_mapping.txt" ;
+		final String networkFile = "scenarios/fem2016/hn_net_ses_emme_2016_V12_network.xml.gz" ;
+//		final String networkFile = "scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz" ;
+		final String inputShapeFile = utils.getPackageInputDirectory() + "hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp" ;
+		final String evacNodesFile = utils.getPackageInputDirectory() + "2016_subsectors_safe_node_mapping.txt" ;
 		final String outputPopFile = utils.getOutputDirectory() + "pop.xml.gz" ;
 		
 		String [] str = new String [] {inputShapeFile,networkFile,evacNodesFile,outputPopFile} ;

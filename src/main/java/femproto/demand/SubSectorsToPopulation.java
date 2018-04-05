@@ -86,20 +86,20 @@ public class SubSectorsToPopulation {
 			
 			// test that evac nodes are same in both files:
 			String evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
-			String evacNodeFromCorrespondancesFile = record.evac_node.toString() ;
+			String evacNodeFromCorrespondancesFile = record.EVAC_NODE.toString() ;
 			if ( ! ( evacNodeFromShp.equals(evacNodeFromCorrespondancesFile) ) ) {
 				final String msg = "evacNodes in shape file and in correspondances file not same: evacNodeFromShp="
 						+ evacNodeFromShp + "; evacNodeFromCorrespondances=" + evacNodeFromCorrespondancesFile ;
 				log.error(msg) ;
-				throw new RuntimeException(msg) ;
+//				throw new RuntimeException(msg) ;
 			}
 			
 			Link startLink = null;
 			{
 				// find evacNode in network file:
-				Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(evacNodeFromShp));
+				Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(evacNodeFromCorrespondancesFile));
 				if ( node==null ) {
-					String msg = "did not find evacNode in matsim network file; evacNodeFromShp=" + evacNodeFromShp ;
+					String msg = "did not find evacNode in matsim network file; evacNodeFromCorrespondancesFile=" + evacNodeFromCorrespondancesFile ;
 					log.warn(msg) ;
 					throw new RuntimeException(msg) ;
 				}
@@ -119,8 +119,8 @@ public class SubSectorsToPopulation {
 				// find safeNode in network file:
 				// yoyoyo?? currently we only use the ifrst of the safe nodes,
 				// upodate 2018.3.7 access to these are cordoned off in order as the previous nodes become inaccesssible
-				String safeNodeFromShp = record.safe_nodes.split(",")[0] ;
-				Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(safeNodeFromShp));
+				String defaultSafeNode = record.SAFE_NODE1;
+				Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
 				Gbl.assertNotNull(node);
 				
 				// find some outgoing link:
@@ -141,7 +141,7 @@ public class SubSectorsToPopulation {
 			int totalVehicles = (int)(double)feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(id++));
-				person.getAttributes().putAttribute("Subsector",subsector);
+				person.getAttributes().putAttribute("SUBSECTOR",subsector);
 				
 				Plan plan = pf.createPlan() ;
 				
@@ -154,7 +154,17 @@ public class SubSectorsToPopulation {
 				
 				Activity safe = pf.createActivityFromLinkId("safe", endLink.getId() ) ;
 				plan.addActivity(safe);
-				
+
+				person.getAttributes().putAttribute("SAFE_NODE1",record.SAFE_NODE1);
+				if(record.SAFE_NODE2 != null)
+					person.getAttributes().putAttribute("SAFE_NODE2",record.SAFE_NODE2);
+				if(record.SAFE_NODE3 != null)
+					person.getAttributes().putAttribute("SAFE_NODE3",record.SAFE_NODE3);
+				if(record.SAFE_NODE4 != null)
+					person.getAttributes().putAttribute("SAFE_NODE4",record.SAFE_NODE4);
+				if(record.SAFE_NODE5 != null)
+					person.getAttributes().putAttribute("SAFE_NODE5",record.SAFE_NODE5);
+
 				person.addPlan(plan) ;
 
 				scenario.getPopulation().addPerson(person);
@@ -180,9 +190,7 @@ public class SubSectorsToPopulation {
 			for (Iterator<Record> it = reader2.iterator(); it.hasNext(); ) {
 				Record record = it.next();
 				log.info( record.toString() ) ;
-				if ( !record.subsector.startsWith("#") ) { // yyyy argh, now relying on position again :-(.  kai, feb'18
-					subsectorToEvacAndSafeNodes.put(record.subsector.toString(), record);
-				}
+				subsectorToEvacAndSafeNodes.put(record.SUBSECTOR.toString(), record);
 			}
 		}
 		catch (IOException e) {
@@ -200,18 +208,22 @@ public class SubSectorsToPopulation {
 	public final static class Record {
 		// needs to be public, otherwise one gets some incomprehensible exception.  kai, nov'17
 		
-		@CsvBindByName private String subsector ;
-		@CsvBindByName private String evac_node ;
-		@CsvBindByName private String safe_nodes ;
-		@CsvBindByName private String safe_node_priorities ;
-		@CsvBindByName private String upgrade_options_b_c_priorities ;
-		
+		@CsvBindByName private String SUBSECTOR;
+		@CsvBindByName private String EVAC_NODE;
+		@CsvBindByName private String SAFE_NODE1;
+		@CsvBindByName private String SAFE_NODE2;
+		@CsvBindByName private String SAFE_NODE3;
+		@CsvBindByName private String SAFE_NODE4;
+		@CsvBindByName private String SAFE_NODE5;
+
 		@Override public String toString() {
-			return this.subsector
-						   + "\t" + this.evac_node
-						   + "\t" + this.safe_nodes
-						   + "\t" + this.safe_node_priorities
-						   + "\t" + this.upgrade_options_b_c_priorities
+			return this.SUBSECTOR
+						   + "\t" + this.EVAC_NODE
+						   + "\t" + this.SAFE_NODE1
+						   + "\t" + this.SAFE_NODE2
+						   + "\t" + this.SAFE_NODE3
+						   + "\t" + this.SAFE_NODE4
+						   + "\t" + this.SAFE_NODE5
 					;
 		}
 	}
