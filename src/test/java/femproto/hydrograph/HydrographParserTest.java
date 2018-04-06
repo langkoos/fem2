@@ -33,6 +33,7 @@ public class HydrographParserTest {
 		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS1.csv.gz");
 		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS2.csv.gz");
 		hydrographParser.removeHydrographPointsWithNoData();
+		hydrographParser.setHydroFloodTimes();
 
 		int linkCount = 0;
 		for (Map.Entry<String, HydrographPoint> stringEntry : hydrographParser.getHydrographPointMap().entrySet()) {

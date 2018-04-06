@@ -153,24 +153,24 @@ public class HydrographParser {
 	}
 
 	public void networkChangeEventsFromHydrographData(Network network, String outputFileName) {
-		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
+		Set<NetworkChangeEvent> networkChangeEvents = new HashSet<>();
 		for (HydrographPoint point : hydrographPointMap.values()) {
 			if (!point.mappedToNetworkLink())
 				continue;
 			if (point.getFloodTime() < 0)
 				continue;
-			NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
-			NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.00001);
-			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
-			changeEvent.setFreespeedChange(speedChange);
-			changeEvent.setFlowCapacityChange(flowChange);
 			for (String linkId : point.linkIds) {
 				Link link = network.getLinks().get(Id.createLinkId(linkId));
-				if (link != null)
+				if (link != null) {
+					NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
+					NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+					changeEvent.setFlowCapacityChange(flowChange);
+					NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.000001);
+					changeEvent.setFreespeedChange(speedChange);
 					changeEvent.addLink(link);
+					networkChangeEvents.add(changeEvent);
+				}
 			}
-			if (changeEvent.getLinks().size() > 0)
-				networkChangeEvents.add(changeEvent);
 		}
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
