@@ -2,22 +2,19 @@
 <operation atomic="false" bgcolor="4280839393" id="{cda4f031-d031-4b4e-bc55-a09b831266f8}" label="Root" plugin="www.csiro.au/workspace/builtin" type="Workspace">
   <environment>
     <platform>windows 64bit</platform>
-    <lastModified>2018-03-28T17:42:32</lastModified>
+    <lastModified>2018-04-10T16:07:23</lastModified>
     <plugin name="www.csiro.au/workspace/builtin" uri="www.csiro.au/workspace/packages/5.0.4/Windows/x86_64"/>
     <plugin name="www.csiro.au/workspace/dataanalysis" uri="www.csiro.au/workspace/packages/5.0.4/Windows/x86_64"/>
-    <plugin name="www.csiro.au/workspace/python" uri="www.csiro.au/workspace/packages/5.0.4/Windows/x86_64"/>
   </environment>
   <input name="Dependencies" size="0"/>
-  <operation bgcolor="4284395451" dataname="Script output" dataplugin="www.csiro.au/workspace/builtin" datatype="CSIRO::DataExecution::Dependency" id="{11554136-5699-4849-b08c-5bfb7148a20f}" label="Run MATSim" plugin="www.csiro.au/workspace/dataanalysis" type="RunExternalScript">
+  <operation bgcolor="4284395451" dataname="Script output" dataplugin="www.csiro.au/workspace/builtin" datatype="CSIRO::DataExecution::Dependency" id="{11554136-5699-4849-b08c-5bfb7148a20f}" label="Run FEM2 Model" plugin="www.csiro.au/workspace/dataanalysis" type="RunExternalScript">
     <input name="Dependencies" size="2"/>
-    <input name="Options" size="4">
-      <input index="0">-Xmx4g</input>
-      <input index="1">-cp</input>
-      <input index="3">org.matsim.run.Controler</input>
+    <input name="Options" size="3">
+      <input index="0" preferredwidget="QLineEdit">-cp</input>
+      <input index="1" nodata="true" preferredwidget="QLineEdit"/>
+      <input index="2" nodata="true" preferredwidget="QLineEdit"/>
     </input>
-    <input name="Arguments" size="1">
-      <input index="0">org.matsim.run.Controler</input>
-    </input>
+    <input name="Arguments" size="1"/>
     <input name="Environment variables" size="0"/>
     <input name="Wait for completion">1</input>
     <input name="Capture output">1</input>
@@ -26,144 +23,52 @@
     <output name="Command output" preferredwidget="CSIRO::Widgets::JSEditWidget"/>
     <output name="Script output file" preferredwidget="CSIRO::Widgets::JSEditWidget"/>
     <output name="Script output" preferredwidget="QPushButton"/>
-    <view height="451" width="168" x="8" y="-1546.5"/>
+    <view height="451" width="168" x="-202" y="-1546.5"/>
   </operation>
   <operation bgcolor="4294931456" dataname="End" dataplugin="www.csiro.au/workspace/builtin" datatype="CSIRO::DataExecution::Dependency" id="{ebb626c2-0190-4907-8835-7ee98ad00f47}" label="End" plugin="www.csiro.au/workspace/builtin" type="WorkspaceOutput">
     <input name="Dependencies" size="0"/>
-    <view height="96" width="168" x="138" y="-1069"/>
+    <view height="96" width="168" x="288" y="-1369"/>
   </operation>
-  <operation bgcolor="4291611648" dataname="External Java.exe path" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{92ff0839-90a2-41e2-bca1-fbc9fd4afaa1}" label="External Java.exe path" plugin="www.csiro.au/workspace/builtin" type="Variable">
+  <operation bgcolor="4291611648" dataname="Java runtime (absolute path)" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{92ff0839-90a2-41e2-bca1-fbc9fd4afaa1}" label="Java runtime (absolute path)" plugin="www.csiro.au/workspace/builtin" type="Variable">
     <input name="Dependencies" size="0"/>
-    <input globalname="PathToJava" name="External Java.exe path">C:/Program Files/Java/jre1.8.0_152/bin/java.exe</input>
-    <view height="96" width="168" x="88" y="-1529"/>
-  </operation>
-  <operation bgcolor="4291611648" dataname="External MATSim config template" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{d0a4946d-df85-47c1-a47b-af7b42c74125}" label="External MATSim config template" plugin="www.csiro.au/workspace/builtin" type="Variable">
-    <input name="Dependencies" size="0"/>
-    <input globalname="MATSimConfigTemplate" name="External MATSim config template">./Input/config_template.xml</input>
-    <view height="96" width="168" x="-922" y="-1619"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{c76e362a-731c-48c6-9c9c-006f1f1d9370}" label="Resolve Absolute File Path" plugin="www.csiro.au/workspace/builtin" type="ResolveAbsoluteFilePath">
-    <input name="Dependencies" size="1"/>
-    <input name="File name" nodata="true" preferredwidget="CSIRO::Widgets::FileNameWidget"/>
-    <view height="110" width="168" x="-152" y="-1376"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{0fbbf1d5-24ff-4db0-a175-a6ac55a613e4}" label="Read file to string" plugin="www.csiro.au/workspace/builtin" type="ReadFileToString">
-    <input name="Dependencies" size="0"/>
-    <input name="Log errors">1</input>
-    <view height="112" width="168" x="-782" y="-1627"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{c2ec9cc4-e22f-455e-a0b7-456c167853f0}" label="Substitute plan filename" plugin="www.csiro.au/workspace/builtin" regexdefault="true" type="SubstituteString">
-    <input name="Dependencies" size="0"/>
-    <input name="Use regular expression matching">0</input>
-    <input name="Substring to match">PLAN_FILE</input>
-    <view height="156" width="168" x="-622" y="-1579"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{2d094015-a2bd-475b-aedc-228e1fa09243}" label="Write string to file" plugin="www.csiro.au/workspace/builtin" type="WriteStringToFile">
-    <input name="Dependencies" size="0"/>
-    <input name="Append if file exists">0</input>
-    <input name="End string with new line">0</input>
-    <input name="Use QSystemSemaphore">0</input>
-    <view height="178" width="168" x="-322" y="-1410"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{b11887da-0bc9-497e-a9f2-1ead11673fd5}" label="Substitute network filename" plugin="www.csiro.au/workspace/builtin" regexdefault="true" type="SubstituteString">
-    <input name="Dependencies" size="0"/>
-    <input name="Use regular expression matching">0</input>
-    <input name="Substring to match">NETWORK_FILE</input>
-    <view height="156" width="168" x="-622" y="-1399"/>
-  </operation>
-  <operation bgcolor="4291611648" dataname="Config file name" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{a9e248c1-b863-4ecd-ac6a-ceb13d001b22}" label="Config file name" plugin="www.csiro.au/workspace/builtin" type="Variable">
-    <input name="Dependencies" size="0"/>
-    <input name="Config file name">./wsconfig.xml</input>
-    <view height="96" width="168" x="-282" y="-1529"/>
-  </operation>
-  <operation bgcolor="4291611648" dataname="Matsim output directory" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{a7cc5ba4-185c-47f7-b90f-d95a6f7ab48c}" label="Matsim output directory" plugin="www.csiro.au/workspace/builtin" type="Variable">
-    <input name="Dependencies" size="0"/>
-    <input globalname="OutputDirectory" name="Matsim output directory">./output</input>
-    <view height="96" width="168" x="-452" y="-1699"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{49e1202d-9e20-47a2-a550-3b7ae094e699}" label="Resolve Absolute File Path" plugin="www.csiro.au/workspace/builtin" type="ResolveAbsoluteFilePath">
-    <input name="Dependencies" size="1"/>
-    <input name="File name" nodata="true" preferredwidget="CSIRO::Widgets::FileNameWidget"/>
-    <view height="110" width="168" x="-452" y="-1536"/>
-  </operation>
-  <operation bgcolor="4284395451" id="{277f9919-021a-41a7-8a99-84ca75d60011}" label="Substitute network filename" plugin="www.csiro.au/workspace/builtin" regexdefault="true" type="SubstituteString">
-    <input name="Dependencies" size="0"/>
-    <input name="Use regular expression matching">0</input>
-    <input name="Substring to match">OUTPUT_DIRECTORY</input>
-    <view height="156" width="168" x="-452" y="-1399"/>
+    <input globalname="JavaRuntimePath" name="Java runtime (absolute path)">C:\Program Files\Java\jre1.8.0_162\bin\java.exe</input>
+    <view height="96" width="168" x="-622" y="-1629"/>
   </operation>
   <operation bgcolor="4284395451" id="{1d6cd786-1ba3-4ff4-bc5c-05f0ee6ffb6f}" label="Get current time" plugin="www.csiro.au/workspace/builtin" type="GetCurrentTime">
     <input name="Dependencies" size="1"/>
     <input name="Format">dddd, d MMMM yyyy h:mm:ss AP</input>
-    <view height="112" width="168" x="138" y="-1377"/>
+    <view height="112" width="168" x="-22" y="-1377"/>
   </operation>
   <operation bgcolor="4284395451" id="{9bc65603-c8dc-44c9-9c97-e6461014df81}" label="Log Text" plugin="www.csiro.au/workspace/builtin" type="LogText">
     <input name="Dependencies" size="0"/>
-    <view height="90" width="168" x="138" y="-1216"/>
+    <view height="90" width="168" x="128" y="-1366"/>
   </operation>
-  <operation bgcolor="4284395451" id="{27774637-e32a-4f86-8d3f-0f6e7b3bc3e5}" label="Resolve Absolute File Path" plugin="www.csiro.au/workspace/builtin" type="ResolveAbsoluteFilePath">
-    <input name="Dependencies" size="1"/>
-    <input name="File name" nodata="true" preferredwidget="CSIRO::Widgets::FileNameWidget"/>
-    <view height="110" width="168" x="-782" y="-1466"/>
-  </operation>
-  <operation bgcolor="4291611648" dataname="Plan XML name" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{9b9b4788-b7ce-4026-a3b6-205583fd4fc6}" label="Plan XML name" plugin="www.csiro.au/workspace/builtin" type="Variable">
+  <operation bgcolor="4291611648" dataname="FEM2 JAR (absolute path)" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{747403a5-86cf-4be5-b638-b6203b634f13}" label="FEM2 JAR (absolute path)" plugin="www.csiro.au/workspace/builtin" type="Variable">
     <input name="Dependencies" size="0"/>
-    <input name="Plan XML name">./wsplan.xml</input>
-    <view height="90" width="168" x="-922" y="-1456"/>
+    <input globalname="ProgramJarPath" name="FEM2 JAR (absolute path)">E:\target\au-flood-evacuation-0.0.1-SNAPSHOT-jar-with-dependencies.jar</input>
+    <view height="90" width="168" x="-622" y="-1486"/>
   </operation>
-  <operation atomic="false" bgcolor="4280839393" id="{93415dc1-7ef4-4dc2-8b8f-58a404b557a3}" label="MATSim Directory and JAR filename" plugin="www.csiro.au/workspace/builtin" type="Workspace">
+  <operation bgcolor="4291611648" dataname="Working Dir (absolute path)" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{44c82584-4c9e-44b6-b5fb-687fcf4e705a}" label="Working Dir (absolute path)" plugin="www.csiro.au/workspace/builtin" type="Variable">
     <input name="Dependencies" size="0"/>
-    <view height="90" width="168" x="-102" y="-1526"/>
-    <operation bgcolor="4284395451" id="{9e26cb7e-a04d-4003-914f-d9c0b799467d}" label="Split MATSim directory and JAR name" plugin="www.csiro.au/workspace/python" type="RunPythonScript">
-      <input name="Dependencies" size="0"/>
-      <input name="Script">import os
-MatSIMJarFileName = os.path.basename(MatSIMJarFilePath)
-MatSIMDir = os.path.dirname(MatSIMJarFilePath)</input>
-      <input name="Persistent namespace">0</input>
-      <input name="Run in GUI thread">0</input>
-      <view height="156" width="168" x="-172" y="-1579"/>
-      <namedinputs>
-        <input dataname="MatSIMJarFilePath" dataplugin="www.csiro.au/workspace/builtin" datatype="QString"/>
-      </namedinputs>
-      <namedoutputs>
-        <output dataname="MatSIMJarFileName" dataplugin="www.csiro.au/workspace/builtin" datatype="QString"/>
-        <output dataname="MatSIMDir" dataplugin="www.csiro.au/workspace/builtin" datatype="QString"/>
-      </namedoutputs>
-    </operation>
-    <operation bgcolor="4291611648" dataname="External MATSim JAR file" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{dd7f1ed4-2a4c-443e-a881-08f431b72365}" label="External MATSim JAR file" plugin="www.csiro.au/workspace/builtin" type="Variable">
-      <input name="Dependencies" size="0"/>
-      <input globalname="MATSimJar" name="External MATSim JAR file">C:/matsim/matsim 0.8.0/matsim-0.8.0.jar</input>
-      <view height="96" width="168" x="-172" y="-1769"/>
-    </operation>
-    <operation bgcolor="4294931456" dataname="MatSIMJarFileName" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{d2a52b05-dbf0-41c7-b699-32741046469c}" label="MatSIMJarFileName" plugin="www.csiro.au/workspace/builtin" type="WorkspaceOutput">
-      <input name="Dependencies" size="0"/>
-      <view height="130" width="168" x="98" y="-1636"/>
-    </operation>
-    <operation bgcolor="4294931456" dataname="MatSIMDir" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{b7086725-eaaf-44e1-9aaa-54032cb6616f}" label="MatSIMDir" plugin="www.csiro.au/workspace/builtin" type="WorkspaceOutput">
-      <input name="Dependencies" size="0"/>
-      <view height="130" width="168" x="108" y="-1456"/>
-    </operation>
-    <connection copy="false" dest_name="MatSIMJarFilePath" from_op="{dd7f1ed4-2a4c-443e-a881-08f431b72365}" src_name="External MATSim JAR file" to_op="{9e26cb7e-a04d-4003-914f-d9c0b799467d}"/>
-    <connection copy="false" dest_name="MatSIMJarFileName" from_op="{9e26cb7e-a04d-4003-914f-d9c0b799467d}" src_name="MatSIMJarFileName" to_op="{d2a52b05-dbf0-41c7-b699-32741046469c}"/>
-    <connection copy="false" dest_name="MatSIMDir" from_op="{9e26cb7e-a04d-4003-914f-d9c0b799467d}" src_name="MatSIMDir" to_op="{b7086725-eaaf-44e1-9aaa-54032cb6616f}"/>
+    <input globalname="WorkingDirPath" name="Working Dir (absolute path)">E:\integration</input>
+    <view height="90" width="168" x="-622" y="-1096"/>
   </operation>
-  <connection copy="false" dest_name="External runtime" from_op="{92ff0839-90a2-41e2-bca1-fbc9fd4afaa1}" src_name="External Java.exe path" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
-  <connection copy="false" dest_name="External script file" from_op="{c76e362a-731c-48c6-9c9c-006f1f1d9370}" src_name="Relative path" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
-  <connection copy="false" dest_name="File name" from_op="{d0a4946d-df85-47c1-a47b-af7b42c74125}" src_name="External MATSim config template" to_op="{0fbbf1d5-24ff-4db0-a175-a6ac55a613e4}"/>
-  <connection copy="false" dest_name="Input string" from_op="{0fbbf1d5-24ff-4db0-a175-a6ac55a613e4}" src_name="String" to_op="{c2ec9cc4-e22f-455e-a0b7-456c167853f0}"/>
-  <connection copy="false" dest_name="Input string" from_op="{c2ec9cc4-e22f-455e-a0b7-456c167853f0}" src_name="String" to_op="{b11887da-0bc9-497e-a9f2-1ead11673fd5}"/>
-  <connection copy="false" dest_name="File name" from_op="{a9e248c1-b863-4ecd-ac6a-ceb13d001b22}" src_name="Config file name" to_op="{2d094015-a2bd-475b-aedc-228e1fa09243}"/>
-  <connection copy="false" dest_name="File name" from_op="{a9e248c1-b863-4ecd-ac6a-ceb13d001b22}" src_name="Config file name" to_op="{c76e362a-731c-48c6-9c9c-006f1f1d9370}"/>
-  <connection copy="false" dest_index="0" dest_name="Dependencies" from_op="{2d094015-a2bd-475b-aedc-228e1fa09243}" src_name="Dependencies" to_op="{c76e362a-731c-48c6-9c9c-006f1f1d9370}"/>
-  <connection copy="false" dest_name="File name" from_op="{a7cc5ba4-185c-47f7-b90f-d95a6f7ab48c}" src_name="Matsim output directory" to_op="{49e1202d-9e20-47a2-a550-3b7ae094e699}"/>
-  <connection copy="false" dest_name="Input string" from_op="{b11887da-0bc9-497e-a9f2-1ead11673fd5}" src_name="String" to_op="{277f9919-021a-41a7-8a99-84ca75d60011}"/>
-  <connection copy="false" dest_name="Replacement substring" from_op="{49e1202d-9e20-47a2-a550-3b7ae094e699}" src_name="Relative path" to_op="{277f9919-021a-41a7-8a99-84ca75d60011}"/>
-  <connection copy="false" dest_name="String" from_op="{277f9919-021a-41a7-8a99-84ca75d60011}" src_name="String" to_op="{2d094015-a2bd-475b-aedc-228e1fa09243}"/>
+  <operation bgcolor="4291611648" dataname="Main Class" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{667ac25f-9941-409d-aea6-437cc3f6318f}" label="Main Class" plugin="www.csiro.au/workspace/builtin" type="Variable">
+    <input name="Dependencies" size="0"/>
+    <input globalname="MainClass" name="Main Class">org.matsim.run.RunMatsim4FloodEvacuation</input>
+    <view height="90" width="168" x="-622" y="-1356"/>
+  </operation>
+  <operation bgcolor="4291611648" dataname="MATSim config (absolute path)" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{416fa2ea-5513-4069-8fd5-ab34248cff43}" label="MATSim config (absolute path)" plugin="www.csiro.au/workspace/builtin" type="Variable">
+    <input name="Dependencies" size="0"/>
+    <input globalname="MATSimConfigPath" name="MATSim config (absolute path)">..\scenarios\fem2016\testConfig.xml</input>
+    <view height="96" width="168" x="-622" y="-1229"/>
+  </operation>
   <connection copy="false" dest_name="Text to Log" from_op="{1d6cd786-1ba3-4ff4-bc5c-05f0ee6ffb6f}" src_name="Value" to_op="{9bc65603-c8dc-44c9-9c97-e6461014df81}"/>
   <connection copy="false" dest_name="End" from_op="{9bc65603-c8dc-44c9-9c97-e6461014df81}" src_name="Dependencies" to_op="{ebb626c2-0190-4907-8835-7ee98ad00f47}"/>
-  <connection copy="false" dest_name="File name" from_op="{9b9b4788-b7ce-4026-a3b6-205583fd4fc6}" src_name="Plan XML name" to_op="{27774637-e32a-4f86-8d3f-0f6e7b3bc3e5}"/>
-  <connection copy="false" dest_name="Replacement substring" from_op="{27774637-e32a-4f86-8d3f-0f6e7b3bc3e5}" src_name="Relative path" to_op="{c2ec9cc4-e22f-455e-a0b7-456c167853f0}"/>
   <connection copy="false" dest_index="0" dest_name="Dependencies" from_op="{11554136-5699-4849-b08c-5bfb7148a20f}" src_name="Script output" to_op="{1d6cd786-1ba3-4ff4-bc5c-05f0ee6ffb6f}"/>
-  <connection copy="false" dest_index="2" dest_name="Options" from_op="{93415dc1-7ef4-4dc2-8b8f-58a404b557a3}" src_name="MatSIMJarFileName" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
-  <connection copy="false" dest_name="Working directory" from_op="{93415dc1-7ef4-4dc2-8b8f-58a404b557a3}" src_name="MatSIMDir" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
+  <connection copy="false" dest_index="2" dest_name="Options" from_op="{667ac25f-9941-409d-aea6-437cc3f6318f}" src_name="Main Class" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
+  <connection copy="false" dest_name="External script file" from_op="{416fa2ea-5513-4069-8fd5-ab34248cff43}" src_name="MATSim config (absolute path)" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
+  <connection copy="false" dest_name="External runtime" from_op="{92ff0839-90a2-41e2-bca1-fbc9fd4afaa1}" src_name="Java runtime (absolute path)" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
+  <connection copy="false" dest_index="1" dest_name="Options" from_op="{747403a5-86cf-4be5-b638-b6203b634f13}" src_name="FEM2 JAR (absolute path)" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
+  <connection copy="false" dest_name="Working directory" from_op="{44c82584-4c9e-44b6-b5fb-687fcf4e705a}" src_name="Working Dir (absolute path)" to_op="{11554136-5699-4849-b08c-5bfb7148a20f}"/>
 </operation>

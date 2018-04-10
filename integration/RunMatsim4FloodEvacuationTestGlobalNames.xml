@@ -1,7 +1,13 @@
 <!DOCTYPE serializeddata>
 <operation>
- <input globalname="PathToJava">C:\Program Files\Java\jdk1.8.0_162\bin\java.exe</input>
- <input globalname="MATSimConfigTemplate">../scenarios/fem2016/testConfig.xml</input>
- <input globalname="MATSimJar">E:\target\au-flood-evacuation-0.0.1-SNAPSHOT-jar-with-dependencies.jar</input>
- <input globalname="OutputDirectory">./RunMatsim4FloodEvacuationTestOutput</input>
+  <!-- Path to the Java runtime executable (relative or absolute) -->
+ <input globalname="JavaRuntimePath">C:\Program Files\Java\jre1.8.0_162\bin\java.exe</input>
+ <!-- Directory in which to run the workflow (relative or absolute) -->
+ <input globalname="WorkingDirPath">E:\integration</input>
+ <!-- Path to the FEM2 jar (relative or absolute) -->
+ <input globalname="ProgramJarPath">E:\target\au-flood-evacuation-0.0.1-SNAPSHOT-jar-with-dependencies.jar</input>
+ <!-- Path to the MATSim config file for this scenario (relative or absolute) -->
+ <input globalname="MATSimConfigPath">E:\scenarios\fem2016\testConfig.xml</input>
+ <!-- Fully qualified name of the class with the main function -->
+ <input globalname="MainClass">org.matsim.run.RunMatsim4FloodEvacuation</input>
 </operation>
