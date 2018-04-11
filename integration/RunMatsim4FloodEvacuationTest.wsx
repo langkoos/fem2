@@ -2,7 +2,7 @@
 <operation atomic="false" bgcolor="4280839393" id="{cda4f031-d031-4b4e-bc55-a09b831266f8}" label="Root" plugin="www.csiro.au/workspace/builtin" type="Workspace">
   <environment>
     <platform>windows 64bit</platform>
-    <lastModified>2018-04-10T16:07:23</lastModified>
+    <lastModified>2018-04-10T23:56:19</lastModified>
     <plugin name="www.csiro.au/workspace/builtin" uri="www.csiro.au/workspace/packages/5.0.4/Windows/x86_64"/>
     <plugin name="www.csiro.au/workspace/dataanalysis" uri="www.csiro.au/workspace/packages/5.0.4/Windows/x86_64"/>
   </environment>
@@ -60,7 +60,7 @@
   </operation>
   <operation bgcolor="4291611648" dataname="MATSim config (absolute path)" dataplugin="www.csiro.au/workspace/builtin" datatype="QString" id="{416fa2ea-5513-4069-8fd5-ab34248cff43}" label="MATSim config (absolute path)" plugin="www.csiro.au/workspace/builtin" type="Variable">
     <input name="Dependencies" size="0"/>
-    <input globalname="MATSimConfigPath" name="MATSim config (absolute path)">..\scenarios\fem2016\testConfig.xml</input>
+    <input globalname="MATSimConfigPath" name="MATSim config (absolute path)">E:\scenarios\fem2016\testConfig.xml</input>
     <view height="96" width="168" x="-622" y="-1229"/>
   </operation>
   <connection copy="false" dest_name="Text to Log" from_op="{1d6cd786-1ba3-4ff4-bc5c-05f0ee6ffb6f}" src_name="Value" to_op="{9bc65603-c8dc-44c9-9c97-e6461014df81}"/>
