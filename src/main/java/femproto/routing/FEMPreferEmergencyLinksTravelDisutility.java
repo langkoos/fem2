@@ -85,7 +85,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
 			factor = result ;
-			log.debug("found link in fire area; link=" + link.getId() + "; factor=" + factor ) ;
+//			log.debug("found link in fire area; link=" + link.getId() + "; factor=" + factor ) ;
 		}
 		return factor * this.travelTime.getLinkTravelTime(link, time, person, vehicle);
 	}
@@ -95,7 +95,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		double factor = 100. ;
 		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
-			log.debug("found link being special link:" + link.getId() );
+//			log.debug("found link being special link:" + link.getId() );
 			factor = result ;
 		}
 		return factor * this.travelTime.getLinkTravelTime(link, Time.UNDEFINED_TIME, null, null);

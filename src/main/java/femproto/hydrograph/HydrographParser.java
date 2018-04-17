@@ -165,7 +165,7 @@ public class HydrographParser {
 					NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
 					NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
 					changeEvent.setFlowCapacityChange(flowChange);
-					NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.000001);
+					NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
 					changeEvent.setFreespeedChange(speedChange);
 					changeEvent.addLink(link);
 					networkChangeEvents.add(changeEvent);
