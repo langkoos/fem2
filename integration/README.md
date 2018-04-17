@@ -36,4 +36,3 @@ net use E: \\VBOXSVR\au-flood-evacuation; e:\integration\run.ps1
    * Uninstall CSIRO Workspace if already installed
    * Install CSIRO Workspace from `./integration/workspace-drops/csiro.au-workspace*.exe`
    * Run the workflow from `./integration/RunMatsim4FloodEvacuationTest.wsx`
-   * *Still to fix issues with windows paths; runs but fails; DS 6/apr/18]**
