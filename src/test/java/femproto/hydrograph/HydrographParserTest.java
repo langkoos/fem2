@@ -46,6 +46,8 @@ public class HydrographParserTest {
 
 		hydrographParser.hydrographToViaXY("scenarios/fem2016/hydroxy.txt.gz");
 
+		hydrographParser.hydrographToViaLinkAttributes("scenarios/fem2016/hydro_linkattrs.txt.gz",scenario.getNetwork());
+
 		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),"scenarios/fem2016/d09693_H_change_events.xml.gz");
 
 		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),"scenarios/fem2016/pop.xml.gz",0,10/360);

@@ -81,7 +81,7 @@ public class RunMatsim4FloodEvacuation {
 			
 			config.qsim().setEndTime(36*3600);
 			config.qsim().setRemoveStuckVehicles(true);
-			config.qsim().setStuckTime(3600);
+			config.qsim().setStuckTime(86400);
 
 			{
 				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;

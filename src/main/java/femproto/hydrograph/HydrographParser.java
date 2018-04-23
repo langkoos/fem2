@@ -139,6 +139,40 @@ public class HydrographParser {
 
 	}
 
+	public void hydrographToViaLinkAttributes(String fileName, Network network) {
+		Set<Id<Link>> ids = new HashSet<>();
+				ids.addAll(network.getLinks().keySet());
+		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
+		try {
+			writer.write("ID\ttime\tflooded\n");
+
+			for (HydrographPoint point : hydrographPointMap.values()) {
+				if (!point.mappedToNetworkLink())
+					continue;
+				List<HydrographPoint.HydrographPointData> pointData = point.getData();
+				for (HydrographPoint.HydrographPointData pointDatum : pointData) {
+					for (String linkId : point.linkIds) {
+						ids.remove(Id.createLinkId(linkId));
+						writer.write(String.format("%s\t%f\t%d\n", linkId, pointDatum.getTime(), pointDatum.getLevel_ahd() - point.ALT_AHD > 0 ? 1 : 0));
+					}
+
+				}
+
+			}
+			for (Id<Link> id : ids) {
+						writer.write(String.format("%s\t%f\t%d\n", id, 240*3600f,  0));
+
+			}
+
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Something went wrong writing the links plotfile.");
+			throw new RuntimeException();
+		}
+
+	}
+
 	public void setHydroFloodTimes() {
 		for (HydrographPoint point : hydrographPointMap.values()) {
 			double floodtime = -1;
