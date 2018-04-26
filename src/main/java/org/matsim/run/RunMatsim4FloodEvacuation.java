@@ -19,6 +19,7 @@
 package org.matsim.run;
 
 import femproto.config.FEMConfigGroup;
+import femproto.network.NetworkConverter;
 import femproto.routing.FEMPreferEmergencyLinksTravelDisutility;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -43,7 +44,10 @@ import org.matsim.core.router.NetworkRoutingProvider;
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
+import org.matsim.core.utils.io.IOUtils;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,13 +62,19 @@ import static org.matsim.core.network.NetworkUtils.*;
 public class RunMatsim4FloodEvacuation {
 	private static final Logger log = Logger.getLogger(RunMatsim4FloodEvacuation.class) ;
 	private Controler controler;
-
+	
 	RunMatsim4FloodEvacuation(String[] args) {
-		Config config ;
-		if ( args==null || args.length==0 || args[0]=="" ) {
-
-			config = ConfigUtils.loadConfig("scenarios/fem2016/testConfigDeprecated.xml") ;
+		this( args, null ) ;
+	}
+	RunMatsim4FloodEvacuation(String[] args, String outputDir ) {
+		// (outputDir so we can set this from the test; not a terribly good solution, but still cleaner than hardcoding the
+		// test output dir in the test config file. kai, apr'18)
+		
+		Config config;
+		if (args == null || args.length == 0 || args[0] == "") {
 			
+			config = ConfigUtils.loadConfig("scenarios/fem2016/testConfigDeprecated.xml");
+
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
 //			config.plans().setInputFile("pop.xml.gz");
@@ -74,14 +84,18 @@ public class RunMatsim4FloodEvacuation {
 			
 		
 		} else {
-			log.info( "found an argument, thus loading config from file ...") ;
-			config = ConfigUtils.loadConfig(args[0]) ;
+			log.info("found an argument, thus loading config from file ...");
+			config = ConfigUtils.loadConfig(args[0]);
 		}
 		
 		// === prepare config:
 		
 		config.controler().setLastIteration(0);
-		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
+		
+		if ( outputDir!=null && !outputDir.equals("") ) {
+			config.controler().setOutputDirectory( outputDir );
+		}
+		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
 		{
 			Set<String> set = new HashSet<>();
@@ -90,65 +104,65 @@ public class RunMatsim4FloodEvacuation {
 			config.qsim().setMainModes(set);
 		}
 		
-		config.qsim().setEndTime(264*3600);
+		config.qsim().setEndTime(264 * 3600);
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
 		
 		config.qsim().setRemoveStuckVehicles(true);
 		config.qsim().setStuckTime(86400);
 		
 		{
-			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
+			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac");
 			params.setScoringThisActivityAtAll(false);
 			config.planCalcScore().addActivityParams(params);
 		}
 		{
-			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
+			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe");
 			params.setScoringThisActivityAtAll(false);
 			config.planCalcScore().addActivityParams(params);
 		}
 		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 		
-		FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class ) ;
-
+		FEMConfigGroup femConfig = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
+		
 		// === add overriding config material if there is something in that file:
-
-		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL( config.getContext(), "overridingConfig.xml") ) ;
+		
+		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL(config.getContext(), "overridingConfig.xml"));
 		
 		// prepare scenario:
 		
-		Scenario scenario = ScenarioUtils.loadScenario(config) ;
+		Scenario scenario = ScenarioUtils.loadScenario(config);
 		
 		// yyyyyy reduce to 10% for debugging:
-		double sample = 0.1 ;
-		List<Id<Person>> list = new ArrayList<>() ;
-		for ( Id<Person> personId : scenario.getPopulation().getPersons().keySet() ) {
-			if (MatsimRandom.getRandom().nextDouble() < (1.-sample) ) {
-				list.add( personId) ;
+		double sample = 0.1;
+		List<Id<Person>> list = new ArrayList<>();
+		for (Id<Person> personId : scenario.getPopulation().getPersons().keySet()) {
+			if (MatsimRandom.getRandom().nextDouble() < (1. - sample)) {
+				list.add(personId);
 			}
 		}
-		for ( Id<Person> toBeRemoved : list ) {
-			scenario.getPopulation().removePerson( toBeRemoved ) ;
+		for (Id<Person> toBeRemoved : list) {
+			scenario.getPopulation().removePerson(toBeRemoved);
 		}
-		scenario.getConfig().qsim().setFlowCapFactor( sample );
-		scenario.getConfig().qsim().setStorageCapFactor( sample );
-
+		scenario.getConfig().qsim().setFlowCapFactor(sample);
+		scenario.getConfig().qsim().setStorageCapFactor(sample);
 		
 		//		preparationsForRmitHawkesburyScenario();
 		
-		controler = new Controler( scenario ) ;
+		controler = new Controler(scenario);
 		
 		// ---
 		
-		controler.addOverridingModule(new AbstractModule(){
-			@Override public void install() {
-				switch( femConfig.getFEMRoutingMode() ) {
+		controler.addOverridingModule(new AbstractModule() {
+			@Override
+			public void install() {
+				switch (femConfig.getFEMRoutingMode()) {
 					case preferEvacuationLinks:
-						final String routingMode = TransportMode.car ;
+						final String routingMode = TransportMode.car;
 						// (the "routingMode" can be different from the "mode".  useful if, say, different cars should follow different routing
 						// algorithms, but still executed as "car" on the network.  Ask me if this might be useful for this project.  kai, feb'18)
-
+						
 						// register this routing mode:
-						addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(TransportMode.car, routingMode)) ;
+						addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(TransportMode.car, routingMode));
 						
 						// define how the travel time is computed:
 						addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
@@ -160,27 +174,43 @@ public class RunMatsim4FloodEvacuation {
 //						addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
 						
 						// define how the travel disutility is computed:
-						TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory( scenario.getNetwork() );
+						TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork());
 						addTravelDisutilityFactoryBinding(routingMode).toInstance(disutilityFactory);
 						
 						break;
 					default:
-						throw new RuntimeException("not implemented") ;
+						throw new RuntimeException("not implemented");
 				}
 			}
 		});
 		
-		// ---
-		
-
 	}
-
+		
 	public static void main(String[] args) {
 		new RunMatsim4FloodEvacuation(args).run();
 	}
 
-	private void run() {
+	public void run() {
 		controler.run();
+		
+		// need to do this fairly late since otherwise the directory is wiped out again when the controler gets going. kai, apr'18
+		final String filename = controler.getConfig().controler().getOutputDirectory() + "/linkAttribs.txt.gz";
+		log.info( "will write link attributes to " + filename ) ;
+		
+		try (BufferedWriter writer = IOUtils.getBufferedWriter(filename)) {
+			writer.write("id\t" + NetworkConverter.EVACUATION_LINK);
+			writer.newLine();
+			for (Link link : controler.getScenario().getNetwork().getLinks().values()) {
+				writer.write(link.getId().toString() + "\t");
+				writer.write(Boolean.toString((boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK)));
+				writer.newLine();
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	private static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {

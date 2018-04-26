@@ -2,12 +2,17 @@ package routing;
 
 import femproto.network.NetworkConverter;
 import femproto.routing.FEMPreferEmergencyLinksTravelDisutility;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
+import org.matsim.api.core.v01.events.LinkLeaveEvent;
 import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
+import org.matsim.api.core.v01.events.handler.LinkLeaveEventHandler;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.gbl.Gbl;
+import org.matsim.jaxb.lanedefinitions20.XMLLaneType;
 import org.matsim.vehicles.Vehicle;
 
 import java.util.HashMap;
@@ -16,7 +21,8 @@ import java.util.Map;
 /**
  * A test to see to what extent the {@link FEMPreferEmergencyLinksTravelDisutility } makes agents stick to FEM routes
  */
-public class FEMEvacuationLinkRoutingCounter implements LinkEnterEventHandler{
+public class FEMEvacuationLinkRoutingCounter implements LinkLeaveEventHandler{
+	private static final Logger log = Logger.getLogger( FEMEvacuationLinkRoutingCounter.class ) ;
 
 	private final Network network;
 	
@@ -34,29 +40,33 @@ public class FEMEvacuationLinkRoutingCounter implements LinkEnterEventHandler{
 		return badLinkEnterEventCount;
 	}
 
-	private int totalLinkEnterEventCount = 0, badLinkEnterEventCount = 0;
+	private long totalLinkEnterEventCount = 0, badLinkEnterEventCount = 0, evacLinkFollowedByNonEvacLinkCount = 0 ;
 
 	@Override
-	public void handleEvent(LinkEnterEvent linkEnterEvent) {
-		boolean isEvacLink = false;
-		try{
-			isEvacLink = (boolean) network.getLinks().get(linkEnterEvent.getLinkId()).getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
-		}catch (NullPointerException e){
-			System.out.println();
-		}
+	public void handleEvent(LinkLeaveEvent event) {
+		
+		final Link link = network.getLinks().get(event.getLinkId());
+		Gbl.assertNotNull(link);
+		Boolean isEvacLink = (Boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
+		
+//		log.info( "vehId=" + event.getVehicleId() + "; linkId=" + event.getLinkId() + "; isEvacLink=" + isEvacLink ) ;
 
 		if(isEvacLink) {
 			totalLinkEnterEventCount++;
-			map.put( linkEnterEvent.getVehicleId(), linkEnterEvent.getLinkId() );
+			map.put( event.getVehicleId(), event.getLinkId() );
 		} else {
 			badLinkEnterEventCount++;
-			Id<Link> prevLinkId = map.get(linkEnterEvent.getVehicleId());
+			Id<Link> prevLinkId = map.get(event.getVehicleId());
 			if ( prevLinkId!=null ) {
-				Assert.fail("evacLink=" + prevLinkId + " followed by nonEvacLink=" + linkEnterEvent.getLinkId() +
-				" by vehicle=" + linkEnterEvent.getVehicleId() );
+//				Assert.fail("evacLink=" + prevLinkId + " followed by nonEvacLink=" + event.getLinkId() +
+//				" by vehicle=" + event.getVehicleId() );
+				evacLinkFollowedByNonEvacLinkCount ++ ;
 			}
 		}
 		totalLinkEnterEventCount++;
 	}
-
+	
+	public long getEvacLinkFollowedByNonEvacLinkCount() {
+		return evacLinkFollowedByNonEvacLinkCount;
+	}
 }

@@ -1,5 +1,8 @@
 package org.matsim.run;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -21,64 +24,65 @@ import routing.FEMEvacuationLinkRoutingCounter;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RunMatsim4FloodEvacuationTest {
+	private static final Logger log = Logger.getLogger( RunMatsim4FloodEvacuationTest.class ) ;
+	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
 
 	@Test
 	public void testA_startWithFullEvacRun() {
-		Config config = ConfigUtils.createConfig() ;
-		
+//		Config config = ConfigUtils.createConfig() ;
+//
 		String scenarioBase = "scenarios/fem2016/" ;
-		
-		config.network().setInputFile( "hn_net_ses_emme_2016_V12_network.xml.gz");
-		// (relative to config file location!)
-		
-		config.plans().setInputFile( "pop.xml.gz" ) ;
-		// (relative to config file location!)
-		
-		config.controler().setOutputDirectory( utils.getOutputDirectory() );
-		config.controler().setOverwriteFileSetting( OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists );
-		
-		config.controler().setLastIteration(0);
-
-		config.network().setChangeEventsInputFile("d09693_H_change_events.xml.gz");
-		config.network().setTimeVariantNetwork(true);
-		
-		Set<String> set = new HashSet<>();
-		set.add(TransportMode.car ) ;
-		config.plansCalcRoute().setNetworkModes(set);
-		config.qsim().setMainModes(set);
-		
-//		config.qsim().setEndTime(36*3600);
-
-		{
-			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
-			params.setScoringThisActivityAtAll(false);
-			config.planCalcScore().addActivityParams(params);
-		}
-		{
-			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
-			params.setScoringThisActivityAtAll(false);
-			config.planCalcScore().addActivityParams(params);
-		}
-		
-		
-		
-		
-		// ---
-		
-		String configFilename = scenarioBase + "testConfigDeprecated.xml" ;
-		
-		ConfigUtils.writeConfig( config, configFilename );
+//
+//		config.network().setInputFile( "hn_net_ses_emme_2016_V12_network.xml.gz");
+//		// (relative to config file location!)
+//
+//		config.plans().setInputFile( "pop.xml.gz" ) ;
+//		// (relative to config file location!)
+//
+//		config.controler().setOutputDirectory( utils.getOutputDirectory() );
+//		config.controler().setOverwriteFileSetting( OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists );
+//
+//		config.controler().setLastIteration(0);
+//
+//		config.network().setChangeEventsInputFile("d09693_H_change_events.xml.gz");
+//		config.network().setTimeVariantNetwork(true);
+//
+//		Set<String> set = new HashSet<>();
+//		set.add(TransportMode.car ) ;
+//		config.plansCalcRoute().setNetworkModes(set);
+//		config.qsim().setMainModes(set);
+//
+////		config.qsim().setEndTime(36*3600);
+//
+//		{
+//			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
+//			params.setScoringThisActivityAtAll(false);
+//			config.planCalcScore().addActivityParams(params);
+//		}
+//		{
+//			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
+//			params.setScoringThisActivityAtAll(false);
+//			config.planCalcScore().addActivityParams(params);
+//		}
+//
+//
+//
+//
+//		// ---
+//
+		String configFilename = scenarioBase + "config.xml" ;
+//
+//		ConfigUtils.writeConfig( config, configFilename );
 		
 		// ---
 
 		try {
-			RunMatsim4FloodEvacuation.main( new String [] {configFilename} );
+			new RunMatsim4FloodEvacuation( new String [] {configFilename}, utils.getOutputDirectory() ).run() ;
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
 			Assert.fail("something went wrong");
@@ -89,14 +93,28 @@ public class RunMatsim4FloodEvacuationTest {
 	public void testB_FEMEvacuationLinkRouting() {
 		EventsManager eventsManager = new EventsManagerImpl();
 		Network network = NetworkUtils.createNetwork();
-		new MatsimNetworkReader(network).readFile("scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz");
+//		new MatsimNetworkReader(network).readFile("scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz");
+		new MatsimNetworkReader(network).readFile(utils.getOutputDirectory()+"../testA_startWithFullEvacRun/output_network.xml.gz");
 		FEMEvacuationLinkRoutingCounter counter = new FEMEvacuationLinkRoutingCounter(network);
 		eventsManager.addHandler(counter);
 		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
+
 		matsimEventsReader.readFile(utils.getOutputDirectory()+"../testA_startWithFullEvacRun/output_events.xml.gz");
-		Logger.getLogger("LOG").info(counter.getBadLinkEnterEventCount() + " out of "+ counter.getTotalLinkEnterEventCount() + " link entries on non-evac links.");
-		if(counter.getBadLinkEnterEventCount()/counter.getTotalLinkEnterEventCount() > 0.1)
+
+		log.info(counter.getBadLinkEnterEventCount() + " out of "+ counter.getTotalLinkEnterEventCount() + " link entries on non-evac links.");
+		
+		Priority level = Level.INFO ;
+		if ( counter.getEvacLinkFollowedByNonEvacLinkCount() > 0 ) {
+			level = Level.WARN ;
+		}
+		log.log( level, "evac links followed by non-evac links=" + counter.getEvacLinkFollowedByNonEvacLinkCount() ) ;
+		if ( counter.getEvacLinkFollowedByNonEvacLinkCount() > 0 ) {
+			log.warn("yyyyyy That number should really be zero; need to investigate!!!") ;
+		}
+		
+		if(counter.getBadLinkEnterEventCount()/counter.getTotalLinkEnterEventCount() > 0.1) {
 			Assert.fail("Number fo vehicles on non-evac links exceeds 10%");
+		}
 
 	}
 }
