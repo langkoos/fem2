@@ -52,7 +52,7 @@ public class FEMEvacuationLinkRoutingCounter implements LinkEnterEventHandler{
 			badLinkEnterEventCount++;
 			Id<Link> prevLinkId = map.get(linkEnterEvent.getVehicleId());
 			if ( prevLinkId!=null ) {
-				Assert.fail("evacLink=" + prevLinkId + " followed by nonEvacLink=" + linkEnterEvent.getLinkId()
+				Assert.fail("evacLink=" + prevLinkId + " followed by nonEvacLink=" + linkEnterEvent.getLinkId() +
 				" by vehicle=" + linkEnterEvent.getVehicleId() );
 			}
 		}

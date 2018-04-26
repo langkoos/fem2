@@ -71,7 +71,7 @@ public class RunMatsim4FloodEvacuationTest {
 		
 		// ---
 		
-		String configFilename = scenarioBase + "testConfig.xml" ;
+		String configFilename = scenarioBase + "testConfigDeprecated.xml" ;
 		
 		ConfigUtils.writeConfig( config, configFilename );
 		

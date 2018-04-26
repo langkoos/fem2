@@ -30,6 +30,7 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
@@ -59,74 +60,77 @@ public class RunMatsim4FloodEvacuation {
 	private Controler controler;
 
 	RunMatsim4FloodEvacuation(String[] args) {
-		Set<String> set = new HashSet<>();
-		set.add(TransportMode.car ) ;
-		
 		Config config ;
 		if ( args==null || args.length==0 || args[0]=="" ) {
-			config = ConfigUtils.createConfig() ;
-			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
-			config.plans().setInputFile("pop.xml.gz");
+
+			config = ConfigUtils.loadConfig("scenarios/fem2016/testConfigDeprecated.xml") ;
+			
+//			config = ConfigUtils.createConfig() ;
+//			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
+//			config.plans().setInputFile("pop.xml.gz");
 
 //			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
 //			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config.xml" ) ;
 			
-			
-			config.controler().setLastIteration(0);
-			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
-			
-			config.plansCalcRoute().setNetworkModes(set);
-			
-			config.qsim().setMainModes(set);
-			
-			config.qsim().setEndTime(36*3600);
-			config.qsim().setRemoveStuckVehicles(true);
-			config.qsim().setStuckTime(86400);
-
-			{
-				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
-				params.setScoringThisActivityAtAll(false);
-				config.planCalcScore().addActivityParams(params);
-			}
-			{
-				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
-				params.setScoringThisActivityAtAll(false);
-				config.planCalcScore().addActivityParams(params);
-			}
-			
+		
 		} else {
 			log.info( "found an argument, thus loading config from file ...") ;
 			config = ConfigUtils.loadConfig(args[0]) ;
 		}
 		
+		// === prepare config:
+		
+		config.controler().setLastIteration(0);
+		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
+		
+		{
+			Set<String> set = new HashSet<>();
+			set.add(TransportMode.car);
+			config.plansCalcRoute().setNetworkModes(set);
+			config.qsim().setMainModes(set);
+		}
+		
+		config.qsim().setEndTime(264*3600);
+		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
+		
+		config.qsim().setRemoveStuckVehicles(true);
+		config.qsim().setStuckTime(86400);
+		
+		{
+			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
+			params.setScoringThisActivityAtAll(false);
+			config.planCalcScore().addActivityParams(params);
+		}
+		{
+			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
+			params.setScoringThisActivityAtAll(false);
+			config.planCalcScore().addActivityParams(params);
+		}
 		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 		
 		FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class ) ;
+
+		// === add overriding config material if there is something in that file:
+
+		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL( config.getContext(), "overridingConfig.xml") ) ;
 		
-		// ---
+		// prepare scenario:
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
-
-		//
-//		for ( Link link : scenario.getNetwork().getLinks().values() ) {
-//			link.setAllowedModes(  set ); // yyyyyy fix in network generator; needs to be comma separated!!
-//			link.setCapacity( link.getCapacity() * 60.); //  seems to be capacity per minute; correct in netconvert
-//			link.setLength( link.getLength()*1000. ); //  correct in netconvert
-//		}
 		
 		// yyyyyy reduce to 10% for debugging:
+		double sample = 0.1 ;
 		List<Id<Person>> list = new ArrayList<>() ;
 		for ( Id<Person> personId : scenario.getPopulation().getPersons().keySet() ) {
-			if (MatsimRandom.getRandom().nextDouble() < 0.9 ) {
+			if (MatsimRandom.getRandom().nextDouble() < (1.-sample) ) {
 				list.add( personId) ;
 			}
 		}
 		for ( Id<Person> toBeRemoved : list ) {
 			scenario.getPopulation().removePerson( toBeRemoved ) ;
 		}
-		scenario.getConfig().qsim().setFlowCapFactor(0.1);
-		scenario.getConfig().qsim().setStorageCapFactor(0.2);
-		scenario.getConfig().qsim().setEndTime(264*3600);
+		scenario.getConfig().qsim().setFlowCapFactor( sample );
+		scenario.getConfig().qsim().setStorageCapFactor( sample );
 
 		
 		//		preparationsForRmitHawkesburyScenario();
