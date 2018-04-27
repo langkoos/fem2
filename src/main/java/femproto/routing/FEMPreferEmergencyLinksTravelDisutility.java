@@ -81,24 +81,24 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 	
 	@Override
 	public double getLinkTravelDisutility(final Link link, final double time, final Person person, final Vehicle vehicle) {
-		double factor = 100. ;
-		Double result = specialLinks.get(link.getId());;
+		Double result = specialLinks.get(link.getId());
 		if ( result != null ) {
-			factor = result ;
-//			log.debug("found link in fire area; link=" + link.getId() + "; factor=" + factor ) ;
+//			log.debug("found link being special link; link=" + link.getId() + "; factor=" + factor ) ;
+			return result * this.travelTime.getLinkTravelTime(link,time,person,vehicle) ;
+		} else {
+			return 100. + 100. * this.travelTime.getLinkTravelTime(link,time,person,vehicle) ;
 		}
-		return factor * this.travelTime.getLinkTravelTime(link, time, person, vehicle);
 	}
 	
 	@Override
 	public double getLinkMinimumTravelDisutility(final Link link) {
-		double factor = 100. ;
 		Double result = specialLinks.get(link.getId());;
 		if ( result != null ) {
-//			log.debug("found link being special link:" + link.getId() );
-			factor = result ;
+//			log.debug("found link being special link; link=" + link.getId() + "; factor=" + factor ) ;
+			return result * this.travelTime.getLinkTravelTime(link,Time.getUndefinedTime(),null,null) ;
+		} else {
+			return 100. + 100. * this.travelTime.getLinkTravelTime(link,Time.getUndefinedTime(), null, null ) ;
 		}
-		return factor * this.travelTime.getLinkTravelTime(link, Time.UNDEFINED_TIME, null, null);
 	}
 	
 	public static final class Factory implements TravelDisutilityFactory {
