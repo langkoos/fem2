@@ -2,14 +2,14 @@
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
 <config>
 	<module name="network" >
-		<param name="inputChangeEventsFile" value="d09693_H_change_events.xml.gz" />
+		<!--<param name="inputChangeEventsFile" value="d09693_H_change_events.xml.gz" />-->
 		<param name="inputNetworkFile" value="hn_net_ses_emme_2016_V12_network.xml.gz" />
-		<param name="timeVariantNetwork" value="true" />
+		<param name="timeVariantNetwork" value="false" />
 	</module>
 	<module name="plans" >
 		<param name="inputPlansFile" value="pop.xml.gz" />
 	</module>
 	<module name="qsim" >
-		<param name="endTime" value="264:00:00" />
+		<!--<param name="endTime" value="264:00:00" />-->
 	</module>
 </config>

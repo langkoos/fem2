@@ -73,7 +73,7 @@ public class RunMatsim4FloodEvacuation {
 		Config config;
 		if (args == null || args.length == 0 || args[0] == "") {
 			
-			config = ConfigUtils.loadConfig("scenarios/fem2016/configFull.xml");
+			config = ConfigUtils.loadConfig("scenarios/fem2016/configSmall.xml");
 
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
@@ -104,7 +104,7 @@ public class RunMatsim4FloodEvacuation {
 			config.qsim().setMainModes(set);
 		}
 		
-		config.qsim().setEndTime(264 * 3600);
+//		config.qsim().setEndTime(264 * 3600);
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
 		
 		config.qsim().setRemoveStuckVehicles(true);
