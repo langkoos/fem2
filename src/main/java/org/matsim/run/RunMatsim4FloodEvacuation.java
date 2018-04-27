@@ -73,14 +73,14 @@ public class RunMatsim4FloodEvacuation {
 		Config config;
 		if (args == null || args.length == 0 || args[0] == "") {
 			
-			config = ConfigUtils.loadConfig("scenarios/fem2016/testConfigDeprecated.xml");
+			config = ConfigUtils.loadConfig("scenarios/fem2016/configFull.xml");
 
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
 //			config.plans().setInputFile("pop.xml.gz");
 
 //			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
-//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config.xml" ) ;
+//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/configSmall.xml" ) ;
 			
 		
 		} else {
@@ -214,6 +214,10 @@ public class RunMatsim4FloodEvacuation {
 	}
 
 	private static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {
+		
+		// yy That population (e.g. haw_pop_route_defined.xml.gz) has an "Evacuation" activity in between
+		// "Home" and "Safe".  Without documentation I don't know what that means.  Thus removing it here. kai, jan/apr'18
+		// yyyy Why did this work without also removing the routes? kai, apr'18
 		for ( Person person : scenario.getPopulation().getPersons().values() ) {
 			List<PlanElement> toRemove = new ArrayList<>() ;
 			boolean justRemoved = false ;
@@ -237,6 +241,9 @@ public class RunMatsim4FloodEvacuation {
 			person.getSelectedPlan().getPlanElements().removeAll( toRemove ) ;
 		}
 		
+		
+		// There are some "weird" links in that scenario, way too short.  (Maybe centroid connectors that ended
+		// up being used for routing?) Extending them to Euclidean length.  kai, jan/apr'18
 		new NetworkCleaner().run(scenario.getNetwork());
 		new NetworkSimplifier().run(scenario.getNetwork());
 		new NetworkCleaner().run(scenario.getNetwork());
