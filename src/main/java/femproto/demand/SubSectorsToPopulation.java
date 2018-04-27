@@ -28,10 +28,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
@@ -114,65 +111,94 @@ public class SubSectorsToPopulation {
 					}
 				}
 			}
-			Link endLink = null ;
+			List<Link> safeLinks = new ArrayList<>() ;
 			{
 				// find safeNode in network file:
 				// yoyoyo?? currently we only use the ifrst of the safe nodes,
 				// upodate 2018.3.7 access to these are cordoned off in order as the previous nodes become inaccesssible
 				String defaultSafeNode = record.SAFE_NODE1;
-				Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
-				Gbl.assertNotNull(node);
-				
-				// find some outgoing link:
-				// yyyyyy??
-				double maxCap = Double.NEGATIVE_INFINITY;
-				for (Link link : node.getOutLinks().values()) {
-					if (link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
-						maxCap = link.getCapacity();
-						endLink = link;
-					}
+				Link defaultLink = getLinkFromSafeNode(defaultSafeNode);
+				if(defaultLink != null)
+					safeLinks.add(defaultLink);
+				if(record.SAFE_NODE2 != null){
+					defaultLink = getLinkFromSafeNode(record.SAFE_NODE2);
+					if(defaultLink != null)
+						safeLinks.add(defaultLink);
 				}
+				if(record.SAFE_NODE3 != null){
+					defaultLink = getLinkFromSafeNode(record.SAFE_NODE3);
+					if(defaultLink != null)
+						safeLinks.add(defaultLink);
+				}
+				if(record.SAFE_NODE4 != null){
+					defaultLink = getLinkFromSafeNode(record.SAFE_NODE4);
+					if(defaultLink != null)
+						safeLinks.add(defaultLink);
+				}
+				if(record.SAFE_NODE5 != null){
+					defaultLink = getLinkFromSafeNode(record.SAFE_NODE5);
+					if(defaultLink != null)
+						safeLinks.add(defaultLink);
+				}
+
 			}
-			
-			
-			
-			
-			
-			int totalVehicles = (int)(double)feature.getAttribute("Totalvehic");
+
+
+			int totalVehicles = (int) (double) feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(id++));
-				person.getAttributes().putAttribute("SUBSECTOR",subsector);
-				
-				Plan plan = pf.createPlan() ;
-				
-				Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId() );
-				startAct.setEndTime(0); // yyyyyy ????
-				plan.addActivity(startAct);
-				
-				Leg evacLeg = pf.createLeg(TransportMode.car) ;
-				plan.addLeg(evacLeg);
-				
-				Activity safe = pf.createActivityFromLinkId("safe", endLink.getId() ) ;
-				plan.addActivity(safe);
+				person.getAttributes().putAttribute("SUBSECTOR", subsector);
+				for (Link safeLink : safeLinks) {
 
-				person.getAttributes().putAttribute("SAFE_NODE1",record.SAFE_NODE1);
-				if(record.SAFE_NODE2 != null)
-					person.getAttributes().putAttribute("SAFE_NODE2",record.SAFE_NODE2);
-				if(record.SAFE_NODE3 != null)
-					person.getAttributes().putAttribute("SAFE_NODE3",record.SAFE_NODE3);
-				if(record.SAFE_NODE4 != null)
-					person.getAttributes().putAttribute("SAFE_NODE4",record.SAFE_NODE4);
-				if(record.SAFE_NODE5 != null)
-					person.getAttributes().putAttribute("SAFE_NODE5",record.SAFE_NODE5);
 
-				person.addPlan(plan) ;
+					Plan plan = pf.createPlan();
+
+					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());
+					startAct.setEndTime(0); // yyyyyy ????
+					plan.addActivity(startAct);
+
+					Leg evacLeg = pf.createLeg(TransportMode.car);
+					plan.addLeg(evacLeg);
+
+					Activity safe = pf.createActivityFromLinkId("safe", safeLink.getId());
+					plan.addActivity(safe);
+
+					person.getAttributes().putAttribute("SAFE_NODE1", record.SAFE_NODE1);
+					if (record.SAFE_NODE2 != null)
+						person.getAttributes().putAttribute("SAFE_NODE2", record.SAFE_NODE2);
+					if (record.SAFE_NODE3 != null)
+						person.getAttributes().putAttribute("SAFE_NODE3", record.SAFE_NODE3);
+					if (record.SAFE_NODE4 != null)
+						person.getAttributes().putAttribute("SAFE_NODE4", record.SAFE_NODE4);
+					if (record.SAFE_NODE5 != null)
+						person.getAttributes().putAttribute("SAFE_NODE5", record.SAFE_NODE5);
+
+					person.addPlan(plan);
+				}
 
 				scenario.getPopulation().addPerson(person);
 			}
 		}
 		
 	}
-	
+
+	private Link getLinkFromSafeNode(String defaultSafeNode) {
+		Link endLink = null;
+		Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
+		Gbl.assertNotNull(node);
+
+		// find some outgoing link:
+		// yyyyyy??
+		double maxCap = Double.NEGATIVE_INFINITY;
+		for (Link link : node.getOutLinks().values()) {
+			if (link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
+				maxCap = link.getCapacity();
+				endLink = link;
+			}
+		}
+		return endLink;
+	}
+
 	Map<String,Record> subsectorToEvacAndSafeNodes = new LinkedHashMap<>() ;
 	
 	private void readEvacAndSafeNodes(String fileName) {

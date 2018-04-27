@@ -72,7 +72,7 @@ public class RunMatsim4FloodEvacuation {
 //			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config.xml" ) ;
 			
 			
-			config.controler().setLastIteration(0);
+			config.controler().setLastIteration(20);
 			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 			
 			config.plansCalcRoute().setNetworkModes(set);
@@ -81,7 +81,8 @@ public class RunMatsim4FloodEvacuation {
 			
 			config.qsim().setEndTime(36*3600);
 			config.qsim().setRemoveStuckVehicles(true);
-			config.qsim().setStuckTime(86400);
+			config.qsim().setStuckTime(86400); // yoyoyo if a veh enters a link that is flooded, what should we do? BDI? do they turn around
+			//yoyoyo turn on kinematic wave, but for comparability with FEM 1
 
 			{
 				PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;

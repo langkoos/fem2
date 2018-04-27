@@ -11,11 +11,13 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.events.EventsManagerImpl;
 import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
 import org.matsim.testcases.MatsimTestUtils;
 import routing.FEMEvacuationLinkRoutingCounter;
 
@@ -43,7 +45,12 @@ public class RunMatsim4FloodEvacuationTest {
 		config.controler().setOutputDirectory( utils.getOutputDirectory() );
 		config.controler().setOverwriteFileSetting( OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists );
 		
-		config.controler().setLastIteration(0);
+		config.controler().setLastIteration(10);
+
+		StrategyConfigGroup.StrategySettings stratSets = new StrategyConfigGroup.StrategySettings();
+		stratSets.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
+		stratSets.setWeight(1);
+		config.strategy().addStrategySettings(stratSets);
 
 		config.network().setChangeEventsInputFile("d09693_H_change_events.xml.gz");
 		config.network().setTimeVariantNetwork(true);
