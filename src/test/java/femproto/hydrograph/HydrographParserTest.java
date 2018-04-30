@@ -25,7 +25,11 @@ public class HydrographParserTest {
 		String inputDirectory = utils.getPackageInputDirectory();
 		MutableScenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new MatsimNetworkReader(scenario.getNetwork()).readFile("scenarios/fem2016/hn_net_ses_emme_2016_V12_network.xml.gz");
-		new PopulationReader(scenario).readFile("test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/pop.xml.gz");
+//		new PopulationReader(scenario).readFile("test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/pop.xml.gz");
+		// (My preference would be to not use output of other tests as input for this test: this routinely leads to unstable tests,
+		// possibly running on one machine (since it still has leftover files) and
+		// not running on another. Thanks a lot.  kai, apr'18)
+		new PopulationReader(scenario).readFile("scenarios/fem2016/pop.xml.gz");
 
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork());
@@ -43,6 +47,10 @@ public class HydrographParserTest {
 			}
 		}
 		System.out.println(linkCount + " out of " + hydrographParser.getHydrographPointMap().size()+ " points are associated with a link.");
+		
+		// yyyyyy In a similar vein as above, I am actually not so happy when tests automatically overwrite scenario files.  I'd rather
+		// have output go to some neutral place, and have the user move it to the final location.  Even if you want a workflow,
+		// I would prefer to have it in some testworkflow directory. kai, apr'18
 
 		hydrographParser.hydrographToViaXY("scenarios/fem2016/hydroxy.txt.gz");
 
