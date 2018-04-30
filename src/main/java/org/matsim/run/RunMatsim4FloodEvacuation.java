@@ -34,6 +34,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
@@ -90,7 +91,7 @@ public class RunMatsim4FloodEvacuation {
 		
 		// === prepare config:
 		
-		config.controler().setLastIteration(0);
+		config.controler().setLastIteration(10);
 		
 		if ( outputDir!=null && !outputDir.equals("") ) {
 			config.controler().setOutputDirectory( outputDir );
@@ -106,7 +107,10 @@ public class RunMatsim4FloodEvacuation {
 		
 //		config.qsim().setEndTime(264 * 3600);
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
-		
+		StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+			strategySettings.setStrategyName("BestScore");
+			strategySettings.setWeight(1);
+		config.strategy().addStrategySettings(strategySettings);
 		config.qsim().setRemoveStuckVehicles(true);
 		config.qsim().setStuckTime(86400);
 		

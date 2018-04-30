@@ -141,7 +141,7 @@ public class HydrographParser {
 
 	public void hydrographToViaLinkAttributes(String fileName, Network network) {
 		Set<Id<Link>> ids = new HashSet<>();
-				ids.addAll(network.getLinks().keySet());
+		ids.addAll(network.getLinks().keySet());
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		try {
 			writer.write("ID\ttime\tflooded\n");
@@ -160,7 +160,7 @@ public class HydrographParser {
 
 			}
 			for (Id<Link> id : ids) {
-						writer.write(String.format("%s\t%f\t%d\n", id, 240*3600f,  0));
+				writer.write(String.format("%s\t%f\t%d\n", id, 240 * 3600f, 0));
 
 			}
 
@@ -210,30 +210,27 @@ public class HydrographParser {
 	}
 
 	public void triggerPopulationDepartures(Population population, String modifiedPopulationOutputFile, double timeBuffer, double rate) {
-		Set<String> subsectors = null;
+		Set<String> subsectors = new HashSet<>();
 		Set<String> hydroSubsectors = new HashSet<>();
-		boolean subsectorsFilled = false;
 		double paxCounter = 0;
 
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
-			hydroSubsectors.add(hydrographPoint.getSubSector());
 			if (hydrographPoint.getSubSector() == null || hydrographPoint.getFloodTime() < 0) {
 				continue;
 			}
-			if (!subsectorsFilled) {
-				subsectors = new HashSet<>();
+			hydroSubsectors.add(hydrographPoint.getSubSector());
+			System.out.println(hydrographPoint.getSubSector());
+			for (Person person : population.getPersons().values()) {
+				subsectors.add((String) person.getAttributes().getAttribute("SUBSECTOR"));
+				paxCounter += 1;
+				String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
+				if (subsector.equals(hydrographPoint.getSubSector())) {
+					for (Plan plan : person.getPlans()) {
+						Activity departure = (Activity) plan.getPlanElements().get(0);
+						departure.setEndTime(minTime - timeBuffer + paxCounter * rate);
 
-				for (Person person : population.getPersons().values()) {
-					if (!subsectorsFilled)
-						subsectors.add((String) person.getAttributes().getAttribute("SUBSECTOR"));
-					paxCounter += 1;
-					String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
-					if (subsector == hydrographPoint.getSubSector()) {
-						Activity departure = (Activity) person.getPlans().get(0).getPlanElements().get(0);
-						departure.setEndTime(hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate);
 					}
 				}
-				subsectorsFilled = true;
 			}
 		}
 		subsectors.removeAll(hydroSubsectors);
@@ -241,12 +238,14 @@ public class HydrographParser {
 		for (String sub : subsectors) {
 			paxCounter = 0;
 			for (Person person : population.getPersons().values()) {
-				subsectors.add((String) person.getAttributes().getAttribute("SUBSECTOR"));
 				paxCounter += 1;
 				String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
-				if (subsector == sub) {
-					Activity departure = (Activity) person.getPlans().get(0).getPlanElements().get(0);
-					departure.setEndTime(minTime - timeBuffer + paxCounter * rate);
+				if (subsector.equals(sub)) {
+					for (Plan plan : person.getPlans()) {
+						Activity departure = (Activity) plan.getPlanElements().get(0);
+						departure.setEndTime(minTime - timeBuffer + paxCounter * rate);
+
+					}
 				}
 			}
 		}

@@ -4,7 +4,7 @@
 	<module name="network" >
 		<!--<param name="inputChangeEventsFile" value="d09693_H_change_events.xml.gz" />-->
 		<param name="inputNetworkFile" value="hn_net_ses_emme_2016_V12_network.xml.gz" />
-		<param name="timeVariantNetwork" value="false" />
+		<param name="timeVariantNetwork" value="true" />
 	</module>
 	<module name="plans" >
 		<param name="inputPlansFile" value="pop.xml.gz" />

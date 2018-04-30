@@ -107,6 +107,7 @@ public class RunMatsim4FloodEvacuationTest {
 		if ( counter.getEvacLinkFollowedByNonEvacLinkCount() > 0 ) {
 			level = Level.WARN ;
 		}
+
 		log.log( level, "evac links followed by non-evac links=" + counter.getEvacLinkFollowedByNonEvacLinkCount() ) ;
 		if ( counter.getEvacLinkFollowedByNonEvacLinkCount() > 0 ) {
 			log.warn("yyyyyy That number should really be zero; need to investigate!!!") ;

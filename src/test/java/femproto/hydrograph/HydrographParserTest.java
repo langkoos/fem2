@@ -25,7 +25,7 @@ public class HydrographParserTest {
 		String inputDirectory = utils.getPackageInputDirectory();
 		MutableScenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new MatsimNetworkReader(scenario.getNetwork()).readFile("scenarios/fem2016/hn_net_ses_emme_2016_V12_network.xml.gz");
-		new PopulationReader(scenario).readFile("scenarios/fem2016/pop.xml.gz");
+		new PopulationReader(scenario).readFile("test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/pop.xml.gz");
 
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork());
@@ -50,7 +50,7 @@ public class HydrographParserTest {
 
 		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),"scenarios/fem2016/d09693_H_change_events.xml.gz");
 
-		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),"scenarios/fem2016/pop.xml.gz",0,10/360);
+		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/pop.xml.gz",0,10/360);
 
 	}
 }
