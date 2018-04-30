@@ -30,6 +30,8 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.contrib.analysis.kai.KNAnalysisEventsHandler;
+import org.matsim.contrib.analysis.kai.KaiAnalysisListener;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
@@ -159,6 +161,9 @@ public class RunMatsim4FloodEvacuation {
 		controler.addOverridingModule(new AbstractModule() {
 			@Override
 			public void install() {
+				
+				this.addControlerListenerBinding().toInstance( new KaiAnalysisListener() ) ;
+				
 				switch (femConfig.getFEMRoutingMode()) {
 					case preferEvacuationLinks:
 						final String routingMode = TransportMode.car;
