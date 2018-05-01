@@ -162,7 +162,7 @@ public class RunMatsim4FloodEvacuation {
 			@Override
 			public void install() {
 				
-				this.addControlerListenerBinding().toInstance( new KaiAnalysisListener() ) ;
+				this.addControlerListenerBinding().to( KaiAnalysisListener.class ) ;
 				
 				switch (femConfig.getFEMRoutingMode()) {
 					case preferEvacuationLinks:
