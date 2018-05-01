@@ -8,10 +8,12 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.gbl.Gbl;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.io.PopulationWriter;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -19,6 +21,7 @@ import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
+import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.opencsv.bean.CsvBindByName;
@@ -46,6 +49,7 @@ public class SubSectorsToPopulation {
 		subSectorsToPopulation.readEvacAndSafeNodes(args[2]);
 		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
 		subSectorsToPopulation.writePopulation(args[3]);
+		subSectorsToPopulation.writeEvac2SafeNodeShapefile(args[4]);
 		// TODO if we really want to leave it like this, then put in a more expressive
 		// command passing syntax (see bdi-abm-integration project).  kai, feb'18
 	}
@@ -223,6 +227,67 @@ public class SubSectorsToPopulation {
 			e.printStackTrace();
 		}
 		
+	}
+
+	/**
+	 * This looks at the mapping of evac to safe nodes, then creates a small disconnected network from the mapping,
+	 * calls Links2ESRIShape to render it to a shapefile.
+	 * @param fileName
+	 */
+	public void writeEvac2SafeNodeShapefile(String fileName){
+		Network network = NetworkUtils.createNetwork();
+		for (Map.Entry<String, Record> stringRecordEntry : subsectorToEvacAndSafeNodes.entrySet()) {
+			Node fromNode = this.scenario.getNetwork().getNodes().get(Id.createNodeId(stringRecordEntry.getValue().EVAC_NODE));
+			if ( fromNode==null ) {
+				String msg = "did not find evacNode in matsim network file; node id  = "+ stringRecordEntry.getValue().EVAC_NODE;
+				log.warn(msg) ;
+				throw new RuntimeException(msg) ;
+			}
+			//creates a new node in the small network
+//			Node fromNodeAlt = network.getFactory().createNode(fromNode.getId(), fromNode.getCoord());
+			network.addNode(fromNode);
+			Node toNode = this.scenario.getNetwork().getNodes().get(Id.createNodeId(stringRecordEntry.getValue().SAFE_NODE1));
+			Gbl.assertNotNull(toNode);
+//			Node toNodeAlt = network.getFactory().createNode(toNode.getId(), toNode.getCoord());
+			network.addNode(toNode);
+			Link link = network.getFactory().createLink(Id.createLinkId(stringRecordEntry.getKey() + "_SAFE_NODE1"), fromNode, toNode);
+			network.addLink(link);
+
+			if(stringRecordEntry.getValue().SAFE_NODE2 != null) {
+				toNode = this.scenario.getNetwork().getNodes().get(Id.createNodeId(stringRecordEntry.getValue().SAFE_NODE2));
+				Gbl.assertNotNull(toNode);
+//				toNodeAlt = network.getFactory().createNode(toNode.getId(), toNode.getCoord());
+				network.addNode(toNode);
+				link = network.getFactory().createLink(Id.createLinkId(stringRecordEntry.getKey() + "_SAFE_NODE2"), fromNode, toNode);
+				network.addLink(link);
+			}
+			if(stringRecordEntry.getValue().SAFE_NODE3 != null) {
+				toNode = this.scenario.getNetwork().getNodes().get(Id.createNodeId(stringRecordEntry.getValue().SAFE_NODE3));
+				Gbl.assertNotNull(toNode);
+//				toNodeAlt = network.getFactory().createNode(toNode.getId(), toNode.getCoord());
+				network.addNode(toNode);
+				link = network.getFactory().createLink(Id.createLinkId(stringRecordEntry.getKey() + "_SAFE_NODE3"), fromNode, toNode);
+				network.addLink(link);
+			}
+			if(stringRecordEntry.getValue().SAFE_NODE4 != null) {
+				toNode = this.scenario.getNetwork().getNodes().get(Id.createNodeId(stringRecordEntry.getValue().SAFE_NODE4));
+				Gbl.assertNotNull(toNode);
+//				toNodeAlt = network.getFactory().createNode(toNode.getId(), toNode.getCoord());
+				network.addNode(toNode);
+				link = network.getFactory().createLink(Id.createLinkId(stringRecordEntry.getKey() + "_SAFE_NODE4"), fromNode, toNode);
+				network.addLink(link);
+			}
+
+			if(stringRecordEntry.getValue().SAFE_NODE5 != null) {
+				toNode = this.scenario.getNetwork().getNodes().get(Id.createNodeId(stringRecordEntry.getValue().SAFE_NODE5));
+				Gbl.assertNotNull(toNode);
+//				toNodeAlt = network.getFactory().createNode(toNode.getId(), toNode.getCoord());
+				network.addNode(toNode);
+				link = network.getFactory().createLink(Id.createLinkId(stringRecordEntry.getKey() + "_SAFE_NODE5"), fromNode, toNode);
+				network.addLink(link);
+			}
+		}
+		new Links2ESRIShape(network,fileName,Globals.EPSG28356).write();
 	}
 	
 	private void writePopulation(String filename) {

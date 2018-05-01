@@ -17,10 +17,11 @@ public class SubSectorsToPopulationTest {
 		final String inputShapeFile = utils.getPackageInputDirectory() + "hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp" ;
 		final String evacNodesFile = utils.getPackageInputDirectory() + "2016_subsectors_safe_node_mapping.txt" ;
 		final String outputPopFile = utils.getOutputDirectory() + "pop.xml.gz" ;
-		
-		String [] str = new String [] {inputShapeFile,networkFile,evacNodesFile,outputPopFile} ;
+		final String mappingFile = utils.getOutputDirectory() + "safeNodeMapping.shp" ;
+
+		String [] str = new String [] {inputShapeFile,networkFile,evacNodesFile,outputPopFile,mappingFile} ;
 		SubSectorsToPopulation.main(str);
-		
+
 	}
 	
 }
