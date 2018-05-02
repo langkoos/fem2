@@ -155,9 +155,10 @@ public class RunMatsim4FloodEvacuation {
 		//		preparationsForRmitHawkesburyScenario();
 		
 		controler = new Controler(scenario);
-		
+		OutputEvents2TravelDiaries events2TravelDiaries = new OutputEvents2TravelDiaries(controler);
+
 		// ---
-		
+
 		controler.addOverridingModule(new AbstractModule() {
 			@Override
 			public void install() {
@@ -169,12 +170,13 @@ public class RunMatsim4FloodEvacuation {
 						final String routingMode = TransportMode.car;
 						// (the "routingMode" can be different from the "mode".  useful if, say, different cars should follow different routing
 						// algorithms, but still executed as "car" on the network.  Ask me if this might be useful for this project.  kai, feb'18)
-						
+
 						// register this routing mode:
 						addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(TransportMode.car, routingMode));
-						
+
 						// define how the travel time is computed:
 						addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
+						bind(OutputEvents2TravelDiaries.class).toInstance(events2TravelDiaries);
 						
 						// congested travel time:
 //						bind(WithinDayTravelTime.class).in(Singleton.class);

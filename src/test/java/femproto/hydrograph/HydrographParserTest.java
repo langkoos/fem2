@@ -58,7 +58,7 @@ public class HydrographParserTest {
 
 		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),"scenarios/fem2016/d09693_H_change_events.xml.gz");
 
-		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/pop.xml.gz",0,10/360);
+		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/pop.xml.gz",0,60/360);
 
 	}
 }

@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.travelsummary.events2traveldiaries.EventsToTravelDiaries;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -97,6 +98,7 @@ public class RunMatsim4FloodEvacuationTest {
 		new MatsimNetworkReader(network).readFile(utils.getOutputDirectory()+"../testA_startWithFullEvacRun/output_network.xml.gz");
 		FEMEvacuationLinkRoutingCounter counter = new FEMEvacuationLinkRoutingCounter(network);
 		eventsManager.addHandler(counter);
+
 		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
 
 		matsimEventsReader.readFile(utils.getOutputDirectory()+"../testA_startWithFullEvacRun/output_events.xml.gz");
