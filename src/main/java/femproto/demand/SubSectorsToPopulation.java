@@ -18,15 +18,20 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.io.PopulationWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
+import org.matsim.utils.gis.matsim2esri.network.FeatureGeneratorBuilderImpl;
+import org.matsim.utils.gis.matsim2esri.network.LanesBasedWidthCalculator;
+import org.matsim.utils.gis.matsim2esri.network.LineStringBasedFeatureGenerator;
 import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 
 import java.io.FileReader;
@@ -287,7 +292,13 @@ public class SubSectorsToPopulation {
 				network.addLink(link);
 			}
 		}
-		new Links2ESRIShape(network,fileName,Globals.EPSG28356).write();
+		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(network, Globals.EPSG28356);
+		builder.setFeatureGeneratorPrototype(LineStringBasedFeatureGenerator.class);
+		builder.setWidthCoefficient(0.5);
+		builder.setWidthCalculatorPrototype(LanesBasedWidthCalculator.class);
+		CoordinateReferenceSystem crs = MGC.getCRS(Globals.EPSG28356);
+		builder.setCoordinateReferenceSystem(crs);
+		new Links2ESRIShape(network,fileName, builder).write();
 	}
 	
 	private void writePopulation(String filename) {
