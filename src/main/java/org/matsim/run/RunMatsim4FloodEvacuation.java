@@ -205,7 +205,7 @@ public class RunMatsim4FloodEvacuation {
 		controler.run();
 		
 		// need to do this fairly late since otherwise the directory is wiped out again when the controler gets going. kai, apr'18
-		final String filename = controler.getConfig().controler().getOutputDirectory() + "/linkAttribs.txt.gz";
+		final String filename = controler.getConfig().controler().getOutputDirectory() + "/output_linkAttribs.txt.gz";
 		log.info( "will write link attributes to " + filename ) ;
 		
 		try (BufferedWriter writer = IOUtils.getBufferedWriter(filename)) {
