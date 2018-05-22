@@ -42,6 +42,7 @@ import org.matsim.contrib.decongestion.DecongestionModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.AbstractModule;
@@ -127,13 +128,15 @@ public class RunMatsim4FloodEvacuation {
 		// === prepare config:
 		
 		// --- controler config group:
-		final int lastIteration = 1000;
+		final int lastIteration = 100;
 		config.controler().setLastIteration(lastIteration);
+//		config.qsim().setEndTime(3600.);
 		
 		if ( outputDir!=null && !outputDir.equals("") ) {
 			config.controler().setOutputDirectory( outputDir );
 		}
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+		config.controler().setRoutingAlgorithmType( ControlerConfigGroup.RoutingAlgorithmType.FastDijkstra );
 		
 		// --- plansCalcRoute config group:
 		{
@@ -170,7 +173,7 @@ public class RunMatsim4FloodEvacuation {
 		
 		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 
-		config.travelTimeCalculator().setMaxTime(72*3600); // congestion observation, also for decongestion
+//		config.travelTimeCalculator().setMaxTime(72*3600); // congestion observation, also for decongestion
 		
 		
 		// --- qsim:
@@ -205,10 +208,16 @@ public class RunMatsim4FloodEvacuation {
 		decongestionSettings.setUpdatePriceInterval(1);
 		decongestionSettings.setMsa(false);
 		decongestionSettings.setTollBlendFactor(1.0);
-		decongestionSettings.setDecongestionApproach(DecongestionConfigGroup.DecongestionApproach.PID);
-		decongestionSettings.setKd(0.5);
-		decongestionSettings.setKi(0.5);
-		decongestionSettings.setKp(0.5);
+
+//		decongestionSettings.setDecongestionApproach(DecongestionConfigGroup.DecongestionApproach.PID);
+//		decongestionSettings.setKd(0.0);
+//		decongestionSettings.setKi(0.0);
+//		decongestionSettings.setKp(0.5);
+		
+		decongestionSettings.setDecongestionApproach( DecongestionConfigGroup.DecongestionApproach.BangBang );
+		decongestionSettings.setInitialToll(20.);
+		decongestionSettings.setTollAdjustment(20.);
+
 		decongestionSettings.setIntegralApproach(DecongestionConfigGroup.IntegralApproach.UnusedHeadway);
 		decongestionSettings.setIntegralApproachUnusedHeadwayFactor(10.0);
 		decongestionSettings.setIntegralApproachAverageAlpha(0.0);
@@ -271,7 +280,10 @@ public class RunMatsim4FloodEvacuation {
 			// give all agents all safe locations (to compensate for errors we seem to have in input data):
 			PopulationFactory pf = scenario.getPopulation().getFactory();
 			;
+			long cnt = 0 ;
 			for (Person person : scenario.getPopulation().getPersons().values()) {
+				cnt++ ;
+				
 				// memorize evac link id:
 				Id<Link> evacLinkId = ((Activity) person.getPlans().get(0).getPlanElements().get(0)).getLinkId();
 				;
@@ -279,7 +291,9 @@ public class RunMatsim4FloodEvacuation {
 				person.getPlans().clear();
 				// add all safe locations as potential plans:
 
-				Collections.shuffle( safeLinkIds , MatsimRandom.getLocalInstance() );
+				if ( cnt % (long)(scenario.getPopulation().getPersons().size()/10) == 0 ) {
+					Collections.shuffle(safeLinkIds, MatsimRandom.getLocalInstance());
+				}
 				// (so that we don't have everybody go to same safe location in 0th, 1st, 2nd, ... iteration. kai, may'18)
 
 				for (Id<Link> safeLinkId :  safeLinkIds ) {
@@ -410,6 +424,7 @@ public class RunMatsim4FloodEvacuation {
 					@Inject TripRouter tripRouter ;
 					@Inject PrepareForSimImpl delegate ;
 					@Override public void run() {
+						log.info("running local PrepareForSim implementation ...") ;
 						long exceptionCnt = 0;
 						Counter counter = new Counter("person # ") ;
 						for (Person person : scenario.getPopulation().getPersons().values()) {
@@ -560,7 +575,7 @@ public class RunMatsim4FloodEvacuation {
 				// (by the framework, only link events where the person is involved (as driver or passenger) end up here!)
 				
 				Link link = network.getLinks().get( ((LinkEnterEvent) event).getLinkId() ) ;
-				score += ((FEMPreferEmergencyLinksTravelDisutility)travelDisutility).getAdditionalLinkTravelDisutility(link,event.getTime(), person,null) ;
+				score -= ((FEMPreferEmergencyLinksTravelDisutility)travelDisutility).getAdditionalLinkTravelDisutility(link,event.getTime(), person,null) ;
 			}
 		}
 	}
