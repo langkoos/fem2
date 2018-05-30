@@ -1,7 +1,11 @@
 package femproto.hydrograph;
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import femproto.demand.SubSectorsToPopulation;
 import femproto.gis.Globals;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -18,6 +22,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
@@ -209,6 +214,31 @@ public class HydrographParser {
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
 
+	Map<String,Record> subsectorToEvacAndSafeNodes = new LinkedHashMap<>() ;
+
+	public void readEvacAndSafeNodes(String fileName) {
+
+		try (final FileReader reader = new FileReader(fileName)) {
+
+			// construct the csv reader:
+			final CsvToBeanBuilder<Record> builder = new CsvToBeanBuilder<>(reader);
+			builder.withType(Record.class);
+			builder.withSeparator(';');
+			final CsvToBean<Record> reader2 = builder.build();
+
+			// go through the records:
+			for (Iterator<Record> it = reader2.iterator(); it.hasNext(); ) {
+				Record record = it.next();
+				subsectorToEvacAndSafeNodes.put(record.subsector.toString(), record);
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+
 	public void triggerPopulationDepartures(Population population, String modifiedPopulationOutputFile, double timeBuffer, double rate) {
 		Set<String> subsectors = new HashSet<>();
 		Set<String> hydroSubsectors = new HashSet<>();
@@ -250,5 +280,26 @@ public class HydrographParser {
 			}
 		}
 		new PopulationWriter(population).write(modifiedPopulationOutputFile);
+	}
+	public final static class Record {
+		// needs to be public, otherwise one gets some incomprehensible exception.  kai, nov'17
+
+		@CsvBindByName
+		private String SUBSECTOR;
+		@CsvBindByName private String subsector;
+		@CsvBindByName private String evacnode;
+		@CsvBindByName private String safenode;
+		@CsvBindByName private String traveltime;
+		@CsvBindByName private String offset;
+
+		@Override public String toString() {
+			return this.SUBSECTOR
+					+ "\t" + this.subsector
+					+ "\t" + this.evacnode
+					+ "\t" + this.safenode
+					+ "\t" + this.traveltime
+					+ "\t" + this.offset
+					;
+		}
 	}
 }
