@@ -20,28 +20,6 @@
 
 package femproto.routing;
 
-/*
- * #%L
- * BDI-ABM Integration Package
- * %%
- * Copyright (C) 2014 - 2017 by its authors. See AUTHORS file.
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-3.0.html>.
- * #L%
- */
-
 import com.google.inject.Inject;
 import femproto.network.NetworkConverter;
 import org.apache.log4j.Logger;
@@ -85,7 +63,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		if ( result != null ) { // found special link, in this case evac link, do not penalize
 			return 0. ;
 		} else { // non-evac link --> penalize
-			return 4. * delegate.getLinkTravelDisutility(link,time,person,vehicle) ;
+			return 100. * delegate.getLinkTravelDisutility(link,time,person,vehicle) ;
 		}
 	}
 	
@@ -105,7 +83,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		private final TravelDisutilityFactory delegateFactory;
 		public Factory(Network network, TravelDisutilityFactory delegateFactory ) {
 			for( Link link : network.getLinks().values() ) {
-				boolean isEvacLink = (boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
+				boolean isEvacLink = isEvacLink(link);
 				if ( isEvacLink ) {
 					specialLinks.put( link.getId(), 0.01 ) ;
 				}
@@ -122,6 +100,13 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 					new FEMPreferEmergencyLinksTravelDisutility(timeCalculator, specialLinks, delegate);
 			return femPreferEmergencyLinksTravelDisutility;
 		}
+	}
+	
+	public static boolean isEvacLink(Link link) {
+		if ( link==null ) {
+			return false ;
+		}
+		return (boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
 	}
 	
 }

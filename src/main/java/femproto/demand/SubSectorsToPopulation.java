@@ -1,9 +1,8 @@
 package femproto.demand;
 
+import femproto.FEMAttributes;
 import femproto.gis.Globals;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -156,7 +155,7 @@ public class SubSectorsToPopulation {
 			int totalVehicles = (int) (double) feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(id++));
-				person.getAttributes().putAttribute("SUBSECTOR", subsector);
+				person.getAttributes().putAttribute(FEMAttributes.SUBSECTOR, subsector);
 				for (Link safeLink : safeLinks) {
 
 
@@ -172,15 +171,15 @@ public class SubSectorsToPopulation {
 					Activity safe = pf.createActivityFromLinkId("safe", safeLink.getId());
 					plan.addActivity(safe);
 
-					person.getAttributes().putAttribute("SAFE_NODE1", record.SAFE_NODE1);
+					person.getAttributes().putAttribute(FEMAttributes.SAFE_NODE_1, record.SAFE_NODE1);
 					if (record.SAFE_NODE2 != null)
-						person.getAttributes().putAttribute("SAFE_NODE2", record.SAFE_NODE2);
+						person.getAttributes().putAttribute(FEMAttributes.SAFE_NODE_2, record.SAFE_NODE2);
 					if (record.SAFE_NODE3 != null)
-						person.getAttributes().putAttribute("SAFE_NODE3", record.SAFE_NODE3);
+						person.getAttributes().putAttribute(FEMAttributes.SAFE_NODE_3, record.SAFE_NODE3);
 					if (record.SAFE_NODE4 != null)
-						person.getAttributes().putAttribute("SAFE_NODE4", record.SAFE_NODE4);
+						person.getAttributes().putAttribute(FEMAttributes.SAFE_NODE_4, record.SAFE_NODE4);
 					if (record.SAFE_NODE5 != null)
-						person.getAttributes().putAttribute("SAFE_NODE5", record.SAFE_NODE5);
+						person.getAttributes().putAttribute(FEMAttributes.SAFE_NODE_5, record.SAFE_NODE5);
 
 					person.addPlan(plan);
 				}

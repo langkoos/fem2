@@ -19,6 +19,7 @@
 package org.matsim.run;
 
 import com.google.inject.Inject;
+import femproto.FEMAttributes;
 import femproto.config.FEMConfigGroup;
 import femproto.network.NetworkConverter;
 import femproto.routing.FEMPreferEmergencyLinksTravelDisutility;
@@ -35,7 +36,6 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.analysis.kai.KaiAnalysisListener;
 import org.matsim.contrib.decongestion.DecongestionConfigGroup;
@@ -51,15 +51,12 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.controler.PrepareForSim;
 import org.matsim.core.controler.PrepareForSimImpl;
-import org.matsim.core.controler.events.IterationEndsEvent;
-import org.matsim.core.controler.listener.IterationEndsListener;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.algorithms.NetworkSimplifier;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.population.routes.NetworkRoute;
-import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
 import org.matsim.core.router.ActivityWrapperFacility;
 import org.matsim.core.router.NetworkRoutingProvider;
 import org.matsim.core.router.TripRouter;
@@ -92,6 +89,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static femproto.routing.FEMPreferEmergencyLinksTravelDisutility.isEvacLink;
 import static org.matsim.core.network.NetworkUtils.getEuclideanDistance;
 import static org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.*;
 
@@ -101,6 +99,7 @@ import static org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.
  */
 public class KNRunMatsim4FloodEvacuation {
 	private static final Logger log = Logger.getLogger(KNRunMatsim4FloodEvacuation.class) ;
+	private static boolean safeNodeBySector = false ;
 	private Controler controler;
 	
 	KNRunMatsim4FloodEvacuation(String[] args) {
@@ -150,6 +149,12 @@ public class KNRunMatsim4FloodEvacuation {
 		}
 		
 		// --- strategies:
+		if ( safeNodeBySector ){
+			StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+			strategySettings.setStrategyName(DefaultSelector.KeepLastSelected);
+			strategySettings.setWeight(1);
+			config.strategy().addStrategySettings(strategySettings);
+		} else {
 //		{
 //			StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 //			strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
@@ -157,18 +162,19 @@ public class KNRunMatsim4FloodEvacuation {
 //			strategySettings.setDisableAfter( (int) (0.9*lastIteration) ); // (50 iterations was not enough)
 //			config.strategy().addStrategySettings(strategySettings);
 //		}
-		{
-			StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-			strategySettings.setStrategyName(DefaultSelector.BestScore);
-			strategySettings.setWeight(1);
-			config.strategy().addStrategySettings(strategySettings);
-		}
-		{
-			StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-			strategySettings.setStrategyName(DefaultSelector.SelectRandom);
-			strategySettings.setWeight(0.1);
-			strategySettings.setDisableAfter( (int) (0.9*lastIteration) ); // (50 iterations was not enough)
-			config.strategy().addStrategySettings(strategySettings);
+			{
+				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+				strategySettings.setStrategyName(DefaultSelector.BestScore);
+				strategySettings.setWeight(1);
+				config.strategy().addStrategySettings(strategySettings);
+			}
+			{
+				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+				strategySettings.setStrategyName(DefaultSelector.SelectRandom);
+				strategySettings.setWeight(0.1);
+				strategySettings.setDisableAfter((int) (0.9 * lastIteration)); // (50 iterations was not enough)
+				config.strategy().addStrategySettings(strategySettings);
+			}
 		}
 		config.strategy().setMaxAgentPlanMemorySize(0);
 		
@@ -188,7 +194,7 @@ public class KNRunMatsim4FloodEvacuation {
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
 		
 		// --- scoring:
-		config.planCalcScore().setFractionOfIterationsToStartScoreMSA(0.7);
+		config.planCalcScore().setFractionOfIterationsToStartScoreMSA(0.9);
 		{
 			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac");
 			params.setScoringThisActivityAtAll(false);
@@ -212,14 +218,14 @@ public class KNRunMatsim4FloodEvacuation {
 		decongestionSettings.setMsa(false);
 		decongestionSettings.setTollBlendFactor(1.0);
 
-//		decongestionSettings.setDecongestionApproach(DecongestionConfigGroup.DecongestionApproach.PID);
-//		decongestionSettings.setKd(0.0);
-//		decongestionSettings.setKi(0.0);
-//		decongestionSettings.setKp(0.5);
+		decongestionSettings.setDecongestionApproach(DecongestionConfigGroup.DecongestionApproach.PID);
+		decongestionSettings.setKd(0.0);
+		decongestionSettings.setKi(0.0);
+		decongestionSettings.setKp(0.5);
 		
-		decongestionSettings.setDecongestionApproach( DecongestionConfigGroup.DecongestionApproach.BangBang );
-		decongestionSettings.setInitialToll(20.);
-		decongestionSettings.setTollAdjustment(20.);
+//		decongestionSettings.setDecongestionApproach( DecongestionConfigGroup.DecongestionApproach.BangBang );
+//		decongestionSettings.setInitialToll(20.);
+//		decongestionSettings.setTollAdjustment(20.);
 
 		decongestionSettings.setIntegralApproach(DecongestionConfigGroup.IntegralApproach.UnusedHeadway);
 		decongestionSettings.setIntegralApproachUnusedHeadwayFactor(10.0);
@@ -240,90 +246,12 @@ public class KNRunMatsim4FloodEvacuation {
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config);
 		
-//		new NetworkCleaner().run(scenario.getNetwork());
-		// yyyyyy fem2016 network seems to have unconnected pieces.
+		// yyyy reduce to sample for debugging:
+		sampleDown(scenario, 0.01);
 		
-		{
-			// yyyyyy reduce to sample for debugging:
-			double sample = 0.01;
-			List<Id<Person>> list = new ArrayList<>();
-			for (Person person : scenario.getPopulation().getPersons().values()) {
-				if (MatsimRandom.getRandom().nextDouble() < (1. - sample)) {
-					list.add(person.getId());
-				}
-				
-			}
-			for (Id<Person> toBeRemoved : list) {
-				scenario.getPopulation().removePerson(toBeRemoved);
-			}
-			scenario.getConfig().qsim().setFlowCapFactor(sample);
-			scenario.getConfig().qsim().setStorageCapFactor(sample);
-		}
-		{
-			// collect all safe locations (could also get this from the attributes, but currently can't iterate over them)
-			List<Id<Link>> safeLinkIds = new ArrayList<>() ;
-			{
-				Set<Id<Link>> safeLinkIdsAsSet = new LinkedHashSet<>();
-				
-				for (Person person : scenario.getPopulation().getPersons().values()) {
-					for (Plan plan : person.getPlans()) {
-						for (PlanElement pe : plan.getPlanElements()) {
-							if (pe instanceof Activity) {
-								final Activity activity = (Activity) pe;
-								if (activity.getType().equals("safe")) {
-									safeLinkIdsAsSet.add(activity.getLinkId());
-								}
-							}
-						}
-					}
-				}
-				safeLinkIds.addAll( safeLinkIdsAsSet ) ;
-			}
-			log.info("safeLinkIDs:");
-			for (Id<Link> safeLinkId : safeLinkIds) {
-				log.info(safeLinkId);
-			}
-			// give all agents all safe locations (to compensate for errors we seem to have in input data):
-			PopulationFactory pf = scenario.getPopulation().getFactory();
-			;
-			long cnt = 0 ;
-			for (Person person : scenario.getPopulation().getPersons().values()) {
-				cnt++ ;
-				
-				// memorize evac link id:
-				Id<Link> evacLinkId = ((Activity) person.getPlans().get(0).getPlanElements().get(0)).getLinkId();
-				;
-				// clear all plans:
-				person.getPlans().clear();
-				// add all safe locations as potential plans:
-
-				if ( cnt % (long)(scenario.getPopulation().getPersons().size()/10) == 0 ) {
-					Collections.shuffle(safeLinkIds, MatsimRandom.getLocalInstance());
-				}
-				// (so that we don't have everybody go to same safe location in 0th, 1st, 2nd, ... iteration. kai, may'18)
-
-				for (Id<Link> safeLinkId :  safeLinkIds ) {
-					Plan plan = pf.createPlan();
-					{
-						Activity act = pf.createActivityFromLinkId("evac", evacLinkId);
-						act.setEndTime(0.);
-						plan.addActivity(act);
-					}
-					{
-						Leg leg = pf.createLeg(TransportMode.car);
-						plan.addLeg(leg);
-					}
-					{
-						Activity act = pf.createActivityFromLinkId("safe", safeLinkId);
-						plan.addActivity(act);
-					}
-					person.addPlan(plan);
-				}
-				person.setSelectedPlan(person.getPlans().get(0));
-			}
-		}
+		giveAllSafeNodesToAllAgents(scenario);
 		
-		// move activity end times to 0:00 so that decongestion can work:
+		// move activity end times towards 0:00 so that decongestion can work:
 		boolean first = true ;
 		for ( Person person : scenario.getPopulation().getPersons().values() ) {
 			for ( Plan plan : person.getPlans() ) {
@@ -333,8 +261,10 @@ public class KNRunMatsim4FloodEvacuation {
 					firstAct.setEndTime(0);
 				} else {
 					// have all other agents start one sec late so that in VIA we can still see all these others at home:
-					firstAct.setEndTime(Math.max(1,firstAct.getEndTime()-240.*3600.)) ;
+//					firstAct.setEndTime(Math.max(1,firstAct.getEndTime()-240.*3600.)) ;
+					firstAct.setEndTime(1); // yyyyyy
 				}
+				
 			}
 			if ( first ) {
 				first = false ;
@@ -346,6 +276,7 @@ public class KNRunMatsim4FloodEvacuation {
 		// ===========================================================================
 		// ===========================================================================
 		// ===========================================================================
+		// === prepare controler:
 
 		controler = new Controler(scenario);
 		
@@ -367,6 +298,10 @@ public class KNRunMatsim4FloodEvacuation {
 			public void install() {
 				
 				this.addControlerListenerBinding().to( KaiAnalysisListener.class ) ;
+
+				if ( safeNodeBySector) {
+					this.addControlerListenerBinding().to(SelectOneBestSafeNodePerSubsector.class);
+				}
 
 				bind(OutputEvents2TravelDiaries.class).toInstance(events2TravelDiaries);
 				
@@ -400,33 +335,11 @@ public class KNRunMatsim4FloodEvacuation {
 					default:
 						throw new RuntimeException("not implemented");
 				}
-			}
-		});
-		
-		controler.setScoringFunctionFactory(new ScoringFunctionFactory() {
-			@Inject private ScoringParametersForPerson params;
-			@Inject private Map<String,TravelDisutilityFactory> travelDisutilityFactories ;
-			@Inject private Map<String,TravelTime> travelTimes ;
-			@Inject private Network network ;
-			@Override public ScoringFunction createNewScoringFunction(Person person) {
 
-				final ScoringParameters parameters = params.getScoringParameters( person );
-
-				TravelTime travelTime = travelTimes.get(TransportMode.car) ;
-				TravelDisutility travelDisutility = travelDisutilityFactories.get(TransportMode.car).createTravelDisutility(travelTime) ;
-
-				SumScoringFunction sumScoringFunction = new SumScoringFunction();
-				sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters ));
-				sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring( parameters , scenario.getNetwork()));
-				sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring( parameters ));
-				sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring( parameters ));
-				sumScoringFunction.addScoringFunction(new NonevacLinksPenalizer( travelDisutility, person, network) );
-				return sumScoringFunction;
-			}
-		});
-		
-		controler.addOverridingModule(new AbstractModule() {
-			@Override public void install() {
+				this.bindScoringFunctionFactory().to(NonEvacLinkPenalizingScoringFunctionFactory.class);
+				
+				// calculating all routes at initialization (assuming that they are sufficiently defined by the evac
+				// network).  kai, may'18
 				this.bind(PrepareForSimImpl.class) ;
 				this.bind(PrepareForSim.class).toInstance(new PrepareForSim() {
 					@Inject TripRouter tripRouter ;
@@ -482,18 +395,12 @@ public class KNRunMatsim4FloodEvacuation {
 						delegate.run() ;
 					}
 				});
-			}
-		});
-		
-		controler.addOverridingModule(new AbstractModule() {
-			@Override
-			public void install() {
-				this.addControlerListenerBinding().to( ScoresPerSubsector.class ) ;
+
 			}
 		});
 		
 	}
-		
+	
 	public static void main(String[] args) {
 		new KNRunMatsim4FloodEvacuation(args).run();
 	}
@@ -520,7 +427,22 @@ public class KNRunMatsim4FloodEvacuation {
 		
 		
 	}
-
+	
+	private static void sampleDown(Scenario scenario, double sample) {
+		List<Id<Person>> list = new ArrayList<>();
+		for (Person person : scenario.getPopulation().getPersons().values()) {
+			if (MatsimRandom.getRandom().nextDouble() < (1. - sample)) {
+				list.add(person.getId());
+			}
+			
+		}
+		for (Id<Person> toBeRemoved : list) {
+			scenario.getPopulation().removePerson(toBeRemoved);
+		}
+		scenario.getConfig().qsim().setFlowCapFactor(sample);
+		scenario.getConfig().qsim().setStorageCapFactor(sample);
+	}
+	
 	private static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {
 		
 		// yy That population (e.g. haw_pop_route_defined.xml.gz) has an "Evacuation" activity in between
@@ -571,18 +493,20 @@ public class KNRunMatsim4FloodEvacuation {
 		}
 	}
 	
-	private class NonevacLinksPenalizer implements SumScoringFunction.ArbitraryEventScoring {
+	private static class NonevacLinksPenalizer implements SumScoringFunction.ArbitraryEventScoring {
 		private final TravelDisutility travelDisutility;
 		private final Person person;
 		private final Network network;
 		private double score = 0. ;
+		Link prevLink = null ;
+		boolean hasBeenOnEvacNetwork = false ;
+		boolean hasLeftEvacNetworkAfterHavingBeenOnIt = false ;
 		NonevacLinksPenalizer(TravelDisutility travelDisutility, Person person, Network network) {
 			this.travelDisutility = travelDisutility;
 			this.person = person;
 			this.network = network;
 		}
-		@Override public void finish() {
-		}
+		@Override public void finish() { }
 		@Override public double getScore() {
 			return score ;
 		}
@@ -592,27 +516,121 @@ public class KNRunMatsim4FloodEvacuation {
 				
 				Link link = network.getLinks().get( ((LinkEnterEvent) event).getLinkId() ) ;
 				score -= ((FEMPreferEmergencyLinksTravelDisutility)travelDisutility).getAdditionalLinkTravelDisutility(link,event.getTime(), person,null) ;
+				
+				if ( isEvacLink(link) ) {
+					hasBeenOnEvacNetwork = true ;
+				}
+				if ( hasBeenOnEvacNetwork && !isEvacLink(link) ) {
+					hasLeftEvacNetworkAfterHavingBeenOnIt = true ;
+				}
+				if ( hasLeftEvacNetworkAfterHavingBeenOnIt) {
+					if ( !isEvacLink(prevLink) && isEvacLink(link) ) {
+						// (means has re-entered evac network for second time; this is what we penalize)
+						score -= 100000.;
+					}
+				}
+				
+				prevLink = link ;
 			}
 		}
 	}
 	
-	private class ScoresPerSubsector implements IterationEndsListener {
-		@Inject Population population ;
-		@Inject Config config ;
-		@Override public void notifyIterationEnds(IterationEndsEvent event) {
-			// go through all agents and memorize, for each subsector starting point, the score for each
-			// safe node destination:
-			for ( Person person : population.getPersons().values() ) {
-			
-			}
-			// select for each person the plan we want:
+	static Id<Link> getDestinationLinkId(Plan plan) {
+		return PopulationUtils.getLastActivity(plan).getLinkId();
+	}
+	
+	static String getSubsector(Person person) {
+		final String attribute = (String) person.getAttributes().getAttribute(FEMAttributes.SUBSECTOR);
+		Gbl.assertNotNull(attribute);
+		return attribute;
+	}
+	
+	private static class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFactory {
+		@Inject private ScoringParametersForPerson params;
+		@Inject private Map<String,TravelDisutilityFactory> travelDisutilityFactories ;
+		@Inject private Map<String,TravelTime> travelTimes ;
+		@Inject private Network network ;
 		
-			// remember to set strategy to "keepSelected"
-			Gbl.assertIf( config.strategy().getStrategySettings().size()==1 ) ;
-			for ( StrategyConfigGroup.StrategySettings settings : config.strategy().getStrategySettings() ) {
-				Gbl.assertIf( settings.getStrategyName().equals(DefaultSelector.KeepLastSelected ) );
-			}
-			
+		@Override public ScoringFunction createNewScoringFunction(Person person) {
+
+			final ScoringParameters parameters = params.getScoringParameters( person );
+
+			TravelTime travelTime = travelTimes.get(TransportMode.car) ;
+			TravelDisutility travelDisutility = travelDisutilityFactories.get(TransportMode.car).createTravelDisutility(travelTime) ;
+
+			SumScoringFunction sumScoringFunction = new SumScoringFunction();
+			sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters ));
+			sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring( parameters , network));
+			sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring( parameters ));
+			sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring( parameters ));
+			sumScoringFunction.addScoringFunction(new NonevacLinksPenalizer( travelDisutility, person, network) );
+			return sumScoringFunction;
 		}
 	}
+	
+	private static void giveAllSafeNodesToAllAgents(Scenario scenario) {
+		// collect all safe locations (could also get this from the attributes, but currently can't iterate over them)
+		List<Id<Link>> safeLinkIds = new ArrayList<>() ;
+		{
+			Set<Id<Link>> safeLinkIdsAsSet = new LinkedHashSet<>();
+			
+			for (Person person : scenario.getPopulation().getPersons().values()) {
+				for (Plan plan : person.getPlans()) {
+					for (PlanElement pe : plan.getPlanElements()) {
+						if (pe instanceof Activity) {
+							final Activity activity = (Activity) pe;
+							if (activity.getType().equals("safe")) {
+								safeLinkIdsAsSet.add(activity.getLinkId());
+							}
+						}
+					}
+				}
+			}
+			safeLinkIds.addAll( safeLinkIdsAsSet ) ;
+		}
+		log.info("safeLinkIDs:");
+		for (Id<Link> safeLinkId : safeLinkIds) {
+			log.info(safeLinkId);
+		}
+		// give all agents all safe locations (to compensate for errors we seem to have in input data):
+		PopulationFactory pf = scenario.getPopulation().getFactory();
+		;
+		long cnt = 0 ;
+		for (Person person : scenario.getPopulation().getPersons().values()) {
+			cnt++ ;
+			
+			// memorize evac link id:
+			Id<Link> evacLinkId = ((Activity) person.getPlans().get(0).getPlanElements().get(0)).getLinkId();
+			;
+			// clear all plans:
+			person.getPlans().clear();
+			// add all safe locations as potential plans:
+			
+			if ( cnt % (long)(scenario.getPopulation().getPersons().size()/10) == 0 ) {
+				Collections.shuffle(safeLinkIds, MatsimRandom.getLocalInstance());
+			}
+			// (so that we don't have everybody go to same safe location in 0th, 1st, 2nd, ... iteration. kai, may'18)
+			
+			for (Id<Link> safeLinkId :  safeLinkIds ) {
+				Plan plan = pf.createPlan();
+				{
+					Activity act = pf.createActivityFromLinkId("evac", evacLinkId);
+					act.setEndTime(0.);
+					plan.addActivity(act);
+				}
+				{
+					Leg leg = pf.createLeg(TransportMode.car);
+					plan.addLeg(leg);
+				}
+				{
+					Activity act = pf.createActivityFromLinkId("safe", safeLinkId);
+					plan.addActivity(act);
+				}
+				person.addPlan(plan);
+			}
+			person.setSelectedPlan(person.getPlans().get(0));
+		}
+	}
+	
+	
 }
