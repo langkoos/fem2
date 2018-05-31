@@ -7,7 +7,7 @@ import java.util.TreeMap;
  * The idea with this class is to provide several different mappings to evacuation staging data,
  * allowing evacuation strategies to schedule timings at a higher level than the population
  */
-public class EvacuationStaging {
+public class EvacuationSchedule {
 	/**
 	 * arguably not the best way to organise these, but for a start, assuming that, for most cases, everybody will evacuate to the same safe node,
 	 * organising subsectors by evacuation time will allow for overall scheduling.

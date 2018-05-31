@@ -31,12 +31,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class EvacuationStagingUtils {
-	private static final Logger log = Logger.getLogger(EvacuationStagingUtils.class);
+public class EvacuationScheduling {
+	private static final Logger log = Logger.getLogger(EvacuationScheduling.class);
 	private final Scenario scenario;
 	Map<String, Record> subsectorToEvacAndSafeNodes = new LinkedHashMap<>();
 
-	public EvacuationStagingUtils(Scenario scenario) {
+	public EvacuationScheduling(Scenario scenario) {
 		this.scenario = scenario;
 	}
 

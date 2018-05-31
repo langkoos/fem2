@@ -1,65 +1,35 @@
 package femproto.demand;
 
-import femproto.evacuationstaging.EvacuationStagingUtils;
+import femproto.evacuationstaging.EvacuationScheduling;
 import femproto.gis.Globals;
-import femproto.routing.FEMPreferEmergencyLinksTravelDisutility;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.gbl.Gbl;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.io.PopulationWriter;
-import org.matsim.core.router.DijkstraFactory;
-import org.matsim.core.router.NetworkRoutingProvider;
-import org.matsim.core.router.TripRouter;
-import org.matsim.core.router.costcalculators.FreespeedTravelTimeAndDisutility;
-import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.router.util.TravelDisutility;
-import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-import org.matsim.core.trafficmonitoring.TravelTimeCalculator;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
-import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.utils.gis.matsim2esri.network.FeatureGeneratorBuilderImpl;
-import org.matsim.utils.gis.matsim2esri.network.LanesBasedWidthCalculator;
-import org.matsim.utils.gis.matsim2esri.network.LineStringBasedFeatureGenerator;
-import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
-import org.matsim.vehicles.Vehicle;
 import org.opengis.feature.simple.SimpleFeature;
-
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-
-import static javafx.scene.input.KeyCode.T;
 
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
 
 
 	Scenario scenario;
-	private EvacuationStagingUtils evacuationStagingUtils;
+	private EvacuationScheduling evacuationScheduling;
 
 	private SubSectorsToPopulation() {
 //		log.setLevel(Level.DEBUG);
@@ -78,8 +48,8 @@ public class SubSectorsToPopulation {
 	}
 
 	private void initializeEvacuationStaging(String arg) {
-		 evacuationStagingUtils = new EvacuationStagingUtils(scenario);
-		 evacuationStagingUtils.readEvacAndSafeNodes(arg);
+		 evacuationScheduling = new EvacuationScheduling(scenario);
+		 evacuationScheduling.readEvacAndSafeNodes(arg);
 	}
 
 	private void readNetwork(String fileName) {
@@ -114,7 +84,7 @@ public class SubSectorsToPopulation {
 			
 			// test that evac nodes are same in both files:
 			String evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
-			String evacNodeFromCorrespondancesFile = evacuationStagingUtils.getEvacNode(subsector) ;
+			String evacNodeFromCorrespondancesFile = evacuationScheduling.getEvacNode(subsector) ;
 			if ( ! ( evacNodeFromShp.equals(evacNodeFromCorrespondancesFile) ) ) {
 				final String msg = "evacNodes in shape file and in correspondances file not same: evacNodeFromShp="
 						+ evacNodeFromShp + "; evacNodeFromCorrespondances=" + evacNodeFromCorrespondancesFile ;
@@ -150,7 +120,7 @@ public class SubSectorsToPopulation {
 				Person person = pf.createPerson(Id.createPersonId(id++));
 				person.getAttributes().putAttribute("SUBSECTOR", subsector);
 				int j = 0;
-				List<Link> safeLinks = evacuationStagingUtils.getSafeLinks(subsector);
+				List<Link> safeLinks = evacuationScheduling.getSafeLinks(subsector);
 				for (Link safeLink : safeLinks) {
 
 					Plan plan = pf.createPlan();
