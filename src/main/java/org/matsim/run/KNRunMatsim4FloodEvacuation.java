@@ -110,7 +110,7 @@ public class KNRunMatsim4FloodEvacuation {
 		// test output dir in the test config file. kai, apr'18)
 		
 		Config config;
-		if (args == null || args.length == 0 || args[0] == "") {
+		if (args == null || args.length == 0 || args[0].equals("")) {
 			
 			config = ConfigUtils.loadConfig("scenarios/fem2016/configSmall.xml");
 
@@ -155,13 +155,13 @@ public class KNRunMatsim4FloodEvacuation {
 			strategySettings.setWeight(1);
 			config.strategy().addStrategySettings(strategySettings);
 		} else {
-//		{
-//			StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-//			strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
-//			strategySettings.setWeight(1);
-//			strategySettings.setDisableAfter( (int) (0.9*lastIteration) ); // (50 iterations was not enough)
-//			config.strategy().addStrategySettings(strategySettings);
-//		}
+	//		{
+	//			StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+	//			strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
+	//			strategySettings.setWeight(1);
+	//			strategySettings.setDisableAfter( (int) (0.9*lastIteration) ); // (50 iterations was not enough)
+	//			config.strategy().addStrategySettings(strategySettings);
+	//		}
 			{
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 				strategySettings.setStrategyName(DefaultSelector.BestScore);
