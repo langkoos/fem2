@@ -251,25 +251,47 @@ public class KNRunMatsim4FloodEvacuation {
 		
 		giveAllSafeNodesToAllAgents(scenario);
 		
-		// move activity end times towards 0:00 so that decongestion can work:
-		boolean first = true ;
+//		// move activity end times towards 0:00 so that decongestion can work:
+//		boolean first = true ;
+//		for ( Person person : scenario.getPopulation().getPersons().values() ) {
+//			for ( Plan plan : person.getPlans() ) {
+//				Activity firstAct = (Activity) plan.getPlanElements().get(0);
+//				double origEndTime = firstAct.getEndTime();;
+//
+//				if (first) {
+//					firstAct.setEndTime(0);
+//				} else {
+//					// have all other agents start one sec late so that in VIA we can still see all these others at home:
+////					firstAct.setEndTime(Math.max(1,firstAct.getEndTime()-240.*3600.)) ;
+//					final double newEndTime = Math.max(1, firstAct.getEndTime());
+//					firstAct.setEndTime(newEndTime);
+////					firstAct.setEndTime(1); // yyyyyy
+//				}
+//				log.warn("origEndTime=" + origEndTime + "; newEndTime=" + firstAct.getEndTime() ) ;
+//
+//			}
+//			if ( first ) {
+//				first = false ;
+//			}
+//		}
+		
+		// find earliest departure time:
+		double earliest = Double.POSITIVE_INFINITY ;
+		Id<Person> personId = null ;
 		for ( Person person : scenario.getPopulation().getPersons().values() ) {
-			for ( Plan plan : person.getPlans() ) {
-				Activity firstAct = (Activity) plan.getPlanElements().get(0);
-				
-				if (first) {
-					firstAct.setEndTime(0);
-				} else {
-					// have all other agents start one sec late so that in VIA we can still see all these others at home:
-//					firstAct.setEndTime(Math.max(1,firstAct.getEndTime()-240.*3600.)) ;
-					firstAct.setEndTime(1); // yyyyyy
-				}
-				
-			}
-			if ( first ) {
-				first = false ;
+			Activity firstAct = (Activity) person.getSelectedPlan().getPlanElements().get(0);
+			if ( firstAct.getEndTime() < earliest ) {
+				earliest = firstAct.getEndTime() ;
+				personId = person.getId() ;
 			}
 		}
+//		if ( earliest >= 1.0 ) {
+			for ( Plan plan : scenario.getPopulation().getPersons().get( personId ).getPlans() ) {
+				Activity firstAct = (Activity) plan.getPlanElements().get(0);
+				firstAct.setEndTime( earliest-1 );
+			}
+//		}
+		
 
 		//		preparationsForRmitHawkesburyScenario();
 		
@@ -599,8 +621,10 @@ public class KNRunMatsim4FloodEvacuation {
 		for (Person person : scenario.getPopulation().getPersons().values()) {
 			cnt++ ;
 			
-			// memorize evac link id:
-			Id<Link> evacLinkId = ((Activity) person.getPlans().get(0).getPlanElements().get(0)).getLinkId();
+			// memorize some things:
+			final Activity activity = (Activity) person.getPlans().get(0).getPlanElements().get(0);
+			Id<Link> evacLinkId = activity.getLinkId();
+			double endTime = activity.getEndTime();;
 			;
 			// clear all plans:
 			person.getPlans().clear();
@@ -615,7 +639,7 @@ public class KNRunMatsim4FloodEvacuation {
 				Plan plan = pf.createPlan();
 				{
 					Activity act = pf.createActivityFromLinkId("evac", evacLinkId);
-					act.setEndTime(0.);
+					act.setEndTime( endTime );
 					plan.addActivity(act);
 				}
 				{
