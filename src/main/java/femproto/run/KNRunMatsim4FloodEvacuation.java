@@ -16,13 +16,11 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.run;
+package femproto.run;
 
 import com.google.inject.Inject;
-import femproto.FEMAttributes;
-import femproto.config.FEMConfigGroup;
-import femproto.network.NetworkConverter;
-import femproto.routing.FEMPreferEmergencyLinksTravelDisutility;
+import femproto.globals.FEMAttributes;
+import femproto.prepare.network.NetworkConverter;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -89,7 +87,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static femproto.routing.FEMPreferEmergencyLinksTravelDisutility.isEvacLink;
+import static femproto.run.FEMPreferEmergencyLinksTravelDisutility.isEvacLink;
 import static org.matsim.core.network.NetworkUtils.getEuclideanDistance;
 import static org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.*;
 
@@ -210,7 +208,7 @@ public class KNRunMatsim4FloodEvacuation {
 		// --- decongestion (toll):
 		
 		DecongestionConfigGroup decongestionSettings = ConfigUtils.addOrGetModule(config, DecongestionConfigGroup.class);
-		decongestionSettings.setEnableDecongestionPricing(true);
+//		decongestionSettings.setEnableDecongestionPricing(true); // default
 		decongestionSettings.setToleratedAverageDelaySec(30.);
 		decongestionSettings.setFractionOfIterationsToEndPriceAdjustment(1.0);
 		decongestionSettings.setFractionOfIterationsToStartPriceAdjustment(0.0);
@@ -302,9 +300,6 @@ public class KNRunMatsim4FloodEvacuation {
 
 		controler = new Controler(scenario);
 		
-		
-		OutputEvents2TravelDiaries events2TravelDiaries = new OutputEvents2TravelDiaries(controler);
-		
 		// ---
 		
 		// congestion toll computation
@@ -320,13 +315,12 @@ public class KNRunMatsim4FloodEvacuation {
 			public void install() {
 				
 				this.addControlerListenerBinding().to( KaiAnalysisListener.class ) ;
+				this.addControlerListenerBinding().to( OutputEvents2TravelDiaries.class ) ;
 
 				if ( safeNodeBySector) {
 					this.addControlerListenerBinding().to(SelectOneBestSafeNodePerSubsector.class);
 				}
 
-				bind(OutputEvents2TravelDiaries.class).toInstance(events2TravelDiaries);
-				
 				switch (femConfig.getFEMRoutingMode()) {
 					case preferEvacuationLinks:
 						final String routingMode = TransportMode.car;

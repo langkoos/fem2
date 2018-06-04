@@ -1,4 +1,4 @@
-package org.matsim.run;
+package femproto.run;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -8,23 +8,13 @@ import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.travelsummary.events2traveldiaries.EventsToTravelDiaries;
 import org.matsim.core.api.experimental.events.EventsManager;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
-import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.events.EventsManagerImpl;
 import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.testcases.MatsimTestUtils;
-import routing.FEMEvacuationLinkRoutingCounter;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RunMatsim4FloodEvacuationTest {

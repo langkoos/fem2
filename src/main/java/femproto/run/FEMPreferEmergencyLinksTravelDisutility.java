@@ -18,10 +18,9 @@
  *                                                                         *
  * *********************************************************************** */
 
-package femproto.routing;
+package femproto.run;
 
-import com.google.inject.Inject;
-import femproto.network.NetworkConverter;
+import femproto.prepare.network.NetworkConverter;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;

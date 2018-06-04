@@ -1,7 +1,7 @@
-package femproto.demand;
+package femproto.prepare.demand;
 
-import femproto.FEMAttributes;
-import femproto.gis.Globals;
+import femproto.globals.FEMAttributes;
+import femproto.globals.Gis;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -74,7 +74,7 @@ public class SubSectorsToPopulation {
 		
 		// coordinate transformation:
 		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$", "prj")).readLine().toString();
-		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Globals.EPSG28356);
+		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 		
 		//iterate through features and generate pax by subsector
 		Iterator<SimpleFeature> iterator = features.iterator();
@@ -291,11 +291,11 @@ public class SubSectorsToPopulation {
 				network.addLink(link);
 			}
 		}
-		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(network, Globals.EPSG28356);
+		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(network, Gis.EPSG28356);
 		builder.setFeatureGeneratorPrototype(LineStringBasedFeatureGenerator.class);
 		builder.setWidthCoefficient(0.5);
 		builder.setWidthCalculatorPrototype(LanesBasedWidthCalculator.class);
-		CoordinateReferenceSystem crs = MGC.getCRS(Globals.EPSG28356);
+		CoordinateReferenceSystem crs = MGC.getCRS(Gis.EPSG28356);
 		builder.setCoordinateReferenceSystem(crs);
 		new Links2ESRIShape(network,fileName, builder).write();
 	}

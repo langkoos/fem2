@@ -1,6 +1,5 @@
-package femproto.network;
+package femproto.prepare.network;
 
-import femproto.network.NetworkConverter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;

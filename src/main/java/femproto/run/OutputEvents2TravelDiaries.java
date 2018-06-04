@@ -1,4 +1,4 @@
-package org.matsim.run;
+package femproto.run;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -19,12 +19,6 @@ public class OutputEvents2TravelDiaries implements IterationStartsListener, Iter
 	EventsToTravelDiaries delegate;
 	@Inject EventsManager eventsManager;
 	@Inject Scenario scenario;
-
-	@Inject
-	OutputEvents2TravelDiaries(Controler controler) {
-		controler.addControlerListener(this);
-	}
-
 
 	@Override
 	public void notifyIterationStarts(IterationStartsEvent event) {

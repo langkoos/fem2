@@ -1,4 +1,4 @@
-package femproto.hydrograph;
+package femproto.prepare.hydrograph;
 
 import org.matsim.api.core.v01.Coord;
 

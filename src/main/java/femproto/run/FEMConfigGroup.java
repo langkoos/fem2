@@ -1,9 +1,9 @@
-package femproto.config;
+package femproto.run;
 
 import org.apache.log4j.Logger;
 import org.matsim.core.config.ReflectiveConfigGroup;
 
-import static femproto.config.FEMConfigGroup.FEMRoutingMode.preferEvacuationLinks;
+import static femproto.run.FEMConfigGroup.FEMRoutingMode.preferEvacuationLinks;
 
 public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	

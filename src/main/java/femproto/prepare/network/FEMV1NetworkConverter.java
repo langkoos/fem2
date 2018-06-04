@@ -1,6 +1,6 @@
-package femproto.network;
+package femproto.prepare.network;
 
-import femproto.gis.Globals;
+import femproto.globals.Gis;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
@@ -18,7 +18,7 @@ import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 public class FEMV1NetworkConverter {
 	public static void main(String[] args) {
 		Network networkIn = NetworkUtils.createNetwork();
-		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, Globals.EPSG28356);
+		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, Gis.EPSG28356);
 		new MatsimNetworkReader(networkIn).readFile(args[0]);
 		for (Node node : networkIn.getNodes().values()) {
 			Coord lonlat = node.getCoord();

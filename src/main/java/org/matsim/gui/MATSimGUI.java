@@ -19,7 +19,7 @@
 
 package org.matsim.gui;
 
-import org.matsim.run.RunMatsim4FloodEvacuation;
+import femproto.run.RunMatsim4FloodEvacuation;
 import org.matsim.run.gui.Gui;
 
 public class MATSimGUI {

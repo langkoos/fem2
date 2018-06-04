@@ -1,4 +1,4 @@
-package femproto.network;
+package femproto.prepare.network;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import femproto.gis.Globals;
+import femproto.globals.Gis;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -54,7 +54,7 @@ public class NetworkConverter {
 	
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
 		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$","prj")).readLine().toString() ;
-		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Globals.EPSG28356);
+		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
 		for (SimpleFeature feature : features) {
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
@@ -111,7 +111,7 @@ public class NetworkConverter {
 
 	private void writeNetwork(String fileName){
 		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml.gz");
-		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp",Globals.EPSG28356).write();
+		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 	}
 
 	public static void main(String[] args) throws IOException, FactoryException {

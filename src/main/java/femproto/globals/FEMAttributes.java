@@ -1,4 +1,4 @@
-package femproto;
+package femproto.globals;
 
 public interface FEMAttributes {
 	String SUBSECTOR = "SUBSECTOR";

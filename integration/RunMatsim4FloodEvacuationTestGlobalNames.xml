@@ -9,5 +9,5 @@
  <!-- Path to the MATSim config file for this scenario (relative or absolute) -->
  <input globalname="MATSimConfigPath">E:\scenarios\fem2016\testConfig.xml</input>
  <!-- Fully qualified name of the class with the main function -->
- <input globalname="MainClass">org.matsim.run.RunMatsim4FloodEvacuation</input>
+ <input globalname="MainClass">femproto.run.RunMatsim4FloodEvacuation</input>
 </operation>

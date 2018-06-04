@@ -1,8 +1,8 @@
-package femproto.hydrograph;
+package femproto.prepare.hydrograph;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import femproto.gis.Globals;
+import femproto.globals.Gis;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -39,7 +39,7 @@ public class HydrographParser {
 		String wkt = null;
 		try {
 			wkt = IOUtils.getBufferedReader(shapefile.replaceAll("shp$", "prj")).readLine().toString();
-			transformation = TransformationFactory.getCoordinateTransformation(wkt, Globals.EPSG28356);
+			transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 		} catch (IOException e) {
 			System.err.println("The shapefile doesn't have a .prj file; continuing, but no guarantees on projection.");
 		}
