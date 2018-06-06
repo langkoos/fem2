@@ -13,11 +13,14 @@ public class HydrographPoint {
 	List<HydrographPointData> data;
 	private String subSector;
 	private double floodTime;
-
 	public HydrographPoint(String pointId, Double alt_ahd, Coord coord) {
 		this.pointId = pointId;
 		ALT_AHD = alt_ahd;
 		this.coord = coord;
+	}
+
+	public Double getALT_AHD() {
+		return ALT_AHD;
 	}
 
 	public String getSubSector() {
@@ -54,15 +57,15 @@ public class HydrographPoint {
 		data.add(new HydrographPointData(time,level_ahd));
 	}
 
-	public void setFloodTime(double floodTime) {
-		this.floodTime = floodTime;
-	}
-
 	public double getFloodTime() {
 		return floodTime;
 	}
 
-	class HydrographPointData{
+	public void setFloodTime(double floodTime) {
+		this.floodTime = floodTime;
+	}
+
+	public class HydrographPointData{
 		private final double time;
 		private final double level_ahd;
 
