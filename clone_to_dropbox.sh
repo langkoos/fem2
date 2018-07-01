@@ -1,3 +1,4 @@
 mvn clean install -DskipTests
 cp target/*-jar-with-dependencies.jar ./
-rsync
+pandoc -f markdown -t html -o README.html README.md
+rsync -av --exclude-from 'rsync_exclude_list.txt' ./ ~/Dropbox/FEM2_SNAPSHOT/
