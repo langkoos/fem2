@@ -1,0 +1,12 @@
+integration
+target
+data
+*.iml
+*.Rproj
+pom.xml
+rsync_exclude_list.txt
+src
+clone_to_dropbox.sh
+.*
+.*/
+ITERS
