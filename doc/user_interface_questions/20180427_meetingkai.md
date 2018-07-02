@@ -25,4 +25,4 @@
     - data61 has github implemntation but not cclear if there is lfs, and the 
     - is it ok if peter cinque signs up on github
     - how to deal with git lfs
-    
+13. Created a git commit hook that will mave compile the jar file, and rsync everything to a shared Dropbox folder
