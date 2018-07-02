@@ -1,6 +1,9 @@
 package femproto.evacuationstaging;
 
+import org.matsim.core.gbl.MatsimRandom;
+
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 /**
@@ -18,5 +21,16 @@ public class EvacuationSchedule {
 	 * Likely will need to access a subsector's information directly.
 	 */
 	Map<String, SubsectorData> subsectorsBySubsectorName;
+
+
+	public void addSubsectorData(SubsectorData subsectorData){
+		Random random = MatsimRandom.getLocalInstance();
+		subsectorsBySubsectorName.put(subsectorData.getSubsector(),subsectorData);
+		for (Double time : subsectorData.safeNodesByTime.keySet()) {
+			//yoyoyo this is a cheat to prevent different subsectors from overwriting each other in the map
+			subsectorsByEvacuationTime.put(time + random.nextDouble(), subsectorData);
+		}
+
+	}
 }
 

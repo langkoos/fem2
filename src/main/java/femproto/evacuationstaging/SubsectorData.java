@@ -9,21 +9,49 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class SubsectorData {
-	String subsector;
-	Id<Node> evacuationNode;
-	List<Id<Node>> safeNodesByDecreasingPriority;
+	private final String subsector;
+	private final Node evacuationNode;
+	private final List<Node> safeNodesByDecreasingPriority;
 	/**
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
 	 * routed to different safe node.
 	 */
-	TreeMap<Double,Id<Node>> safeNodesByTime;
+	TreeMap<Double,Node> safeNodesByTime;
 	/**
 	 * If the shortest (or otherwise routed) path is stored for each subsector, would be possible to create timed shapefile of paths
 	 * for diagnostics in e.g. Tableau
 	 */
-	Map<Id<Node>,Path> shortestPathsToSafeNodes;
+	Map<Node,Path> shortestPathsToSafeNodes;
 
-	Id<Node> getSafeNodeForTime(double time){
+	public SubsectorData(String subsector, Node evacuationNode, List<Node> safeNodesByDecreasingPriority) {
+		this.subsector = subsector;
+		this.evacuationNode = evacuationNode;
+		this.safeNodesByDecreasingPriority = safeNodesByDecreasingPriority;
+		safeNodesByTime = new TreeMap<>();
+		safeNodesByTime.put(0.0,safeNodesByDecreasingPriority.get(0));
+	}
+
+	public String getSubsector() {
+		return subsector;
+	}
+
+	public Node getEvacuationNode() {
+		return evacuationNode;
+	}
+
+	public List<Node> getSafeNodesByDecreasingPriority() {
+		return safeNodesByDecreasingPriority;
+	}
+
+	public TreeMap<Double, Node> getSafeNodesByTime() {
+		return safeNodesByTime;
+	}
+
+	public Map<Node, Path> getShortestPathsToSafeNodes() {
+		return shortestPathsToSafeNodes;
+	}
+
+	Node getSafeNodeForTime(double time){
 		return safeNodesByTime.ceilingEntry(time).getValue();
 	}
 }

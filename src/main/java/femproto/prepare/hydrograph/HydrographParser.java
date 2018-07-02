@@ -212,6 +212,15 @@ public class HydrographParser {
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
 
+	/**
+	 * This method should not be used, as Hydrograph parsing and construction of the data structure should be separate from interpreting hydrograph data for evacuation scheduling
+	 * @param population
+	 * @param modifiedPopulationOutputFile
+	 * @param timeBuffer
+	 * @param rate
+	 * @param staggerTime
+	 */
+	@Deprecated
 	public void triggerPopulationDepartures(Population population, String modifiedPopulationOutputFile, double timeBuffer, double rate, double staggerTime) {
 		Set<String> subsectors = new HashSet<>();
 		Set<String> hydroSubsectors = new HashSet<>();

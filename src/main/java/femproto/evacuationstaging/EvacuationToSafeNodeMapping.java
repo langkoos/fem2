@@ -32,12 +32,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class EvacuationScheduling {
-	private static final Logger log = Logger.getLogger(EvacuationScheduling.class);
-	private final Scenario scenario;
-	Map<String, Record> subsectorToEvacAndSafeNodes = new LinkedHashMap<>();
+public class EvacuationToSafeNodeMapping {
+	private static final Logger log = Logger.getLogger(EvacuationToSafeNodeMapping.class);
 
-	public EvacuationScheduling(Scenario scenario) {
+	public Scenario getScenario() {
+		return scenario;
+	}
+
+	private final Scenario scenario;
+
+	public Map<String, Record> getSubsectorToEvacAndSafeNodes() {
+		return subsectorToEvacAndSafeNodes;
+	}
+
+	private Map<String, Record> subsectorToEvacAndSafeNodes = new LinkedHashMap<>();
+
+	public EvacuationToSafeNodeMapping(Scenario scenario) {
 		this.scenario = scenario;
 	}
 
@@ -169,7 +179,6 @@ public class EvacuationScheduling {
 	public List<Link> getSafeLinks(String subsector) {
 		// get corresponding safe node record:
 		Record record = subsectorToEvacAndSafeNodes.get(subsector);
-		;
 		Gbl.assertNotNull(record);
 		List<Link> safeLinks = new ArrayList<>();
 		// find safeNode in network file:
@@ -201,6 +210,25 @@ public class EvacuationScheduling {
 		}
 		return safeLinks;
 	}
+	public List<Node> getSafeNodesByDecreasingPriority(String subsector){
+		Record record = subsectorToEvacAndSafeNodes.get(subsector);
+		Gbl.assertNotNull(record);
+		List<Node> safeNodes = new ArrayList<>();
+		safeNodes.add(this.scenario.getNetwork().getNodes().get(Id.createNodeId(record.SAFE_NODE1)));
+		if (record.SAFE_NODE2 != null) {
+			safeNodes.add(this.scenario.getNetwork().getNodes().get(Id.createNodeId(record.SAFE_NODE2)));
+		}
+		if (record.SAFE_NODE3 != null) {
+			safeNodes.add(this.scenario.getNetwork().getNodes().get(Id.createNodeId(record.SAFE_NODE3)));
+		}
+		if (record.SAFE_NODE4 != null) {
+			safeNodes.add(this.scenario.getNetwork().getNodes().get(Id.createNodeId(record.SAFE_NODE4)));
+		}
+		if (record.SAFE_NODE5 != null) {
+			safeNodes.add(this.scenario.getNetwork().getNodes().get(Id.createNodeId(record.SAFE_NODE5)));
+		}
+		return safeNodes;
+	}
 
 	public Link getLinkFromSafeNode(String defaultSafeNode) {
 		Link endLink = null;
@@ -219,8 +247,10 @@ public class EvacuationScheduling {
 		return endLink;
 	}
 
-	public String getEvacNode(String subsector) {
-		return subsectorToEvacAndSafeNodes.get(subsector).EVAC_NODE;
+	public Node getEvacNode(String subsector) {
+		Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(subsectorToEvacAndSafeNodes.get(subsector).EVAC_NODE));
+		Gbl.assertNotNull(node);
+		return node;
 	}
 
 	public final static class Record {

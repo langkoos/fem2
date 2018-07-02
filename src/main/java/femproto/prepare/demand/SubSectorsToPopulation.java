@@ -1,37 +1,23 @@
 package femproto.prepare.demand;
 
-import femproto.evacuationstaging.EvacuationScheduling;
+import femproto.evacuationstaging.EvacuationToSafeNodeMapping;
 import femproto.globals.Gis;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.gbl.Gbl;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.io.PopulationWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
-import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.utils.gis.matsim2esri.network.FeatureGeneratorBuilderImpl;
-import org.matsim.utils.gis.matsim2esri.network.LanesBasedWidthCalculator;
-import org.matsim.utils.gis.matsim2esri.network.LineStringBasedFeatureGenerator;
-import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
 import org.opengis.feature.simple.SimpleFeature;
-
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -41,7 +27,7 @@ public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
 	
 	Scenario scenario;
-	private EvacuationScheduling evacuationScheduling;
+	private EvacuationToSafeNodeMapping evacuationToSafeNodeMapping;
 
 	private SubSectorsToPopulation() {
 //		log.setLevel(Level.DEBUG);
@@ -60,8 +46,8 @@ public class SubSectorsToPopulation {
 	}
 
 	private void initializeEvacuationStaging(String arg) {
-		 evacuationScheduling = new EvacuationScheduling(scenario);
-		 evacuationScheduling.readEvacAndSafeNodes(arg);
+		 evacuationToSafeNodeMapping = new EvacuationToSafeNodeMapping(scenario);
+		 evacuationToSafeNodeMapping.readEvacAndSafeNodes(arg);
 	}
 
 	private void readNetwork(String fileName) {
@@ -95,7 +81,7 @@ public class SubSectorsToPopulation {
 			
 			// test that evac nodes are same in both files:
 			String evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
-			String evacNodeFromCorrespondancesFile = evacuationScheduling.getEvacNode(subsector) ;
+			String evacNodeFromCorrespondancesFile = evacuationToSafeNodeMapping.getEvacNode(subsector).getId().toString() ;
 			if ( ! ( evacNodeFromShp.equals(evacNodeFromCorrespondancesFile) ) ) {
 				final String msg = "evacNodes in shape file and in correspondances file not same: evacNodeFromShp="
 						+ evacNodeFromShp + "; evacNodeFromCorrespondances=" + evacNodeFromCorrespondancesFile ;
@@ -132,7 +118,7 @@ public class SubSectorsToPopulation {
 				Person person = pf.createPerson(Id.createPersonId(id++));
 				person.getAttributes().putAttribute("SUBSECTOR", subsector);
 				int j = 0;
-				List<Link> safeLinks = evacuationScheduling.getSafeLinks(subsector);
+				List<Link> safeLinks = evacuationToSafeNodeMapping.getSafeLinks(subsector);
 				for (Link safeLink : safeLinks) {
 
 
