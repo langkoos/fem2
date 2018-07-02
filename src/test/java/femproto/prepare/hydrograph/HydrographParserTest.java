@@ -47,11 +47,11 @@ public class HydrographParserTest {
 		// have output go to some neutral place, and have the user move it to the final location.  Even if you want a workflow,
 		// I would prefer to have it in some testworkflow directory. kai, apr'18
 
-		hydrographParser.hydrographToViaXY("scenarios/fem2016/hydroxy.txt.gz");
+		hydrographParser.hydrographToViaXY(utils.getOutputDirectory()+"hydroxy.txt.gz");
 
-		hydrographParser.hydrographToViaLinkAttributes("scenarios/fem2016/hydro_linkattrs.txt.gz",scenario.getNetwork());
+		hydrographParser.hydrographToViaLinkAttributes(utils.getOutputDirectory()+"hydro_linkattrs.txt.gz",scenario.getNetwork());
 
-		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),"scenarios/fem2016/d09693_H_change_events.xml.gz");
+		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d09693_H_change_events.xml.gz");
 
 //		hydrographParser.readEvacAndSafeNodes( "test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/subsectorMappingTravTimeRanked.csv");
 
