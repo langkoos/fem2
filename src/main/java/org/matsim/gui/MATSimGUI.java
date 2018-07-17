@@ -36,9 +36,13 @@ public class MATSimGUI {
 		// yy maybe we rather want a separate button "FEMTools"?
 		
 		gui.getToolsMenu().addSeparator();
-		
+
+		JMenu femTools = new JMenu("FEMTools");
+		gui.addToMenuBar(femTools);
+
 		JMenuItem mntmCreateSamplePopulation = new JMenuItem("Test");
-		gui.getToolsMenu().add(mntmCreateSamplePopulation);
+//		gui.getToolsMenu().add(mntmCreateSamplePopulation);
+		femTools.add(mntmCreateSamplePopulation);
 		mntmCreateSamplePopulation.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
