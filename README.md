@@ -45,7 +45,7 @@ This is a complicated process requiring registration with TU Berlin. Probably re
 This assumes you run Linux or MacOS - probably will work on cygwin too.
 
 1. Open `clone_to_dropbox.sh` in the repository root.
-1. Change the path to the shared `FEM2_SNAPSHIT` subdir in your Dropbox folder.
+1. Change the path to the shared `FEM2_SNAPSHOT` subdir in your Dropbox folder.
 1. Copy this file to your git hooks directory and make executable:
 
 ```
