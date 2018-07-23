@@ -1,4 +1,11 @@
-### New notes 2018-01-24
+###Notes 2018-07-24
+Received reviewed data files from David Pavey.
+These are for 2 population scenarios and the same flooding conditions.
+
+Files are stored in `2018-07-06_DPavey_TestInputFiles`.
+
+
+### Notes 2018-01-24
 
 Subsections evacuate to certain safe nodes.  Questions:
 * Do we have them?  Are they just emme/2 nodes?
