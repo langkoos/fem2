@@ -248,7 +248,7 @@ public class RunMatsim4FloodEvacuation {
 				scenario.getPopulation().removePerson(toBeRemoved);
 			}
 			scenario.getConfig().qsim().setFlowCapFactor(sample);
-			scenario.getConfig().qsim().setStorageCapFactor(sample);
+			scenario.getConfig().qsim().setStorageCapFactor(2*sample);
 		}
 		{
 			// collect all safe locations (could also get this from the attributes, but currently can't iterate over them)
@@ -261,7 +261,7 @@ public class RunMatsim4FloodEvacuation {
 						for (PlanElement pe : plan.getPlanElements()) {
 							if (pe instanceof Activity) {
 								final Activity activity = (Activity) pe;
-								if (activity.getType().equals("safe")) {
+								if (activity.getType().startsWith("safe")) {
 									safeLinkIdsAsSet.add(activity.getLinkId());
 								}
 							}

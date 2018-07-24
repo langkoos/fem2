@@ -17,20 +17,20 @@ public class HydrographParserTest {
 
 	@Test
 	public void test(){
-		String inputDirectory = utils.getPackageInputDirectory();
+		String inputDirectory = utils.getPackageInputDirectory()+"v20180706/";
 		MutableScenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-		new MatsimNetworkReader(scenario.getNetwork()).readFile("scenarios/fem2016/hn_net_ses_emme_2016_V12_network.xml.gz");
+		new MatsimNetworkReader(scenario.getNetwork()).readFile("scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz");
 //		new PopulationReader(scenario).readFile("test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/pop.xml.gz");
 		// (My preference would be to not use output of other tests as input for this test: this routinely leads to unstable tests,
 		// possibly running on one machine (since it still has leftover files) and
 		// not running on another. Thanks a lot.  kai, apr'18)
-		new PopulationReader(scenario).readFile("scenarios/fem2016/pop.xml.gz");
+		new PopulationReader(scenario).readFile("scenarios/fem2016_v20180706/pop.xml.gz");
 
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork());
 
-		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS1.csv.gz");
-		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS2.csv.gz");
+		hydrographParser.readHydrographData(inputDirectory + "/d06391_H_TS.csv.gz");
+//		hydrographParser.readHydrographData(inputDirectory + "/d09693_H_TS2.csv.gz");
 		hydrographParser.removeHydrographPointsWithNoData();
 		hydrographParser.setHydroFloodTimes();
 
@@ -51,7 +51,7 @@ public class HydrographParserTest {
 
 		hydrographParser.hydrographToViaLinkAttributes(utils.getOutputDirectory()+"hydro_linkattrs.txt.gz",scenario.getNetwork());
 
-		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d09693_H_change_events.xml.gz");
+		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d06391_H_change_events.xml.gz");
 
 //		hydrographParser.readEvacAndSafeNodes( "test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/subsectorMappingTravTimeRanked.csv");
 
