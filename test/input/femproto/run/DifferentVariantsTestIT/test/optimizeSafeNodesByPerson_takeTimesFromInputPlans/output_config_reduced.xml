@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+	<module name="controler" >
+		<param name="lastIteration" value="100" />
+		<param name="outputDirectory" value="test/output/femproto/run/DifferentVariantsTestIT/test//optimizeSafeNodesByPerson_takeTimesFromInputPlans/" />
+		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
+		<param name="routingAlgorithmType" value="FastDijkstra" />
+	</module>
+	<module name="decongestion" >
+		<param name="Kd" value="0.0" />
+		<param name="Ki" value="0.0" />
+		<param name="Kp" value="0.5" />
+		<param name="decongestionApproach" value="PID" />
+		<param name="enableDecongestionPricing" value="true" />
+		<param name="fractionOfIterationsToEndPriceAdjustment" value="1.0" />
+		<param name="fractionOfIterationsToStartPriceAdjustment" value="0.0" />
+		<param name="initialToll" value="10.0" />
+		<param name="integralApproach" value="UnusedHeadway" />
+		<param name="integralApproachAverageAlpha" value="0.0" />
+		<param name="integralApproachUnusedHeadwayFactor" value="10.0" />
+		<param name="runFinalAnalysis" value="true" />
+		<param name="toleratedAverageDelaySec" value="30.0" />
+		<param name="tollAdjustment" value="1.0" />
+		<param name="tollBlendFactor" value="1.0" />
+		<param name="updatePriceInterval" value="1" />
+		<param name="usingMsa" value="false" />
+		<param name="writeLinkInfoCharts" value="false" />
+		<param name="writeOutputIteration" value="100" />
+	</module>
+	<module name="network" >
+		<param name="inputChangeEventsFile" value="d09693_H_change_events.xml.gz" />
+		<param name="inputNetworkFile" value="hn_net_ses_emme_2016_V12_network.xml.gz" />
+		<param name="timeVariantNetwork" value="true" />
+	</module>
+	<module name="planCalcScore" >
+		<param name="fractionOfIterationsToStartScoreMSA" value="0.7" />
+		<param name="writeExperiencedPlans" value="true" />
+		<parameterset type="scoringParameters" >
+			<parameterset type="activityParams" >
+				<param name="activityType" value="dummy" />
+				<param name="typicalDuration" value="02:00:00" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="car interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="pt interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="bike interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="other interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="walk interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="evac" />
+				<param name="scoringThisActivityAtAll" value="false" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="safe" />
+				<param name="scoringThisActivityAtAll" value="false" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="car" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="pt" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="walk" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="bike" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="ride" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="other" />
+			</parameterset>
+		</parameterset>
+	</module>
+	<module name="plans" >
+		<param name="inputPlansFile" value="pop.xml.gz" />
+	</module>
+	<module name="planscalcroute" >
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="bike" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="walk" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="access_walk" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="egress_walk" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="undefined" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="ride" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="pt" />
+		</parameterset>
+	</module>
+	<module name="qsim" >
+		<param name="flowCapacityFactor" value="0.01" />
+		<param name="removeStuckVehicles" value="true" />
+		<param name="storageCapacityFactor" value="0.01" />
+		<param name="stuckTime" value="86400.0" />
+	</module>
+	<module name="roadpricing" >
+		<param name="tollLinksFile" value="null" />
+	</module>
+	<module name="strategy" >
+		<param name="maxAgentPlanMemorySize" value="0" />
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="BestScore" />
+			<param name="weight" value="1.0" />
+		</parameterset>
+		<parameterset type="strategysettings" >
+			<param name="disableAfterIteration" value="90" />
+			<param name="strategyName" value="SelectRandom" />
+			<param name="weight" value="0.1" />
+		</parameterset>
+	</module>
+
+</config>

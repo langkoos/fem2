@@ -3,6 +3,7 @@ package femproto.run;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
+import femproto.globals.FEMAttributes;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -12,8 +13,10 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.events.IterationEndsEvent;
+import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.IterationEndsListener;
+import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
@@ -26,14 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static femproto.run.KNRunMatsim4FloodEvacuation.*;
-
-public class SelectOneBestSafeNodePerSubsector implements StartupListener, IterationEndsListener {
+public class SelectOneBestSafeNodePerSubsector implements StartupListener, ReplanningListener {
 	private static final Logger log = Logger.getLogger( SelectOneBestSafeNodePerSubsector.class ) ;
 	
 	@Inject Population population ;
 	@Inject Config config ;
-	@Override public void notifyIterationEnds(IterationEndsEvent event) {
+	@Override public void notifyReplanning( ReplanningEvent event) {
+//	@Override public void notifyIterationEnds(IterationEndsEvent event) {
 		
 		Table<String,Id<Link>,Double> cnts = HashBasedTable.create() ;
 		Table<String,Id<Link>,Double> sums = HashBasedTable.create() ;
@@ -70,13 +72,17 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Itera
 		
 		// find for each subsector the preferred destination:
 		Map<String,Id<Link>> safeLinkIds = new HashMap<>() ;
+		
+		int cnt2 = 10 ;
 		;
 		// go through each subsector:
 		for (Map.Entry<String, Map<Id<Link>, Double>> entry : cnts.rowMap().entrySet() ) {
 			String subsector = entry.getKey();
 			final Map<Id<Link>, Double> cntsRow = entry.getValue();
 			
-			log.info("subsector=" + subsector ) ;
+			if ( cnt2>0 ) {
+				log.info( "subsector=" + subsector );
+			}
 			
 			Id<Link> linkId = null;
 			
@@ -89,9 +95,11 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Itera
 					final Double sum = sumsRow.get(aLinkId);
 					final Double cnt = entry2.getValue();
 					Double val = sum / cnt;
-					log.info( "linkId=" + aLinkId + "; score av=" + val ) ;
-					if ( val==1. ) {
-						log.info( "sum=" + sum + "; cnt=" + cnt ) ;
+					if ( cnt2 > 0 ) {
+						log.info( "linkId=" + aLinkId + "; score av=" + val );
+						if ( val == 1. ) {
+							log.info( "sum=" + sum + "; cnt=" + cnt );
+						}
 					}
 					if (val > max) {
 						max = val;
@@ -105,9 +113,16 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Itera
 				int index = MatsimRandom.getRandom().nextInt( list.size() ) ;
 				linkId = list.get(index) ;
 			}
-			log.info("selectedLinkId=" + linkId ) ;
 			safeLinkIds.put(subsector, linkId);
-			log.info("") ;
+			
+			if ( cnt2>0 ) {
+				log.info( "selectedLinkId=" + linkId );
+				log.info( "" );
+			}
+			cnt2-- ;
+			if ( cnt2 == 0 ) {
+				log.info( Gbl.FUTURE_SUPPRESSED );
+			}
 		}
 		
 		// select for each person the plan we want:
@@ -135,19 +150,32 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Itera
 			}
 		}
 		
+		int cnt = 10 ;
+		
 		Map< Id<Link>, Id<Link> > memDestLink = new HashMap<>() ;
 		Map< Id<Link>, String > memSubsector = new HashMap<>() ;
 		for ( Person person : population.getPersons().values() ) {
 			Plan plan = person.getSelectedPlan() ;
-			Id<Link> firstLinkId = PopulationUtils.getFirstActivity(plan).getLinkId();
-			Id<Link> lastLinkId = PopulationUtils.getLastActivity(plan).getLinkId();
-			final Id<Link> memorizedLinkId = memDestLink.get(firstLinkId);
+			Id<Link> originLinkId = PopulationUtils.getFirstActivity(plan).getLinkId();
+			Id<Link> destLinkId = PopulationUtils.getLastActivity(plan).getLinkId();
+			final Id<Link> memorizedLinkId = memDestLink.get(originLinkId);
 			if ( memorizedLinkId==null ) {
-				memDestLink.put( firstLinkId, lastLinkId );
-				memSubsector.put( firstLinkId, getSubsector(person) ) ;
-			} else if ( !memorizedLinkId.equals( lastLinkId ) ) {
-				log.warn( "firstLinkId=" + firstLinkId + "; subsector=" + memSubsector.get( firstLinkId ) + "; dest1=" + memorizedLinkId )  ;
-				log.warn( "firstLinkId=" + firstLinkId + "; subsector=" + getSubsector(person)  + "; dest2=" + lastLinkId ) ;
+				// memorizing destLinkId and subsector that are connected to this originLinkId:
+				memDestLink.put( originLinkId, destLinkId );
+				memSubsector.put( originLinkId, getSubsector(person) ) ;
+			} else if ( !memorizedLinkId.equals( destLinkId ) && cnt > 0 ) {
+				// (that is we have seen another destLinkId assigned to the same origLinkId)
+				
+				// writing this to the console:
+				log.warn( "originLinkId=" + originLinkId + "; subsector=" + memSubsector.get( originLinkId ) + "; dest1=" + memorizedLinkId )  ;
+				log.warn( "originLinkId=" + originLinkId + "; subsector=" + getSubsector(person)  + "; dest2=" + destLinkId ) ;
+				// note that this can happen during the first 10 or so iterations when agents are still just selecting
+				// unscored plans. kai, jul'18
+				
+				cnt-- ;
+				if ( cnt==0 ) {
+					log.warn( Gbl.FUTURE_SUPPRESSED ) ;
+				}
 			}
 		}
 
@@ -160,5 +188,15 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Itera
 		for ( StrategyConfigGroup.StrategySettings settings : config.strategy().getStrategySettings() ) {
 			Gbl.assertIf( settings.getStrategyName().equals(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected ) );
 		}
+	}
+	
+	static Id<Link> getDestinationLinkId(Plan plan) {
+		return PopulationUtils.getLastActivity(plan).getLinkId();
+	}
+	
+	static String getSubsector( Person person) {
+		final String attribute = (String) person.getAttributes().getAttribute( FEMAttributes.SUBSECTOR);
+		Gbl.assertNotNull(attribute);
+		return attribute;
 	}
 }
