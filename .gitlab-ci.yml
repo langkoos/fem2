@@ -12,13 +12,18 @@ before_script:
   - chmod 700 ~/.ssh
   - ssh-keyscan cnode00.vsp.tu-berlin.de >> ~/.ssh/known_hosts
   - sshpass -p 'matsim' git fat pull
-#    - sshpass -p 'secret' git fat pull # error: Host key verification failed.
 
 job1:
   stage: all
-  script: 
-    - mvn install -B --fail-at-end -Dmatsim.preferLocalDtds=true
+  script:
+  - mvn clean test --batch-mode --fail-at-end -Dmatsim.preferLocalDtds=true -Dmaven.test.redirectTestOutputToFile
+  # (does not run the *IT tests)
 
-#-Dmaven.test.redirectTestOutputToFile 
+job2:
+  stage: all
+  script:
+  - mvn  failsafe:integration-test failsafe:verify --batch-mode --fail-at-end -Dmatsim.preferLocalDtds=true -Dmaven.test.redirectTestOutputToFile
+  # (seems that without the failsafe:verify a failing integration test will not fail the build)
+
 
 # see http://stackoverflow.com/questions/33430487/how-to-use-gitlab-ci-to-build-a-java-maven-project
