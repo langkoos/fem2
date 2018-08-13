@@ -28,9 +28,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-public class SelectOneBestSafeNodePerSubsector implements StartupListener, ReplanningListener {
+public class SelectOneBestSafeNodePerSubsector implements StartupListener,
+											    ReplanningListener
+//	IterationEndsListener
+{
 	private static final Logger log = Logger.getLogger( SelectOneBestSafeNodePerSubsector.class ) ;
+	
+	private static final Random rnd = MatsimRandom.getLocalInstance() ;
 	
 	@Inject Population population ;
 	@Inject Config config ;
@@ -74,9 +80,9 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Repla
 		Map<String,Id<Link>> safeLinkIds = new HashMap<>() ;
 		
 		int cnt2 = 10 ;
-		;
-		// go through each subsector:
+		
 		for (Map.Entry<String, Map<Id<Link>, Double>> entry : cnts.rowMap().entrySet() ) {
+			// for each subsector:
 			String subsector = entry.getKey();
 			final Map<Id<Link>, Double> cntsRow = entry.getValue();
 			
@@ -86,11 +92,13 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Repla
 			
 			Id<Link> linkId = null;
 			
-			if ( event.getIteration() > 0.9*config.controler().getLastIteration() || MatsimRandom.getRandom().nextDouble() < 0.9 ) {
-				// go through each possible safe node and find best score:
+			if ( rnd.nextDouble() < 0.9 || event.getIteration() > 0.9 * config.controler().getLastIteration() ) {
+				// yy two parameters that are quite ad-hoc!  kai, aug'18
+				
 				Map<Id<Link>, Double> sumsRow = sums.row(subsector);;
 				double max = Double.NEGATIVE_INFINITY ;
 				for (Map.Entry<Id<Link>, Double> entry2 : cntsRow.entrySet()) {
+					// go through each possible safe node and find best score:
 					final Id<Link> aLinkId = entry2.getKey();
 					final Double sum = sumsRow.get(aLinkId);
 					final Double cnt = entry2.getValue();
@@ -167,8 +175,8 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener, Repla
 				// (that is we have seen another destLinkId assigned to the same origLinkId)
 				
 				// writing this to the console:
-				log.warn( "originLinkId=" + originLinkId + "; subsector=" + memSubsector.get( originLinkId ) + "; dest1=" + memorizedLinkId )  ;
-				log.warn( "originLinkId=" + originLinkId + "; subsector=" + getSubsector(person)  + "; dest2=" + destLinkId ) ;
+				log.info( "originLinkId=" + originLinkId + "; subsector=" + memSubsector.get( originLinkId ) + "; dest1=" + memorizedLinkId )  ;
+				log.info( "originLinkId=" + originLinkId + "; subsector=" + getSubsector(person)  + "; dest2=" + destLinkId ) ;
 				// note that this can happen during the first 10 or so iterations when agents are still just selecting
 				// unscored plans. kai, jul'18
 				

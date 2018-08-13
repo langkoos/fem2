@@ -114,14 +114,14 @@ public class RunMatsim4FloodEvacuation {
 	Config loadConfig( final String[] args ) {
 		if ( args == null || args.length == 0 || args[0] == "" ) {
 			
-			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/configSmall.xml" );
+			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/config-just-run-plans-file.xml" );
 
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
-//			config.plans().setInputFile("pop.xml.gz");
+//			config.plans().setInputFile("pop-initial.xml.gz");
 
 //			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
-//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/configSmall.xml" ) ;
+//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config-just-run-plans-file.xml" ) ;
 		
 		
 		} else {
@@ -138,7 +138,7 @@ public class RunMatsim4FloodEvacuation {
 	void prepareConfig() {
 		// division into loadConfig and prepareConfig is necessary since some configuration depends
 		// on (FEM)config switches, and thus configuration-in-code needs to be done before
-		// prepareConfig.  :-(  kai, jul'18
+		// prepareConfig.   kai, jul'18
 		
 		if ( !hasLoadedConfig ) {
 			loadConfig( null ) ;
@@ -147,10 +147,11 @@ public class RunMatsim4FloodEvacuation {
 		// --- controler config group:
 		final int lastIteration = 100;
 		config.controler().setLastIteration( lastIteration );
-//		config.qsim().setEndTime(3600.);
 		
 		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
+
 		config.controler().setRoutingAlgorithmType( ControlerConfigGroup.RoutingAlgorithmType.FastDijkstra );
+		// yy landmarks algorithm does not work when network is disconnected.  kai, aug'18
 		
 		// --- strategies:
 		config.strategy().setMaxAgentPlanMemorySize( 0 );
@@ -164,16 +165,16 @@ public class RunMatsim4FloodEvacuation {
 		}
 		config.plansCalcRoute().setInsertingAccessEgressWalk( true );
 
-//		config.travelTimeCalculator().setMaxTime(72*3600); // congestion observation, also for decongestion
-		
-		
 		// --- qsim:
-		
 		config.qsim().setRemoveStuckVehicles( true );
 		config.qsim().setStuckTime( 86400 );
 		
 		//		config.qsim().setEndTime(264 * 3600);
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
+		
+		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles( true );
+		// means that vehicles in driveways will squeeze into the congested traffic.  Otherwise they are
+		// not picked up by the decongestion approach.  kai, aug'18
 		
 		// --- scoring:
 		config.planCalcScore().setFractionOfIterationsToStartScoreMSA( 0.7 );
@@ -278,9 +279,6 @@ public class RunMatsim4FloodEvacuation {
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;
 		}
 		
-		
-		
-		
 		//		preparationsForRmitHawkesburyScenario();
 		
 		// ---
@@ -295,14 +293,15 @@ public class RunMatsim4FloodEvacuation {
 		
 		controler = new Controler( scenario );
 		
-		
 		controler.addOverridingModule( new AbstractModule() {
 			@Override
 			public void install() {
 				
+				// analysis:
 				this.addControlerListenerBinding().to( KaiAnalysisListener.class );
 				this.addControlerListenerBinding().to( OutputEvents2TravelDiaries.class );
 				
+				// routing:
 				switch ( femConfig.getFemRoutingMode() ) {
 					case preferEvacuationLinks:
 						final String routingMode = TransportMode.car;
@@ -336,16 +335,12 @@ public class RunMatsim4FloodEvacuation {
 					default:
 						throw new RuntimeException( "not implemented" );
 				}
-			}
-		} );
-		
-		
-		// yyyy in the "justRun" mode, do we also assume initial routes?  kai, jul'18
-		controler.addOverridingModule( new AbstractModule() {
-			@Override
-			public void install() {
 				
+				// scoring such that routes on SES links are strongly preferred
 				this.bindScoringFunctionFactory().to( NonEvacLinkPenalizingScoringFunctionFactory.class );
+				// yy (this is mostly necessary since the "to-all-safe-nodes" initial router also accepts short
+				// non-SES links (e.g. ferry links), and if they are not strongly penalized in the iterations, the simulation
+				// will use them.  kai, aug'18)
 				
 				// calculating all routes at initialization (assuming that they are sufficiently defined by the evac
 				// network).  kai, may'18
@@ -401,7 +396,6 @@ public class RunMatsim4FloodEvacuation {
 								}
 							}
 						}
-//						PopulationUtils.writePopulation( scenario.getPopulation(), "pop.xml.gz" );
 						
 						// run the default PrepareForSimImpl:
 						delegate.run();
@@ -419,7 +413,7 @@ public class RunMatsim4FloodEvacuation {
 						this.addControlerListenerBinding().to( SelectOneBestSafeNodePerSubsector.class );
 					}
 				} );
-				// no break since the following settings are shared by the two app
+				// no "break" here since the next lines are also needed.  kai, aug'18
 			case optimizeSafeNodesByPerson:
 				controler.addOverridingModule( new DecongestionModule( scenario ) );
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are

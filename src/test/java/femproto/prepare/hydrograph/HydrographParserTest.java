@@ -20,11 +20,11 @@ public class HydrographParserTest {
 		String inputDirectory = utils.getPackageInputDirectory()+"v20180706/";
 		MutableScenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new MatsimNetworkReader(scenario.getNetwork()).readFile("scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz");
-//		new PopulationReader(scenario).readFile("test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/pop.xml.gz");
+//		new PopulationReader(scenario).readFile("test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/pop-initial.xml.gz");
 		// (My preference would be to not use output of other tests as input for this test: this routinely leads to unstable tests,
 		// possibly running on one machine (since it still has leftover files) and
 		// not running on another. Thanks a lot.  kai, apr'18)
-		new PopulationReader(scenario).readFile("scenarios/fem2016_v20180706/pop.xml.gz");
+		new PopulationReader(scenario).readFile("scenarios/fem2016_v20180706/pop-initial.xml.gz");
 
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork());
@@ -55,7 +55,7 @@ public class HydrographParserTest {
 
 //		hydrographParser.readEvacAndSafeNodes( "test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/subsectorMappingTravTimeRanked.csv");
 
-		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/pop.xml.gz",36000,60/360, 300);
+		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/pop-initial.xml.gz",36000,60/360, 300);
 
 	}
 }

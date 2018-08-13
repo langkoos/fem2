@@ -30,7 +30,7 @@ import java.awt.event.ActionListener;
 public class MATSimGUI {
 
 	public static void main(String[] args) {
-		Gui gui = Gui.show("MATSim GUI from example project", RunMatsim4FloodEvacuation.class);
+		Gui gui = Gui.show("FEM GUI", RunMatsim4FloodEvacuation.class);
 		
 		// the following material is here to demonstrate that we can, in principle, add menu items.
 		// yy maybe we rather want a separate button "FEMTools"?

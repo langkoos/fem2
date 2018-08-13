@@ -3,7 +3,7 @@
 <config>
 	<module name="FEM" >
 		<!-- FEM run type.  Options: justRunInitialPlansFile optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
-		<param name="FEMRunType" value="justRunInitialPlansFile" />
+		<param name="FEMRunType" value="optimizeSafeNodesBySubsector" />
 	</module>
 
 	<module name="network" >
