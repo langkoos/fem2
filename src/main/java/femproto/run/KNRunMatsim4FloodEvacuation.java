@@ -24,6 +24,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 
 import static femproto.run.FEMConfigGroup.*;
+import static org.matsim.core.config.groups.PlanCalcScoreConfigGroup.*;
 
 /**
  * @author nagel
@@ -38,16 +39,22 @@ public class KNRunMatsim4FloodEvacuation {
 		
 		Config config = evac.loadConfig( args ) ;
 		
+		config.network().setTimeVariantNetwork( false );
+		// yy I prefer running without.
+		
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 		
-		femConfig.setFemRunType( FEMRunType.optimizeSafeNodesByPerson );
+//		femConfig.setFemRunType( FEMRunType.optimizeSafeNodesBySubsector );
+		femConfig.setFemRunType( FEMRunType.justRunInputPlansFile );
+
 		femConfig.setFemEvacuationTimeAdjustment( FEMEvacuationTimeAdjustment.allDepartAtMidnight );
 		
 		// ---
 		
 		evac.prepareConfig();
 		
-//		config.planCalcScore().setFractionOfIterationsToStartScoreMSA(0.9);
+		final ActivityParams params = config.planCalcScore().getActivityParams( "dummy" );
+		params.setScoringThisActivityAtAll( false );
 		
 		// ---
 		

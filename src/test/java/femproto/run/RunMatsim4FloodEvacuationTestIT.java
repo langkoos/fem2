@@ -33,7 +33,7 @@ public class RunMatsim4FloodEvacuationTestIT {
 //		config.network().setInputFile( "hn_net_ses_emme_2016_V12_network.xml.gz");
 //		// (relative to config file location!)
 //
-//		config.plans().setInputFile( "pop.xml.gz" ) ;
+//		config.plans().setInputFile( "plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz" ) ;
 //		// (relative to config file location!)
 //
 //		config.controler().setOutputDirectory( utils.getOutputDirectory() );
@@ -67,7 +67,7 @@ public class RunMatsim4FloodEvacuationTestIT {
 //
 //		// ---
 //
-		String configFilename = scenarioBase + "configSmall.xml" ;
+		String configFilename = scenarioBase + "00config-just-run-plans-file.xml" ;
 //
 //		ConfigUtils.writeConfig( config, configFilename );
 		

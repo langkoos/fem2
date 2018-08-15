@@ -26,7 +26,7 @@ import java.util.*;
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
 	
-	Scenario scenario;
+	private final Scenario scenario;
 	private EvacuationToSafeNodeMapping evacuationToSafeNodeMapping;
 
 	private SubSectorsToPopulation() {
@@ -41,8 +41,9 @@ public class SubSectorsToPopulation {
 		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
 		subSectorsToPopulation.writePopulation(args[3]);
 		subSectorsToPopulation.writeAttributes(args[4]);
-		// TODO if we really want to leave it like this, then put in a more expressive
-		// command passing syntax (see bdi-abm-integration project).  kai, feb'18
+		// yyyy do we need to write the attributes, or is this now (also) in the population?  kai, aug'18
+		
+		// TODO if we really want to leave it like this, then put in a more expressive command passing syntax (see bdi-abm-integration project).  kai, feb'18
 	}
 
 	private void initializeEvacuationStaging(String arg) {
@@ -67,10 +68,11 @@ public class SubSectorsToPopulation {
 		// coordinate transformation:
 		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$", "prj")).readLine().toString();
 		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
+		// yyyy this coord transformation is never used.  is this a problem?  kai, aug'18
 		
 		//iterate through features and generate pax by subsector
 		Iterator<SimpleFeature> iterator = features.iterator();
-		long id=0L;
+		long personCnt=0L;
 		while (iterator.hasNext()){
 			SimpleFeature feature = iterator.next();
 			
@@ -115,7 +117,7 @@ public class SubSectorsToPopulation {
 
 			int totalVehicles = (int) (double) feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
-				Person person = pf.createPerson(Id.createPersonId(id++));
+				Person person = pf.createPerson(Id.createPersonId(personCnt++));
 				person.getAttributes().putAttribute("SUBSECTOR", subsector);
 				int j = 0;
 				List<Link> safeLinks = evacuationToSafeNodeMapping.getSafeLinks(subsector);

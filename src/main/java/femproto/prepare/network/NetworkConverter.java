@@ -39,7 +39,7 @@ public class NetworkConverter {
 	public static final String EVACUATION_LINK = "evacSES";
 	public static final String DESCRIPTION = "T_DES";
 
-	Scenario scenario;
+	private Scenario scenario;
 
 	public NetworkConverter(String nodesFile, String linksFile) {
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
@@ -112,6 +112,7 @@ public class NetworkConverter {
 	private void writeNetwork(String fileName){
 		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml.gz");
 		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
+		// yyyy original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 	}
 
 	public static void main(String[] args) throws IOException, FactoryException {

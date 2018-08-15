@@ -3,34 +3,45 @@
 - [Movies](#movies)
 - [Run Via](#via)
 - [Run MATSim](#runmatsim)
-- [Clone repo](#runmatsim)
+- [Clone repo](#clonerepo)
 - [Setting up a post-commit hook to rsync to Dropbox](#commithook)
 
-### Simple things
+### Things try when you are accessing this project via the Dropbox clone
 
 ##### Movies <a name="movies"></a>
 
 1. Go into the `scenarios` directory.  
-1. Decide for a scenario that you find interesting (e.g. `fem2016`) and go into that directory.
+1. Decide for a scenario that you find interesting (e.g. `fem2016_v20180307`) and go into that directory.
 1. Inside there, look for an `output-*` directory that you find interesting and go into that directory.
-1. Inside there, look for `movie-*` files.  You can't view them directly, but you there are various ways to download them, and you can view them then.  Try that.
+1. Inside there, look for `movie-*` files.  You should be able to watch them.
 
 ##### Run VIA on output files  <a name="via"></a>
 
 1. Do steps 1.-3. above.
-1. Download `output_network.xml.gz` and `output_events.xml.gz`.  Best make sure that they do not uncompress, e.g. by "Download linked file as ...".
+1. Locate `output_network.xml.gz` and `output_events.xml.gz`.  
 1. Get these files into VIA.  This can be achieved in various ways; one is to open VIA and then drag the files from a file browser into VIA.
 1. Run VIA and enjoy.
 
 ##### Run MATSim <a name="runmatsim"></a>
 
-1. There should be a file directly in the `fem` directory with name approximately as `au-flood-evacuation-0.11.0-SNAPSHOT-jar-with-dependencies.jar`.
+1. There should be a file directly in the `FEM` base directory with name approximately as `au-flood-evacuation-0.11.0-SNAPSHOT-jar-with-dependencies.jar`.
 1. Double-click on that file (in a file system browser).  A simple GUI should open.
-1. In the GUI, click on the "Choose" button for configuration file.  Navigate, e.g., to `scenario/fem2016` and load one of the configuration files (e.g. `configSmall.xml`).
+1. In the GUI, click on the "Choose" button for configuration file.  Navigate to `scenario/fem2016_v20180307` and load `00config-just-run-plans-file.xml`.
+1. Increase memory.  8000 MB is a good number, but less should do here as well.
 1. Press the "Start MATSim" button.  This should run MATSim.
 1. "Open" the output directory.  You can drag files into VIA as was already done above.
+1. If you run again, you will have to delete the output directory first.  There is a button for this.
 
-1. "Edit..." (in the GUI) the config file.  Re-run MATSim.
+##### Use MATSim to optimize safe node assignments
+
+1. Do all steps as in [Run MATSim](#runmatsim), but load `00config-optimize-safe-nodes-by-subsector.xml`.
+
+The optimization algorithm that is used here is a stochastic heuristic. Small changes will lead to other results, often quite different.  Such changes can be in the code, but also in the random seed.
+
+##### Edit the config files
+
+The GUI allows to edit the config file.  It might be best to first make a copy of the original config file before trying this.
+
 
 
 

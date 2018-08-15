@@ -28,12 +28,14 @@ public class DifferentVariantsTestIT {
 	
 	private final FEMRunType runType;
 	private final FEMEvacuationTimeAdjustment timeAdjustment;
-
+	private final boolean timeDepNetwork;
+	
 	private static String utilsOutputDir ;
 	
-	public DifferentVariantsTestIT( FEMRunType runType, FEMEvacuationTimeAdjustment timeAdjustment ) {
+	public DifferentVariantsTestIT( FEMRunType runType, FEMEvacuationTimeAdjustment timeAdjustment, boolean timeDepNetwork ) {
 		this.runType = runType;
 		this.timeAdjustment = timeAdjustment;
+		this.timeDepNetwork = timeDepNetwork;
 	}
 	
 	@Parameters(name="{index}: {0} {1}") // the "name" entry is just for the test output
@@ -42,7 +44,8 @@ public class DifferentVariantsTestIT {
 		
 		for ( FEMRunType rt : FEMRunType.values() ) {
 			for ( FEMEvacuationTimeAdjustment ta : FEMEvacuationTimeAdjustment.values() ) {
-				combos.add( new Object [] { rt, ta } ) ;
+				combos.add( new Object [] { rt, ta, true } ) ;
+				combos.add( new Object [] { rt, ta, false } ) ;
 			}
 		}
 		return combos ;
@@ -53,15 +56,22 @@ public class DifferentVariantsTestIT {
 		if ( utilsOutputDir==null ) {
 			utilsOutputDir = utils.getOutputDirectory() ;
 			// utils.getOutputDirectory() first removes everything _at that level_.  For the way the output paths are
-			// constructed here, this means that only the last parameterized test output will survive.
+			// constructed here, this means that otherwise only the last parameterized test output would survive.
 			// There might be a better solution ...   kai, jul'18
 		}
 
-		final String dirExtension = "/" + runType.name() + "_" + timeAdjustment.name() + "/";
+		String dirExtension = "/" + runType.name() + "_" + timeAdjustment.name() ;
+		if ( timeDepNetwork ) {
+			dirExtension += "_withTimeDepNetwork/" ;
+		} else {
+			dirExtension += "_woTimeDepNetwork/" ;
+		}
 		
 		RunMatsim4FloodEvacuation evac = new RunMatsim4FloodEvacuation() ;
 
 		Config config = evac.loadConfig( null ) ;
+		
+		config.network().setTimeVariantNetwork( timeDepNetwork );
 		
 		config.controler().setOutputDirectory( utilsOutputDir + dirExtension );
 		
