@@ -125,7 +125,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.matsim.gui.MATSimGUI</mainClass>
+							<mainClass>org.matsim.run.gui.MATSimGUI</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

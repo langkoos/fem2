@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+	<module name="FEM" >
+		<!-- FEM run type.  Options: justRunInitialPlansFile optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
+		<param name="FEMRunType" value="optimizeSafeNodesBySubsector" />
+		<param name="inputSubsectorsShapefile" value="../../data/20180307_DPavey_TestInputFiles/hn_evacuationmodel_PL2016_V12subsectorsVehic2016/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp" />
+		<param name="inputSubsectorsToSafeNodesMappingsFile" value="../../data/20180307_DPavey_TestInputFiles/hn_evacuationmodel_PL2016_V12subsectorsVehic2016/2016_subsectors_safe_node_mapping.txt" />
+	</module>
+
+	<module name="network" >
+
+		<param name="inputNetworkFile" value="hn_net_ses_emme_2016_V12_network.xml.gz" />
+
+		<param name="inputChangeEventsFile" value="d09693_H_change_events.xml.gz" />
+		<param name="timeVariantNetwork" value="true" />
+
+	</module>
+
+	<module name="plans" >
+		<param name="inputPlansFile" value="plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz" />
+	</module>
+
+</config>

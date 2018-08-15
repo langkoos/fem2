@@ -6,7 +6,7 @@
 - [Clone repo](#clonerepo)
 - [Setting up a post-commit hook to rsync to Dropbox](#commithook)
 
-### Simple things when you are accessing this via a Dropbox clone
+### Things try when you are accessing this project via the Dropbox clone
 
 ##### Movies <a name="movies"></a>
 
@@ -24,9 +24,9 @@
 
 ##### Run MATSim <a name="runmatsim"></a>
 
-1. There should be a file directly in the `fem` directory with name approximately as `au-flood-evacuation-0.11.0-SNAPSHOT-jar-with-dependencies.jar`.
+1. There should be a file directly in the `FEM` base directory with name approximately as `au-flood-evacuation-0.11.0-SNAPSHOT-jar-with-dependencies.jar`.
 1. Double-click on that file (in a file system browser).  A simple GUI should open.
-1. In the GUI, click on the "Choose" button for configuration file.  Navigate to `scenario/fem2016_v20180307` and load `config-just-run-plans-file.xml`.
+1. In the GUI, click on the "Choose" button for configuration file.  Navigate to `scenario/fem2016_v20180307` and load `00config-just-run-plans-file.xml`.
 1. Increase memory.  8000 MB is a good number, but less should do here as well.
 1. Press the "Start MATSim" button.  This should run MATSim.
 1. "Open" the output directory.  You can drag files into VIA as was already done above.
@@ -34,7 +34,7 @@
 
 ##### Use MATSim to optimize safe node assignments
 
-1. Do all steps as in [Run MATSim](#runmatsim), but load `config-optimize-safe-nodes-by-subsector.xml`.
+1. Do all steps as in [Run MATSim](#runmatsim), but load `00config-optimize-safe-nodes-by-subsector.xml`.
 
 The optimization algorithm that is used here is a stochastic heuristic. Small changes will lead to other results, often quite different.  Such changes can be in the code, but also in the random seed.
 

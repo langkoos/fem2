@@ -20,10 +20,8 @@ package femproto.run;
 
 import femproto.run.FEMConfigGroup.FEMRunType;
 import org.apache.log4j.Logger;
-import org.matsim.contrib.decongestion.DecongestionConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 
 import static femproto.run.FEMConfigGroup.*;
 import static org.matsim.core.config.groups.PlanCalcScoreConfigGroup.*;
@@ -47,7 +45,7 @@ public class KNRunMatsim4FloodEvacuation {
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 		
 //		femConfig.setFemRunType( FEMRunType.optimizeSafeNodesBySubsector );
-		femConfig.setFemRunType( FEMRunType.justRunInitialPlansFile );
+		femConfig.setFemRunType( FEMRunType.justRunInputPlansFile );
 
 		femConfig.setFemEvacuationTimeAdjustment( FEMEvacuationTimeAdjustment.allDepartAtMidnight );
 		

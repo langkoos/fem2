@@ -114,14 +114,15 @@ public class RunMatsim4FloodEvacuation {
 	Config loadConfig( final String[] args ) {
 		if ( args == null || args.length == 0 || args[0] == "" ) {
 			
-			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/config-just-run-plans-file.xml" );
+//			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-just-run-plans-file.xml" );
+			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-optimize-safe-nodes-by-subsector.xml" );
 
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
-//			config.plans().setInputFile("pop-initial.xml.gz");
+//			config.plans().setInputFile("plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz");
 
 //			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
-//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/config-just-run-plans-file.xml" ) ;
+//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/00config-just-run-plans-file.xml" ) ;
 		
 		
 		} else {
@@ -225,13 +226,13 @@ public class RunMatsim4FloodEvacuation {
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setStrategyName( DefaultPlanStrategiesModule.DefaultSelector.SelectRandom );
 					strategySettings.setWeight( 0.1 );
-					strategySettings.setDisableAfter( (int) ( 0.9 * lastIteration ) ); // (50 iterations was not enough)
+					strategySettings.setDisableAfter( (int) ( 0.9 * lastIteration ) ); // (50 iterations was not enough) (not innovative!)
 					config.strategy().addStrategySettings( strategySettings );
 				}
 				configureDecongestion( config );
 			}
 			break;
-			case justRunInitialPlansFile:
+			case justRunInputPlansFile:
 				config.controler().setLastIteration( 0 );
 				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
 				break;
@@ -408,18 +409,21 @@ public class RunMatsim4FloodEvacuation {
 		
 		switch( femConfig.getFemRunType() ) {
 			case optimizeSafeNodesBySubsector:
+				controler.addOverridingModule( new DecongestionModule( scenario ) );
+				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
+				// computed in prepareForSim. kai, jul'18
 				controler.addOverridingModule( new AbstractModule() {
 					@Override public void install() {
 						this.addControlerListenerBinding().to( SelectOneBestSafeNodePerSubsector.class );
 					}
 				} );
-				// no "break" here since the next lines are also needed.  kai, aug'18
+				break ;
 			case optimizeSafeNodesByPerson:
 				controler.addOverridingModule( new DecongestionModule( scenario ) );
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
 				// computed in prepareForSim. kai, jul'18
 				break;
-			case justRunInitialPlansFile:
+			case justRunInputPlansFile:
 				break;
 			default:
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;

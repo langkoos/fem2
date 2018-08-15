@@ -17,7 +17,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	public FEMConfigGroup() {
 		super(NAME);
 	}
-	
+	// ===
 	@Override
 	public Map<String,String> getComments() {
 		final Map<String, String> map = super.getComments();;
@@ -28,10 +28,10 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 			}
 			map.put( FEM_RUN_TYPE, str ) ;
 		}
+		map.put( INPUT_SUBSECTORS_SHAPEFILE, INPUT_SUBSECTORS_SHAPEFILE_CMT ) ;
 		return map ;
 	}
-	
-	// ---
+	// ===
 	enum FEMRoutingMode {preferEvacuationLinks}
 	private FEMRoutingMode femRoutingMode = preferEvacuationLinks ;
 	final FEMRoutingMode getFemRoutingMode() {
@@ -50,8 +50,9 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	}
 
 	// ---
-	enum FEMRunType { justRunInitialPlansFile, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector }
-	private FEMRunType femRunType = FEMRunType.justRunInitialPlansFile ;
+	enum FEMRunType {
+		justRunInputPlansFile, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector }
+	private FEMRunType femRunType = FEMRunType.justRunInputPlansFile;
 	private static final String FEM_RUN_TYPE="FEMRunType" ;
 	private static final String FEM_RUN_TYPE_CMT = "FEM run type. ";
 	@StringGetter( FEM_RUN_TYPE )
@@ -63,5 +64,30 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 		this.femRunType = femRunType;
 	}
 	// ---
-	
+	private String inputSubsectorsShapefile = null ;
+	private static final String INPUT_SUBSECTORS_SHAPEFILE="inputSubsectorsShapefile" ;
+	private static final String INPUT_SUBSECTORS_SHAPEFILE_CMT="Shapefile that contains the " +
+												     "subsector shapes, and the number of vehicles per subsector.  " +
+												     "Also contains connection to a network node, although MATSim " +
+												     "would not really need that." ;
+	@StringGetter( INPUT_SUBSECTORS_SHAPEFILE )
+	String getInputSubsectorsShapefile() {
+		return inputSubsectorsShapefile ;
+	}
+	@StringSetter( INPUT_SUBSECTORS_SHAPEFILE )
+	void setInputSubsectorsShapefile( String str ) {
+		inputSubsectorsShapefile = str ;
+	}
+	// ---
+	private String inputSubsectorsToSafeNodesMappingsFile = null ;
+	private static final String INPUT_SUBSECTORS_TO_SAFE_NODES_MAPPINGS_FILE="inputSubsectorsToSafeNodesMappingsFile" ;
+	@StringGetter( INPUT_SUBSECTORS_TO_SAFE_NODES_MAPPINGS_FILE )
+	String getInputSubsectorsToSafeNodesMappingsFile() {
+		return inputSubsectorsToSafeNodesMappingsFile ;
+	}
+	@StringSetter( INPUT_SUBSECTORS_TO_SAFE_NODES_MAPPINGS_FILE )
+	void setInputSubsectorsToSafeNodesMappingsFile( String str ) {
+		inputSubsectorsToSafeNodesMappingsFile = str ;
+	}
+	// ---
 }

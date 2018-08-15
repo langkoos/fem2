@@ -2,8 +2,7 @@
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
 <config>
 	<module name="FEM" >
-		<!-- FEM run type.  Options: justRunInitialPlansFile optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
-		<param name="FEMRunType" value="optimizeSafeNodesBySubsector" />
+		<param name="FEMRunType" value="justRunInputPlansFile" />
 	</module>
 
 	<module name="network" >
