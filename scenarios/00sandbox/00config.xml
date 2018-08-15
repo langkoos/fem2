@@ -5,7 +5,8 @@
 		<!-- FEM run type.  Options: justRunInitialPlansFile optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
 		<param name="FEMRunType" value="optimizeSafeNodesBySubsector" />
 		<param name="inputSubsectorsShapefile" value="../../data/20180307_DPavey_TestInputFiles/hn_evacuationmodel_PL2016_V12subsectorsVehic2016/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp" />
-		<param name="inputSubsectorsToSafeNodesMappingsFile" value="../../data/20180307_DPavey_TestInputFiles/hn_evacuationmodel_PL2016_V12subsectorsVehic2016/2016_subsectors_safe_node_mapping.txt" />
+		<param name="inputSubsectorsToSafeNodesMappingsFile" value="../../test/input/femproto/prepare/demand/2016_v20180307/2016_subsectors_safe_node_mapping.txt" />
+		<!--yyyyyy currently only exists as test input; I didn't want to copy it; need to find other solution.  kai, aug'18-->
 	</module>
 
 	<module name="network" >

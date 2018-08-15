@@ -22,7 +22,9 @@
 1. Get these files into VIA.  This can be achieved in various ways; one is to open VIA and then drag the files from a file browser into VIA.
 1. Run VIA and enjoy.
 
-##### Run MATSim <a name="runmatsim"></a>
+##### ... to be continued ...
+
+<!-- ##### Run MATSim to optimize safe node assignments
 
 1. There should be a file directly in the `FEM` base directory with name approximately as `au-flood-evacuation-0.11.0-SNAPSHOT-jar-with-dependencies.jar`.
 1. Double-click on that file (in a file system browser).  A simple GUI should open.
@@ -40,7 +42,7 @@ The optimization algorithm that is used here is a stochastic heuristic. Small ch
 
 ##### Edit the config files
 
-The GUI allows to edit the config file.  It might be best to first make a copy of the original config file before trying this.
+The GUI allows to edit the config file.  It might be best to first make a copy of the original config file before trying this. -->
 
 
 

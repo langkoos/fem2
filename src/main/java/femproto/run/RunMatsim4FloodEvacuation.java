@@ -115,7 +115,7 @@ public class RunMatsim4FloodEvacuation {
 		if ( args == null || args.length == 0 || args[0] == "" ) {
 			
 //			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-just-run-plans-file.xml" );
-			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-optimize-safe-nodes-by-subsector.xml" );
+			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config.xml" );
 
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");

@@ -34,7 +34,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	// ===
 	enum FEMRoutingMode {preferEvacuationLinks}
 	private FEMRoutingMode femRoutingMode = preferEvacuationLinks ;
-	final FEMRoutingMode getFemRoutingMode() {
+	public final FEMRoutingMode getFemRoutingMode() {
 		return femRoutingMode ;
 	}
 	// would need a setter if we needed a second routing mode.  kai, jul'18
@@ -42,10 +42,10 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	// ---
 	enum FEMEvacuationTimeAdjustment{takeTimesFromInputPlans, allDepartAtMidnight } ;
 	private FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment = takeTimesFromInputPlans;
-	FEMEvacuationTimeAdjustment getFemEvacuationTimeAdjustment() {
+	public FEMEvacuationTimeAdjustment getFemEvacuationTimeAdjustment() {
 		return femEvacuationTimeAdjustment;
 	}
-	void setFemEvacuationTimeAdjustment( final FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment ) {
+	public void setFemEvacuationTimeAdjustment( final FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment ) {
 		this.femEvacuationTimeAdjustment = femEvacuationTimeAdjustment;
 	}
 
@@ -60,7 +60,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 		return femRunType;
 	}
 	@StringSetter( FEM_RUN_TYPE )
-	void setFemRunType( final FEMRunType femRunType ) {
+	public void setFemRunType( final FEMRunType femRunType ) {
 		this.femRunType = femRunType;
 	}
 	// ---
@@ -71,22 +71,22 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 												     "Also contains connection to a network node, although MATSim " +
 												     "would not really need that." ;
 	@StringGetter( INPUT_SUBSECTORS_SHAPEFILE )
-	String getInputSubsectorsShapefile() {
+	public String getInputSubsectorsShapefile() {
 		return inputSubsectorsShapefile ;
 	}
 	@StringSetter( INPUT_SUBSECTORS_SHAPEFILE )
-	void setInputSubsectorsShapefile( String str ) {
+	public void setInputSubsectorsShapefile( String str ) {
 		inputSubsectorsShapefile = str ;
 	}
 	// ---
 	private String inputSubsectorsToSafeNodesMappingsFile = null ;
 	private static final String INPUT_SUBSECTORS_TO_SAFE_NODES_MAPPINGS_FILE="inputSubsectorsToSafeNodesMappingsFile" ;
 	@StringGetter( INPUT_SUBSECTORS_TO_SAFE_NODES_MAPPINGS_FILE )
-	String getInputSubsectorsToSafeNodesMappingsFile() {
+	public String getInputSubsectorsToSafeNodesMappingsFile() {
 		return inputSubsectorsToSafeNodesMappingsFile ;
 	}
 	@StringSetter( INPUT_SUBSECTORS_TO_SAFE_NODES_MAPPINGS_FILE )
-	void setInputSubsectorsToSafeNodesMappingsFile( String str ) {
+	public void setInputSubsectorsToSafeNodesMappingsFile( String str ) {
 		inputSubsectorsToSafeNodesMappingsFile = str ;
 	}
 	// ---
