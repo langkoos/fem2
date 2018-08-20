@@ -92,7 +92,7 @@ public class NetworkConverter {
 						case 'c' : modes.add(TransportMode.car);break;
 						case 'b' : modes.add("bus");break;
 						case 'r' : modes.add("rail");break;
-						case 'y' : modes.add("y");break; //yyyy what is y mode?
+//						case 'y' : modes.add("y");break; //yyyy what is y mode? //yoyo our 2016 files dont have this so removing it; raise error in future for weird stuff
 						default:  throw new RuntimeException("No mode specified for link ");
 					}
 				}
