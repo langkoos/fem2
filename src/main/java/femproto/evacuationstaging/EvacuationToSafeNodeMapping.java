@@ -32,6 +32,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
+
 public class EvacuationToSafeNodeMapping {
 	private static final Logger log = Logger.getLogger(EvacuationToSafeNodeMapping.class);
 
@@ -235,13 +237,22 @@ public class EvacuationToSafeNodeMapping {
 		Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
 		Gbl.assertNotNull(node);
 
-		// find some outgoing link:
-		// yyyyyy??
-		double maxCap = Double.NEGATIVE_INFINITY;
-		for (Link link : node.getOutLinks().values()) {
-			if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
-				maxCap = link.getCapacity();
+		// yoyo find an incoming link, preferably an EVAC_SES one.
+		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
+		for (Link link : node.getInLinks().values()) {
+			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
 				endLink = link;
+			}
+		}
+		if (endLink == null) {
+			String msg = "There seems to be no incoming car mode evac link for SAFE node " + defaultSafeNode + ". Defaulting to the highest capacity car link.";
+			log.warn(msg);
+			double maxCap = Double.NEGATIVE_INFINITY;
+			for (Link link : node.getInLinks().values()) {
+				if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
+					maxCap = link.getCapacity();
+					endLink = link;
+				}
 			}
 		}
 		return endLink;

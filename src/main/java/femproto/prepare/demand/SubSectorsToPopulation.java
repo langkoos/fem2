@@ -23,6 +23,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.*;
 
+import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
+
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
 	
@@ -42,7 +44,8 @@ public class SubSectorsToPopulation {
 		subSectorsToPopulation.writePopulation(args[3]);
 		subSectorsToPopulation.writeAttributes(args[4]);
 		// yyyy do we need to write the attributes, or is this now (also) in the population?  kai, aug'18
-		
+		// yoyo I put this here for joining results in external packages like tableau - pieter
+
 		// TODO if we really want to leave it like this, then put in a more expressive command passing syntax (see bdi-abm-integration project).  kai, feb'18
 	}
 
@@ -61,8 +64,7 @@ public class SubSectorsToPopulation {
 		
 		// population factory:
 		PopulationFactory pf = scenario.getPopulation().getFactory();
-		
-		
+
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
 		
 		// coordinate transformation:
@@ -103,15 +105,25 @@ public class SubSectorsToPopulation {
 				
 				// find some incoming link:
 				// yyyyyy??
-				double maxCap = Double.NEGATIVE_INFINITY;
-				for (Link link : node.getInLinks().values()) {
-					if ( link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
-						maxCap = link.getCapacity();
+				// yoyo I think it's better to check for an evac link, preferably the one that gives the shortest path to evac node.
+				// this means, though, that we might need to assign a different link for each possible evac node, for each plan in the agent's memory
+				for (Link link : node.getOutLinks().values()) {
+					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
 						startLink = link;
 					}
 				}
+				if (startLink == null){
+					String msg = "There seems to be no outgoing car mode EVAC link for evac node " + evacNodeFromCorrespondancesFile +". Defaulting to the highest capacity car link.";
+					log.warn(msg) ;
+					double maxCap = Double.NEGATIVE_INFINITY;
+					for (Link link : node.getOutLinks().values()) {
+						if ( link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
+							maxCap = link.getCapacity();
+							startLink = link;
+						}
+					}
+				}
 			}
-
 
 
 
@@ -119,7 +131,6 @@ public class SubSectorsToPopulation {
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(personCnt++));
 				person.getAttributes().putAttribute("SUBSECTOR", subsector);
-				int j = 0;
 				List<Link> safeLinks = evacuationToSafeNodeMapping.getSafeLinks(subsector);
 				for (Link safeLink : safeLinks) {
 
@@ -133,7 +144,7 @@ public class SubSectorsToPopulation {
 					Leg evacLeg = pf.createLeg(TransportMode.car);
 					plan.addLeg(evacLeg);
 
-					Activity safe = pf.createActivityFromLinkId("safe_" + j, safeLink.getId());
+					Activity safe = pf.createActivityFromLinkId("safe" , safeLink.getId());
 					plan.addActivity(safe);
 
 
