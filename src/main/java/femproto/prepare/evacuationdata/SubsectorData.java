@@ -25,6 +25,9 @@ public class SubsectorData {
 	 */
 	TreeMap<Double,Node> safeNodesByTime = new TreeMap<>();
 
+	public void clearSafeNodesByTime(){
+		safeNodesByTime.clear();
+	}
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
@@ -35,6 +38,10 @@ public class SubsectorData {
 		// TODO probably not the best way to initialise... pieter aug'18
 		if (safeNodesByTime.size()==0)
 			safeNodesByTime.put(0.0, node);
+	}
+
+	public void addSafeNodeForTime(Node node, double time){
+		safeNodesByTime.put(time, node);
 	}
 
 	public String getSubsector() {

@@ -19,9 +19,9 @@ public class EvacuationScheduleWriter {
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		writer.write("time,subsector,evac_node,safe_node\n");
 		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : evacuationSchedule.getSubsectorsByEvacuationTime().entrySet()) {
-			double time = subsectorDataEntry.getKey();
+			int time = (int) (double) subsectorDataEntry.getKey();
 			SubsectorData subsectorData = subsectorDataEntry.getValue();
-			writer.write(String.format("%f,%s,%s,%s\n", time, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), subsectorData.getSafeNodeForTime(time).getId().toString()));
+			writer.write(String.format("%d,%s,%s,%s\n", time, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), subsectorData.getSafeNodeForTime(time).getId().toString()));
 
 		}
 		writer.close();
