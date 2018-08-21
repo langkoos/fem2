@@ -1,5 +1,6 @@
 package femproto.prepare.evacuationdata;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Node;
 
 import java.nio.file.Path;
@@ -8,22 +9,27 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class SubsectorData {
+	private static Logger log = Logger.getLogger(SubsectorData.class);
 	private final String subsector;
-	private  Node evacuationNode;
-	private  List<Node> safeNodesByDecreasingPriority;
+
+	public void setEvacuationNode(String evacuationNode) {
+		if(evacuationNode != null && !evacuationNode.equals(this.evacuationNode)){
+			log.warn("Subsector "+subsector+" has evacuation node already set to a different value. Overwriting.");
+		}
+		this.evacuationNode = evacuationNode;
+	}
+
+	private String evacuationNode;
+	private List<String> safeNodesByDecreasingPriority;
 	private int vehicleCount;
 	/**
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
 	 * routed to different safe node.
 	 */
-	TreeMap<Double,Node> safeNodesByTime;
-	/**
-	 * If the shortest (or otherwise routed) path is stored for each subsector, would be possible to create timed shapefile of paths
-	 * for diagnostics in e.g. Tableau
-	 */
-	Map<Node,Path> shortestPathsToSafeNodes;
+	TreeMap<Double,String> safeNodesByTime;
 
-	public SubsectorData(String subsector, Node evacuationNode, List<Node> safeNodesByDecreasingPriority) {
+
+	public SubsectorData(String subsector, String evacuationNode, List<String> safeNodesByDecreasingPriority) {
 		this.subsector = subsector;
 		this.evacuationNode = evacuationNode;
 		this.safeNodesByDecreasingPriority = safeNodesByDecreasingPriority;
@@ -40,23 +46,19 @@ public class SubsectorData {
 		return subsector;
 	}
 
-	public Node getEvacuationNode() {
+	public String getEvacuationNode() {
 		return evacuationNode;
 	}
 
-	public List<Node> getSafeNodesByDecreasingPriority() {
+	public List<String> getSafeNodesByDecreasingPriority() {
 		return safeNodesByDecreasingPriority;
 	}
 
-	public TreeMap<Double, Node> getSafeNodesByTime() {
+	public TreeMap<Double, String> getSafeNodesByTime() {
 		return safeNodesByTime;
 	}
 
-	public Map<Node, Path> getShortestPathsToSafeNodes() {
-		return shortestPathsToSafeNodes;
-	}
-
-	Node getSafeNodeForTime(double time){
+	public String getSafeNodeForTime(double time){
 		return safeNodesByTime.ceilingEntry(time).getValue();
 	}
 

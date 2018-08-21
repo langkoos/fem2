@@ -63,8 +63,15 @@ public class SubsectorShapeFileParsing {
 				log.warn("Subsector "+subsector+" had zero or null vehicles to evacuate.");
 			}
 			subsectorData.setVehicleCount(subsectorVehicleCount);
-
 			totalVehicleCount += subsectorVehicleCount;
+
+			try {
+				String evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
+				subsectorData.setEvacuationNode(evacNodeFromShp);
+			}catch (NullPointerException ne){
+				log.warn("Subsector "+subsector+" has no EVAC_NODE attribute.");
+			}
+
 		}
 
 		log.info("Parsed subsector shapefile. A total of "+totalVehicleCount+" vehicles need to be evacuated.");
