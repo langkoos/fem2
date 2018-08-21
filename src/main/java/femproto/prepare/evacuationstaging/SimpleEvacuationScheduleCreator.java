@@ -1,5 +1,8 @@
 package femproto.prepare.evacuationstaging;
 
+import femproto.prepare.evacuationdata.EvacuationSchedule;
+import femproto.prepare.evacuationdata.EvacuationToSafeNodeMapping;
+import femproto.prepare.evacuationdata.SubsectorData;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.utils.io.IOUtils;
 
@@ -37,7 +40,7 @@ public class SimpleEvacuationScheduleCreator {
 	public void writeScheduleCSV(String fileName) throws IOException {
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		writer.write("time,subsector,evac_node,safe_node\n");
-		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : evacuationSchedule.subsectorsByEvacuationTime.entrySet()) {
+		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : evacuationSchedule.getSubsectorsByEvacuationTime().entrySet()) {
 			double time = subsectorDataEntry.getKey();
 			SubsectorData subsectorData = subsectorDataEntry.getValue();
 			writer.write(String.format("%f,%s,%s,%s\n",time,subsectorData.getSubsector(),subsectorData.getEvacuationNode().getId().toString(),subsectorData.getSafeNodesByTime().firstEntry().getValue().getId().toString()));

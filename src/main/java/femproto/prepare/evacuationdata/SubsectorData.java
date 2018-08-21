@@ -1,4 +1,4 @@
-package femproto.prepare.evacuationstaging;
+package femproto.prepare.evacuationdata;
 
 import org.matsim.api.core.v01.network.Node;
 
@@ -9,8 +9,9 @@ import java.util.TreeMap;
 
 public class SubsectorData {
 	private final String subsector;
-	private final Node evacuationNode;
-	private final List<Node> safeNodesByDecreasingPriority;
+	private  Node evacuationNode;
+	private  List<Node> safeNodesByDecreasingPriority;
+	private int vehicleCount;
 	/**
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
 	 * routed to different safe node.
@@ -29,6 +30,10 @@ public class SubsectorData {
 		safeNodesByTime = new TreeMap<>();
 		// add only the first safe node to the timing map
 		safeNodesByTime.put(0.0,safeNodesByDecreasingPriority.get(0));
+	}
+
+	public SubsectorData(String subsector) {
+		this.subsector = subsector;
 	}
 
 	public String getSubsector() {
@@ -53,5 +58,13 @@ public class SubsectorData {
 
 	Node getSafeNodeForTime(double time){
 		return safeNodesByTime.ceilingEntry(time).getValue();
+	}
+
+	public int getVehicleCount() {
+		return vehicleCount;
+	}
+
+	public void setVehicleCount(int vehicleCount) {
+		this.vehicleCount = vehicleCount;
 	}
 }
