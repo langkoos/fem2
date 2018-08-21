@@ -1,7 +1,6 @@
 package femproto.prepare.evacuationdata;
 
 import com.google.inject.Inject;
-import femproto.prepare.demand.SubSectorsToPopulation;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -18,7 +17,7 @@ import java.util.Iterator;
  * Such a schedule can then be used to be re-organised into a new schedule, or to produce a plans file
  */
 public class SubsectorShapeFileParsing {
-	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
+	private static final Logger log = Logger.getLogger(SubsectorShapeFileParsing.class) ;
 
 	private final EvacuationSchedule evacuationSchedule;
 

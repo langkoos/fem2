@@ -32,8 +32,8 @@ public class SimpleEvacuationScheduleCreator {
 	public void run() {
 		Map<String, EvacuationToSafeNodeMapping.Record> evacAndSafeNodes = nodeMapping.getSubsectorToEvacAndSafeNodes();
 		for (String subsector : evacAndSafeNodes.keySet()) {
-			SubsectorData subsectorData = new SubsectorData(subsector, nodeMapping.getEvacNode(subsector), nodeMapping.getSafeNodesByDecreasingPriority(subsector));
-			evacuationSchedule.addSubsectorData(subsectorData);
+//			SubsectorData subsectorData = new SubsectorData(subsector, nodeMapping.getEvacNode(subsector).toString(), nodeMapping.getSafeNodesByDecreasingPriority(subsector));
+//			evacuationSchedule.addSubsectorData(subsectorData);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class SimpleEvacuationScheduleCreator {
 		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : evacuationSchedule.getSubsectorsByEvacuationTime().entrySet()) {
 			double time = subsectorDataEntry.getKey();
 			SubsectorData subsectorData = subsectorDataEntry.getValue();
-			writer.write(String.format("%f,%s,%s,%s\n",time,subsectorData.getSubsector(),subsectorData.getEvacuationNode().getId().toString(),subsectorData.getSafeNodesByTime().firstEntry().getValue().getId().toString()));
+			writer.write(String.format("%f,%s,%s,%s\n",time,subsectorData.getSubsector(),subsectorData.getEvacuationNode(),subsectorData.getSafeNodesByTime().firstEntry().getValue()));
 
 		}
 		writer.close();
