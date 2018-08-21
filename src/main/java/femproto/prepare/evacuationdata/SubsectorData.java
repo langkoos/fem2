@@ -3,7 +3,6 @@ package femproto.prepare.evacuationdata;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Node;
 
-import java.nio.file.Path;
 import java.util.*;
 
 public class SubsectorData {
@@ -24,15 +23,18 @@ public class SubsectorData {
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
 	 * routed to different safe node.
 	 */
-	TreeMap<Double,String> safeNodesByTime;
+	TreeMap<Double,Node> safeNodesByTime = new TreeMap<>();
 
-
-	public void addSafeNode(Node node){
-		safeNodesByDecreasingPriority.add(node);
-	}
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
+	}
+
+	public void addSafeNode(Node node){
+		safeNodesByDecreasingPriority.add(node);
+		// TODO probably not the best way to initialise... pieter aug'18
+		if (safeNodesByTime.size()==0)
+			safeNodesByTime.put(0.0, node);
 	}
 
 	public String getSubsector() {
@@ -47,12 +49,12 @@ public class SubsectorData {
 		return safeNodesByDecreasingPriority;
 	}
 
-	public TreeMap<Double, String> getSafeNodesByTime() {
+	public TreeMap<Double, Node> getSafeNodesByTime() {
 		return safeNodesByTime;
 	}
 
-	public String getSafeNodeForTime(double time){
-		return safeNodesByTime.ceilingEntry(time).getValue();
+	public Node getSafeNodeForTime(double time){
+		return safeNodesByTime.floorEntry(time).getValue();
 	}
 
 	public int getVehicleCount() {

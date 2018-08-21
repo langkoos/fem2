@@ -6,6 +6,7 @@ import org.matsim.core.utils.io.IOUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -20,47 +21,38 @@ public class EvacuationSchedule {
 	 * organising subsectors by evacuation time will allow for overall scheduling.
 	 * And nothing prevents a subsector from appearing twice; then the time also acts as a key to extract the correct evacuation information.
 	 */
-	TreeMap<Double, SubsectorData> subsectorsByEvacuationTime;
+	TreeMap<Double, SubsectorData> subsectorsByEvacuationTime = new TreeMap<>();
 	/**
 	 * Likely will need to access a subsector's information directly.
 	 */
-	Map<String, SubsectorData> subsectorsBySubsectorName;
+	Map<String, SubsectorData> subsectorsBySubsectorName = new HashMap<>();
 
 	public TreeMap<Double, SubsectorData> getSubsectorsByEvacuationTime() {
 		return subsectorsByEvacuationTime;
 	}
 
-	public void addSubsectorData(SubsectorData subsectorData) {
+	public void createSchedule() {
 		Random random = MatsimRandom.getLocalInstance();
-		subsectorsBySubsectorName.put(subsectorData.getSubsector(), subsectorData);
-		for (Double time : subsectorData.getSafeNodesByTime().keySet()) {
-			//yoyoyo this is a cheat to prevent different subsectors from overwriting each other in the map
-			subsectorsByEvacuationTime.put(time + random.nextDouble(), subsectorData);
+		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
+			for (Double time : subsectorData.getSafeNodesByTime().keySet()) {
+				//yoyoyo this is a cheat to prevent different subsectors from overwriting each other in the map
+				subsectorsByEvacuationTime.put(time + random.nextDouble(), subsectorData);
+			}
 		}
+
 	}
 
 	// this is called if not sure that data has been initialised
 	public SubsectorData getOrCreateSubsectorData(String subsector) {
 		SubsectorData subsectorData;
-		try {
-			subsectorData = subsectorsBySubsectorName.get(subsector);
-		}catch (NullPointerException ne){
+		subsectorData = subsectorsBySubsectorName.get(subsector);
+		if (subsectorData == null) {
 			subsectorData = new SubsectorData(subsector);
-			subsectorsBySubsectorName.put(subsectorData.getSubsector(),subsectorData);
+			subsectorsBySubsectorName.put(subsectorData.getSubsector(), subsectorData);
 		}
 		return subsectorData;
 	}
 
-	public void writeScheduleCSV(String fileName) throws IOException {
-		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
-		writer.write("time,subsector,evac_node,safe_node\n");
-		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : this.getSubsectorsByEvacuationTime().entrySet()) {
-			double time = subsectorDataEntry.getKey();
-			SubsectorData subsectorData = subsectorDataEntry.getValue();
-			writer.write(String.format("%f,%s,%s,%s\n",time,subsectorData.getSubsector(),subsectorData.getEvacuationNode(),subsectorData.getSafeNodesByTime().firstEntry().getValue()));
 
-		}
-		writer.close();
-	}
 }
 
