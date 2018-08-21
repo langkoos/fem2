@@ -1,4 +1,4 @@
-package femproto.evacuationstaging;
+package femproto.prepare.evacuationstaging;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.utils.io.IOUtils;
@@ -34,7 +34,7 @@ public class SimpleEvacuationScheduleCreator {
 		}
 	}
 
-	public void writeSchedule(String fileName) throws IOException {
+	public void writeScheduleCSV(String fileName) throws IOException {
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		writer.write("time,subsector,evac_node,safe_node\n");
 		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : evacuationSchedule.subsectorsByEvacuationTime.entrySet()) {
@@ -44,6 +44,7 @@ public class SimpleEvacuationScheduleCreator {
 
 		}
 		writer.close();
-
 	}
+
+
 }

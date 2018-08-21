@@ -1,6 +1,6 @@
 package femproto.prepare.demand;
 
-import femproto.evacuationstaging.EvacuationToSafeNodeMapping;
+import femproto.prepare.evacuationstaging.EvacuationToSafeNodeMapping;
 import femproto.globals.Gis;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;

@@ -1,6 +1,5 @@
-package femproto.evacuationstaging;
+package femproto.prepare.evacuationstaging;
 
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Node;
 
 import java.nio.file.Path;
@@ -28,6 +27,7 @@ public class SubsectorData {
 		this.evacuationNode = evacuationNode;
 		this.safeNodesByDecreasingPriority = safeNodesByDecreasingPriority;
 		safeNodesByTime = new TreeMap<>();
+		// add only the first safe node to the timing map
 		safeNodesByTime.put(0.0,safeNodesByDecreasingPriority.get(0));
 	}
 
