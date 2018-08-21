@@ -2,7 +2,10 @@ package femproto.prepare.evacuationdata;
 
 import femproto.prepare.evacuationdata.SubsectorData;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.utils.io.IOUtils;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -38,14 +41,26 @@ public class EvacuationSchedule {
 
 	// this is called if not sure that data has been initialised
 	public SubsectorData getOrCreateSubsectorData(String subsector) {
-			SubsectorData subsectorData;
+		SubsectorData subsectorData;
 		try {
-			subsectorData = subsectorsByEvacuationTime.get(subsector);
+			subsectorData = subsectorsBySubsectorName.get(subsector);
 		}catch (NullPointerException ne){
 			subsectorData = new SubsectorData(subsector);
+			subsectorsBySubsectorName.put(subsectorData.getSubsector(),subsectorData);
 		}
 		return subsectorData;
 	}
 
+	public void writeScheduleCSV(String fileName) throws IOException {
+		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
+		writer.write("time,subsector,evac_node,safe_node\n");
+		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : this.getSubsectorsByEvacuationTime().entrySet()) {
+			double time = subsectorDataEntry.getKey();
+			SubsectorData subsectorData = subsectorDataEntry.getValue();
+			writer.write(String.format("%f,%s,%s,%s\n",time,subsectorData.getSubsector(),subsectorData.getEvacuationNode(),subsectorData.getSafeNodesByTime().firstEntry().getValue()));
+
+		}
+		writer.close();
+	}
 }
 
