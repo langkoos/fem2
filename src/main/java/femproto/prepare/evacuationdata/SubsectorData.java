@@ -4,9 +4,7 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Node;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class SubsectorData {
 	private static Logger log = Logger.getLogger(SubsectorData.class);
@@ -20,7 +18,7 @@ public class SubsectorData {
 	}
 
 	private Node evacuationNode;
-	private List<Node> safeNodesByDecreasingPriority;
+	private Set<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
 	private int vehicleCount;
 	/**
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
@@ -29,7 +27,9 @@ public class SubsectorData {
 	TreeMap<Double,String> safeNodesByTime;
 
 
-
+	public void addSafeNode(Node node){
+		safeNodesByDecreasingPriority.add(node);
+	}
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
@@ -43,7 +43,7 @@ public class SubsectorData {
 		return evacuationNode;
 	}
 
-	public List<Node> getSafeNodesByDecreasingPriority() {
+	public Set<Node> getSafeNodesByDecreasingPriority() {
 		return safeNodesByDecreasingPriority;
 	}
 

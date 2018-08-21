@@ -20,30 +20,21 @@ import java.util.Iterator;
  *<p/>
  * Such a schedule can then be used to be re-organised into a new schedule, or to produce a plans file
  */
-public class SubsectorShapeFileParsing {
-	private static final Logger log = Logger.getLogger(SubsectorShapeFileParsing.class) ;
+public class SubsectorShapeFileParser {
+	private static final Logger log = Logger.getLogger(SubsectorShapeFileParser.class) ;
 
 	private final EvacuationSchedule evacuationSchedule;
 	private final Network network;
 
 	//yoyo at some point this should work with injection. pieter aug'18
 	@Inject
-	SubsectorShapeFileParsing(EvacuationSchedule evacuationSchedule, Network network) {
+	SubsectorShapeFileParser(EvacuationSchedule evacuationSchedule, Network network) {
 //		log.setLevel(Level.DEBUG);
 		this.evacuationSchedule = evacuationSchedule;
 		this.network = network;
 	}
 
-	public static void main(String[] args) throws IOException {
-		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
-		Network network = NetworkUtils.createNetwork();
-		new  MatsimNetworkReader(network).readFile(args[1]);
-		SubsectorShapeFileParsing subSectorsToPopulation = new SubsectorShapeFileParsing(evacuationSchedule, network);
-		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
-	}
-
-
-	private void readSubSectorsShapeFile(String fileName) throws IOException {
+	public void readSubSectorsShapeFile(String fileName) throws IOException {
 		log.info("entering readSubSectorsShapeFile with fileName=" + fileName);
 
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
