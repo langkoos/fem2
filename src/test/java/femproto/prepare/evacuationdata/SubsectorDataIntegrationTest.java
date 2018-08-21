@@ -33,6 +33,6 @@ public class SubsectorDataIntegrationTest {
 		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(network,evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
 
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleCSV(utils.getOutputDirectory()+"simpleEvacuationSchedule.csv");
+		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleCSV(utils.getOutputDirectory()+"simpleEvacuationSchedule.csv.gz");
 	}
 }
