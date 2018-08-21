@@ -24,7 +24,7 @@ public class HydrographParserTest {
 		// (My preference would be to not use output of other tests as input for this test: this routinely leads to unstable tests,
 		// possibly running on one machine (since it still has leftover files) and
 		// not running on another. Thanks a lot.  kai, apr'18)
-		new PopulationReader(scenario).readFile("scenarios/fem2016_v20180706/plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz");
+		new PopulationReader(scenario).readFile("scenarios/fem2016_v20180706/pop.xml.gz");
 
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork());
