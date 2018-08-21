@@ -12,15 +12,15 @@ public class SubsectorData {
 	private static Logger log = Logger.getLogger(SubsectorData.class);
 	private final String subsector;
 
-	public void setEvacuationNode(String evacuationNode) {
-		if(evacuationNode != null && !evacuationNode.equals(this.evacuationNode)){
+	public void setEvacuationNode(Node evacuationNode) {
+		if(this.evacuationNode != null && !evacuationNode.equals(this.evacuationNode)){
 			log.warn("Subsector "+subsector+" has evacuation node already set to a different value. Overwriting.");
 		}
 		this.evacuationNode = evacuationNode;
 	}
 
-	private String evacuationNode;
-	private List<String> safeNodesByDecreasingPriority;
+	private Node evacuationNode;
+	private List<Node> safeNodesByDecreasingPriority;
 	private int vehicleCount;
 	/**
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
@@ -29,14 +29,7 @@ public class SubsectorData {
 	TreeMap<Double,String> safeNodesByTime;
 
 
-	public SubsectorData(String subsector, String evacuationNode, List<String> safeNodesByDecreasingPriority) {
-		this.subsector = subsector;
-		this.evacuationNode = evacuationNode;
-		this.safeNodesByDecreasingPriority = safeNodesByDecreasingPriority;
-		safeNodesByTime = new TreeMap<>();
-		// add only the first safe node to the timing map
-		safeNodesByTime.put(0.0,safeNodesByDecreasingPriority.get(0));
-	}
+
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
@@ -46,11 +39,11 @@ public class SubsectorData {
 		return subsector;
 	}
 
-	public String getEvacuationNode() {
+	public Node getEvacuationNode() {
 		return evacuationNode;
 	}
 
-	public List<String> getSafeNodesByDecreasingPriority() {
+	public List<Node> getSafeNodesByDecreasingPriority() {
 		return safeNodesByDecreasingPriority;
 	}
 

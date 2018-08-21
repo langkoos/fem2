@@ -1,8 +1,12 @@
 package femproto.prepare.evacuationdata;
 
 import com.google.inject.Inject;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.Node;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -20,17 +24,21 @@ public class SubsectorShapeFileParsing {
 	private static final Logger log = Logger.getLogger(SubsectorShapeFileParsing.class) ;
 
 	private final EvacuationSchedule evacuationSchedule;
+	private final Network network;
 
 	//yoyo at some point this should work with injection. pieter aug'18
 	@Inject
-	SubsectorShapeFileParsing(EvacuationSchedule evacuationSchedule) {
+	SubsectorShapeFileParsing(EvacuationSchedule evacuationSchedule, Network network) {
 //		log.setLevel(Level.DEBUG);
 		this.evacuationSchedule = evacuationSchedule;
+		this.network = network;
 	}
 
 	public static void main(String[] args) throws IOException {
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
-		SubsectorShapeFileParsing subSectorsToPopulation = new SubsectorShapeFileParsing(evacuationSchedule);
+		Network network = NetworkUtils.createNetwork();
+		new  MatsimNetworkReader(network).readFile(args[1]);
+		SubsectorShapeFileParsing subSectorsToPopulation = new SubsectorShapeFileParsing(evacuationSchedule, network);
 		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
 	}
 
@@ -64,12 +72,22 @@ public class SubsectorShapeFileParsing {
 			subsectorData.setVehicleCount(subsectorVehicleCount);
 			totalVehicleCount += subsectorVehicleCount;
 
+			String evacNodeFromShp;
 			try {
-				String evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
-				subsectorData.setEvacuationNode(evacNodeFromShp);
+				evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
 			}catch (NullPointerException ne){
-				log.warn("Subsector "+subsector+" has no EVAC_NODE attribute.");
+				String message = "Subsector " + subsector + " has no EVAC_NODE attribute.";
+				log.warn(message);
+				throw new RuntimeException(message) ;
 			}
+			Node node = network.getNodes().get(Id.createNodeId(evacNodeFromShp));
+			if ( node==null ) {
+				String msg = "did not find evacNode in matsim network file: " + evacNodeFromShp ;
+				log.warn(msg) ;
+				throw new RuntimeException(msg) ;
+			}
+				subsectorData.setEvacuationNode(node);
+
 
 		}
 
