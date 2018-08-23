@@ -18,9 +18,9 @@ public class EvacuationScheduleWriter {
 	public void writeScheduleCSV(String fileName) throws IOException {
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		writer.write("time,subsector,evac_node,safe_node\n");
-		for (Map.Entry<Double, SubsectorData> subsectorDataEntry : evacuationSchedule.getSubsectorsByEvacuationTime().entrySet()) {
-			int time = (int) (double) subsectorDataEntry.getKey();
-			SubsectorData subsectorData = subsectorDataEntry.getValue();
+		for (EvacuationSchedule.TimedSubSectorDataReference subsectorDataEntry : evacuationSchedule.getSubsectorsByEvacuationTime()) {
+			int time = (int) (double) subsectorDataEntry.time;
+			SubsectorData subsectorData = subsectorDataEntry.data;
 			writer.write(String.format("%d,%s,%s,%s\n", time, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), subsectorData.getSafeNodeForTime(time).getId().toString()));
 
 		}
