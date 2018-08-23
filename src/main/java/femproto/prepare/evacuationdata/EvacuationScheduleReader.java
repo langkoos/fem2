@@ -28,17 +28,14 @@ public class EvacuationScheduleReader {
 		try (final FileReader reader = new FileReader(fileName)) {
 
 			// construct the csv reader:
-			final CsvToBeanBuilder<EvacuationScheduleRecord> builder = new CsvToBeanBuilder<>(reader);
-			builder.withType(EvacuationScheduleRecord.class);
-			builder.withSeparator(',');
-			final CsvToBean<EvacuationScheduleRecord> reader2 = builder.build();
+			final CsvToBean<EvacuationScheduleRecord> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecord>(reader).withType(EvacuationScheduleRecord.class).build();
 
 			// go through the records:
 			for (Iterator<EvacuationScheduleRecord> it = reader2.iterator(); it.hasNext(); ) {
 				EvacuationScheduleRecord record = it.next();
-				SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(record.subsector);
-				subsectorData.setEvacuationNode(getNode(record.evac_node));
-				subsectorData.addSafeNodeForTime(getNode(record.safe_node), Double.parseDouble(record.time));
+				SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(record.getSubsector());
+				subsectorData.setEvacuationNode(getNode(record.getEvac_node()));
+				subsectorData.addSafeNodeAllocation(record.getTime(), getNode(record.getSafe_node()));
 			}
 		}
 	}

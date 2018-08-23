@@ -9,27 +9,25 @@ import java.util.*;
  * allowing evacuation strategies to schedule timings at a higher level than the population
  */
 public class EvacuationSchedule {
-	public Set<TimedSubSectorDataReference> getSubsectorsByEvacuationTime() {
-		return subsectorsByEvacuationTime;
-	}
-
 	/**
 	 * arguably not the best way to organise these, but for a start, assuming that, for most cases, everybody will evacuate to the same safe node,
 	 * organising subsectors by evacuation time will allow for overall scheduling.
 	 * And nothing prevents a subsector from appearing twice; then the time also acts as a key to extract the correct evacuation information.
 	 */
-	private Set<TimedSubSectorDataReference> subsectorsByEvacuationTime = new LinkedHashSet<>();
+	private Set<TimedSubSectorDataReference> subsectorsByEvacuationTime = new TreeSet<>();
 	/**
 	 * Likely will need to access a subsector's information directly.
 	 */
 	private Map<String, SubsectorData> subsectorsBySubsectorName = new HashMap<>();
 
+	public Set<TimedSubSectorDataReference> getSubsectorsByEvacuationTime() {
+		return subsectorsByEvacuationTime;
+	}
 
 	public void createSchedule() {
 		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
-			for (Double time : subsectorData.getSafeNodesByTime().keySet()) {
-				//yoyoyo this is a cheat to prevent different subsectors from overwriting each other in the map
-				subsectorsByEvacuationTime.add(new TimedSubSectorDataReference(time, subsectorData));
+			for (SubsectorData.SafeNodeAllocation safeNodeAllocation : subsectorData.getSafeNodesByTime()) {
+				subsectorsByEvacuationTime.add(new TimedSubSectorDataReference(safeNodeAllocation.startTime, subsectorData));
 			}
 		}
 
@@ -46,7 +44,7 @@ public class EvacuationSchedule {
 		return subsectorData;
 	}
 
-	 class TimedSubSectorDataReference implements Comparable<TimedSubSectorDataReference>{
+	class TimedSubSectorDataReference implements Comparable<TimedSubSectorDataReference> {
 
 		public final double time;
 		public final SubsectorData data;
@@ -58,9 +56,11 @@ public class EvacuationSchedule {
 
 		@Override
 		public int compareTo(TimedSubSectorDataReference o) {
-			if(o.time == this.time && o.data == this.data)
+			if (o.time == this.time && o.data == this.data)
 				return 0;
-			if(this.time <= o.time)
+			if (o.time == this.time)
+				return this.data.getSubsector().compareTo(o.data.getSubsector());
+			if (this.time < o.time)
 				return -1;
 			else
 				return 1;

@@ -70,7 +70,7 @@ public class EvacuationToSafeNodeParser {
 				log.info(record.toString());
 				SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(record.SUBSECTOR);
 				subsectorData.setEvacuationNode(getNode(record.EVAC_NODE));
-				subsectorData.addSafeNode(getNode(record.SAFE_NODE1));
+				subsectorData.addSafeNodeAllocation(0,getNode(record.SAFE_NODE1));
 				//keep adding safe nodes until no more
 				if(record.SAFE_NODE2 != null)
 					subsectorData.addSafeNode(getNode(record.SAFE_NODE2));

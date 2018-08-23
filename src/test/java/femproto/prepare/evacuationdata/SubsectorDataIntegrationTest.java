@@ -1,5 +1,7 @@
 package femproto.prepare.evacuationdata;
 
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +21,7 @@ public class SubsectorDataIntegrationTest {
 	@Rule
 	public MatsimTestUtils utils = new MatsimTestUtils();
 	@Test
-	public void testWriteOnly() throws IOException {
+	public void testWriteOnly() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
 		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
 		String inputEvactoSafeNode = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/2016_subsectors_safe_node_mapping.txt";
@@ -42,7 +44,7 @@ public class SubsectorDataIntegrationTest {
 	}
 
 	@Test
-	public void testReadWrite() throws IOException {
+	public void testReadWrite() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
 		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
 		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationdata/simpleEvacuationSchedule.csv";
