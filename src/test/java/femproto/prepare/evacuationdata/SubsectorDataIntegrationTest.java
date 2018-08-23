@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.utils.misc.CRCChecksum;
 import org.matsim.testcases.MatsimTestUtils;
 import org.matsim.utils.eventsfilecomparison.EventsFileComparator;
 
@@ -60,5 +61,10 @@ public class SubsectorDataIntegrationTest {
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
 		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleCSV(utils.getOutputDirectory()+"simpleEvacuationScheduleCopy.csv");
+
+
+		long input = CRCChecksum.getCRCFromFile(inputEvacScheduleFile);
+		long output = CRCChecksum.getCRCFromFile(utils.getOutputDirectory()+"simpleEvacuationScheduleCopy.csv");
+		Assert.assertEquals(input,output);
 	}
 }

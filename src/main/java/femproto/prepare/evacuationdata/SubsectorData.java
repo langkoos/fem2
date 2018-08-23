@@ -8,29 +8,20 @@ import java.util.*;
 public class SubsectorData {
 	private static Logger log = Logger.getLogger(SubsectorData.class);
 	private final String subsector;
-
-	public void setEvacuationNode(Node evacuationNode) {
-		if(this.evacuationNode != null && !evacuationNode.equals(this.evacuationNode)){
-			log.warn("Subsector "+subsector+" has evacuation node already set to a different value. Overwriting.");
-		}
-		this.evacuationNode = evacuationNode;
-	}
-
-	private Node evacuationNode;
-	private Set<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
-	private int vehicleCount;
 	/**
 	 * Allow for the possibility that, at some point during the evacuation, people from an evacuation node need to be
 	 * routed to different safe node.
 	 */
 	TreeMap<Double,Node> safeNodesByTime = new TreeMap<>();
+	private Node evacuationNode;
+	private Set<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
+	private int vehicleCount;
+	public SubsectorData(String subsector) {
+		this.subsector = subsector;
+	}
 
 	public void clearSafeNodesByTime(){
 		safeNodesByTime.clear();
-	}
-
-	public SubsectorData(String subsector) {
-		this.subsector = subsector;
 	}
 
 	public void addSafeNode(Node node){
@@ -50,6 +41,13 @@ public class SubsectorData {
 
 	public Node getEvacuationNode() {
 		return evacuationNode;
+	}
+
+	public void setEvacuationNode(Node evacuationNode) {
+		if(this.evacuationNode != null && !evacuationNode.equals(this.evacuationNode)){
+			log.warn("Subsector "+subsector+" has evacuation node already set to a different value. Overwriting.");
+		}
+		this.evacuationNode = evacuationNode;
 	}
 
 	public Set<Node> getSafeNodesByDecreasingPriority() {
