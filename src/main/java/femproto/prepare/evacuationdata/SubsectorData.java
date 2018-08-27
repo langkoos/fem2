@@ -2,8 +2,8 @@ package femproto.prepare.evacuationdata;
 
 import femproto.globals.FEMAttributes;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
+import org.matsim.core.utils.collections.CollectionUtils;
 
 import java.util.*;
 
@@ -33,19 +33,25 @@ public class SubsectorData {
 	}
 
 	public void addSafeNodeAllocation(double startTime, double endTime, Node node, int vehicles) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, endTime, node, vehicles));
-		if(!safeNodesByDecreasingPriority.contains(node))
-			addSafeNode(node);
-	}
-
-	public void addSafeNodeAllocation(double startTime, Node node, int vehicles) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, node, vehicles));
+		safeNodesByTime.add(new SafeNodeAllocation(startTime, endTime, node, vehicles, this));
 		if(!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
 	}
 
 	public void addSafeNodeAllocation(double startTime, Node node) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, node));
+		safeNodesByTime.add(new SafeNodeAllocation(startTime, node,  this));
+		if(!safeNodesByDecreasingPriority.contains(node))
+			addSafeNode(node);
+	}
+
+	public void addSafeNodeAllocation(double startTime, Node node, int vehicles) {
+		safeNodesByTime.add(new SafeNodeAllocation(startTime, node, vehicles, this));
+		if(!safeNodesByDecreasingPriority.contains(node))
+			addSafeNode(node);
+	}
+
+	public void addSafeNodeAllocation(double startTime, double endTime, Node node) {
+		safeNodesByTime.add(new SafeNodeAllocation(startTime, endTime, node, this));
 		if(!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
 	}
@@ -99,63 +105,69 @@ public class SubsectorData {
 	}
 
 	/**
-	 * Keeps track of nodes by time, and allows potential for varying rates of evacuation and number of vehicles evacuated to safe node, and simultaneous evacuation of allocation of vehicles to multiple safe nodes.
+	 * When a schedule has been completely parsed, not all {@link SafeNodeAllocation} objects will have a vehicle count, end time assigned.
+	 * We need all these to be pre-specified, otherwise destinations need to be changed while the simulation is running, which we don't want to do.
+	 *
+	 * This will go through the list and complete with expected values where information is missing, and make the schedule explicit.
+	 *
+	 * IMPORTANT: assume departure rate specified in {@link femproto.globals.FEMAttributes}, unless <tt>vehicles</tt> and <tt>endTime</tt> have both been set explicitly.
+	 * If only one {@link SafeNodeAllocation} exists and it has fewer vehicles assigned than the subsector total, tough cookies, but raise a warning.
 	 */
-	public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
-		public final double startTime;
-		public final double endTime;
-		public final Node node;
-		public final int vehicles;
+	public void completeAllocations(){
 
-		SafeNodeAllocation(double startTime, Node node, int vehicles) {
-			this.startTime = startTime;
-			this.endTime = startTime + 3600 * vehicles / FEMAttributes.EVAC_FLOWRATE; //expected end time of evacuating these vehicles
-			this.node = node;
-			this.vehicles = vehicles;
+		LinkedList<SafeNodeAllocation> noVehicles = new LinkedList<>();
+		LinkedList<SafeNodeAllocation> noDurations = new LinkedList<>();
+
+		int numberOfSafeNodes = safeNodesByTime.size();
+		int vehiclesAllocated = 0;
+		double sumTimeWeights = 0;
+
+
+		for (SafeNodeAllocation safeNodeAllocation : safeNodesByTime) {
+			vehiclesAllocated += safeNodeAllocation.vehicles > 0 ? safeNodeAllocation.vehicles : 0;
+			sumTimeWeights += safeNodeAllocation.endTime > safeNodeAllocation.startTime ? safeNodeAllocation.endTime - safeNodeAllocation.startTime : 0;
+
+			if(safeNodeAllocation.vehicles < 0)
+				noVehicles.add(safeNodeAllocation);
+			if(safeNodeAllocation.endTime < safeNodeAllocation.startTime)
+				noDurations.add(safeNodeAllocation);
+
 		}
 
-		SafeNodeAllocation(double startTime, double endTime, Node node, int vehicles) {
-			this.startTime = startTime;
-			this.endTime = endTime;
-			this.node = node;
-			this.vehicles = vehicles;
+		int remainingVehicles = vehicleCount - vehiclesAllocated;
+		if(remainingVehicles < 0  ) {
+			log.warn("Subsector " + subsector + " has more vehicles evacuating from it than what was specified in the shapefile.");
+			return;
 		}
 
-		/**
-		 * If vehicles are not specified, it is set to -1, which means that the subsector will keep evacuating at governing rate until <tt>endTime</tt>
-		 *
-		 * @param startTime
-		 * @param endTime
-		 * @param node
-		 */
-		SafeNodeAllocation(double startTime, double endTime, Node node) {
-			this.startTime = startTime;
-			this.endTime = endTime;
-			this.node = node;
-			this.vehicles = -1;
+		//fill in expected durations
+		if(remainingVehicles == 0){
+			if(noDurations.size()>0){
+				for (SafeNodeAllocation noDuration : noDurations) {
+					//just allocate acording to evac rate
+					noDuration.endTime = noDuration.startTime + noDuration.vehicles * 3600 / FEMAttributes.EVAC_FLOWRATE;
+				}
+			}
+			return;
 		}
 
-		/**
-		 * If <tt>vehicles</tt> and <tt>endTime</tt> are not specified, subsector will keep evacuating at governing rate until next {@link SafeNodeAllocation}.
-		 *
-		 * @param startTime
-		 * @param node
-		 */
-		SafeNodeAllocation(double startTime, Node node) {
-			this.startTime = startTime;
-			this.endTime = Double.POSITIVE_INFINITY;
-			this.node = node;
-			this.vehicles = -1;
+		// split the remaining vehicles equally between allocations
+		if(noVehicles.size()>0 ){
+			for (SafeNodeAllocation nodeAllocation : noVehicles) {
+				nodeAllocation.vehicles = remainingVehicles/noVehicles.size();
+				remainingVehicles -= nodeAllocation.vehicles;
+			}
+			if(remainingVehicles > 0)
+				noVehicles.getLast().vehicles += remainingVehicles;
+			// run the whole thing again to do the rest of rebalancing
+			completeAllocations();
+
 		}
 
-		@Override
-		public int compareTo(SafeNodeAllocation o) {
-			if (this.startTime == o.startTime && this.node == o.node)
-				return 0;
-			if (this.startTime <= o.startTime)
-				return -1;
-			else
-				return 1;
-		}
+
+
+
 	}
+
+
 }

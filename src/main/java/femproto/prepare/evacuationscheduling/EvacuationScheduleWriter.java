@@ -4,6 +4,7 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import femproto.prepare.evacuationdata.SafeNodeAllocation;
 import femproto.prepare.evacuationdata.SubsectorData;
 
 import java.io.IOException;
@@ -29,9 +30,9 @@ public class EvacuationScheduleWriter {
 
 		List<EvacuationScheduleRecord> records = new ArrayList<>();
 
-		for (EvacuationSchedule.TimedSubSectorDataReference subsectorDataEntry : evacuationSchedule.getSubsectorsByEvacuationTime()) {
-			int time = (int) (double) subsectorDataEntry.time;
-			SubsectorData subsectorData = subsectorDataEntry.data;
+		for (SafeNodeAllocation safeNodeAllocation : evacuationSchedule.getSubsectorsByEvacuationTime()) {
+			int time = (int) (double) safeNodeAllocation.startTime;
+			SubsectorData subsectorData = safeNodeAllocation.container;
 			records.add(new EvacuationScheduleRecord( time, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), subsectorData.getSafeNodeForTime(time).getId().toString()));
 
 		}

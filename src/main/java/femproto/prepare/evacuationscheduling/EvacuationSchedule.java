@@ -1,5 +1,6 @@
 package femproto.prepare.evacuationscheduling;
 
+import femproto.prepare.evacuationdata.SafeNodeAllocation;
 import femproto.prepare.evacuationdata.SubsectorData;
 
 import java.util.*;
@@ -9,26 +10,28 @@ import java.util.*;
  * allowing evacuation strategies to schedule timings at a higher level than the population
  */
 public class EvacuationSchedule {
+	public Map<String, SubsectorData> getSubsectorsBySubsectorName() {
+		return subsectorsBySubsectorName;
+	}
+
 	/**
 	 * arguably not the best way to organise these, but for a start, assuming that, for most cases, everybody will evacuate to the same safe node,
 	 * organising subsectors by evacuation time will allow for overall scheduling.
 	 * And nothing prevents a subsector from appearing twice; then the time also acts as a key to extract the correct evacuation information.
 	 */
-	private Set<TimedSubSectorDataReference> subsectorsByEvacuationTime = new TreeSet<>();
+	private Set<SafeNodeAllocation> subsectorsByEvacuationTime = new TreeSet<>();
 	/**
 	 * Likely will need to access a subsector's information directly.
 	 */
 	private Map<String, SubsectorData> subsectorsBySubsectorName = new HashMap<>();
 
-	public Set<TimedSubSectorDataReference> getSubsectorsByEvacuationTime() {
+	public Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
 		return subsectorsByEvacuationTime;
 	}
 
 	public void createSchedule() {
 		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
-			for (SubsectorData.SafeNodeAllocation safeNodeAllocation : subsectorData.getSafeNodesByTime()) {
-				subsectorsByEvacuationTime.add(new TimedSubSectorDataReference(safeNodeAllocation.startTime, subsectorData));
-			}
+			subsectorsByEvacuationTime.addAll(subsectorData.getSafeNodesByTime());
 		}
 
 	}
@@ -44,27 +47,6 @@ public class EvacuationSchedule {
 		return subsectorData;
 	}
 
-	class TimedSubSectorDataReference implements Comparable<TimedSubSectorDataReference> {
 
-		public final double time;
-		public final SubsectorData data;
-
-		private TimedSubSectorDataReference(double time, SubsectorData data) {
-			this.time = time;
-			this.data = data;
-		}
-
-		@Override
-		public int compareTo(TimedSubSectorDataReference o) {
-			if (o.time == this.time && o.data == this.data)
-				return 0;
-			if (o.time == this.time)
-				return this.data.getSubsector().compareTo(o.data.getSubsector());
-			if (this.time < o.time)
-				return -1;
-			else
-				return 1;
-		}
-	}
 }
 
