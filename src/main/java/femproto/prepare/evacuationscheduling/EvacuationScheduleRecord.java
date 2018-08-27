@@ -1,4 +1,4 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.bean.CsvBindByName;
 
@@ -18,7 +18,7 @@ public final class EvacuationScheduleRecord {
 		this.evac_node = evac_node;
 		this.safe_node = safe_node;
 	}
-	//yoyo need this otherwise opencsv throws instantiationexception
+	//yoyo need default constructor otherwise opencsv throws instantiationexception
 	public EvacuationScheduleRecord() {
 	}
 

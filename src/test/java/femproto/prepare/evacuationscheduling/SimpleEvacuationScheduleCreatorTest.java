@@ -1,4 +1,4 @@
-package femproto.prepare.evacuationstaging;
+package femproto.prepare.evacuationscheduling;
 
 import org.junit.Rule;
 import org.junit.Test;

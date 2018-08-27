@@ -1,6 +1,6 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.evacuationscheduling;
 
-import org.matsim.core.gbl.MatsimRandom;
+import femproto.prepare.evacuationdata.SubsectorData;
 
 import java.util.*;
 

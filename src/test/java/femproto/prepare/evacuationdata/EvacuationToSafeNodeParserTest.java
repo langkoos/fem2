@@ -1,13 +1,10 @@
 package femproto.prepare.evacuationdata;
 
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
-
-import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 public class EvacuationToSafeNodeParserTest {
 

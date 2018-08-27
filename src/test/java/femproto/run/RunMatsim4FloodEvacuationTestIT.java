@@ -67,7 +67,7 @@ public class RunMatsim4FloodEvacuationTestIT {
 //
 //		// ---
 //
-		String configFilename = scenarioBase + "00config-just-run-plans-file.xml" ;
+		String configFilename = scenarioBase + "configSmall.xml" ;
 //
 //		ConfigUtils.writeConfig( config, configFilename );
 		

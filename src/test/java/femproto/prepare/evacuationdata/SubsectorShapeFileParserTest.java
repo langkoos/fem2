@@ -1,11 +1,10 @@
 package femproto.prepare.evacuationdata;
 
-import org.junit.Rule;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import org.junit.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
-import org.matsim.testcases.MatsimTestUtils;
 
 import java.io.IOException;
 

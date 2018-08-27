@@ -101,7 +101,7 @@ public class SubsectorData {
 	/**
 	 * Keeps track of nodes by time, and allows potential for varying rates of evacuation and number of vehicles evacuated to safe node, and simultaneous evacuation of allocation of vehicles to multiple safe nodes.
 	 */
-	class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
+	public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
 		public final double startTime;
 		public final double endTime;
 		public final Node node;

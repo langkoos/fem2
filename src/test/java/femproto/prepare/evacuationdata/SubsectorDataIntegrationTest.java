@@ -2,6 +2,9 @@ package femproto.prepare.evacuationdata;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleReader;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,11 +13,8 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.utils.misc.CRCChecksum;
 import org.matsim.testcases.MatsimTestUtils;
-import org.matsim.utils.eventsfilecomparison.EventsFileComparator;
 
 import java.io.IOException;
-
-import static org.matsim.utils.eventsfilecomparison.EventsFileComparator.compare;
 
 public class SubsectorDataIntegrationTest {
 

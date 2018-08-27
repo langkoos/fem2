@@ -1,20 +1,17 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.evacuationscheduling;
 
-import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import org.matsim.core.utils.io.IOUtils;
+import femproto.prepare.evacuationdata.SubsectorData;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class EvacuationScheduleWriter {
 

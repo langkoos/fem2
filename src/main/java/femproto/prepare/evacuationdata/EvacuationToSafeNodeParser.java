@@ -4,36 +4,16 @@ import com.google.inject.Inject;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import femproto.globals.Gis;
-import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.TransportMode;
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.gbl.Gbl;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.io.MatsimNetworkReader;
-import org.matsim.core.router.DijkstraFactory;
-import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
-import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-import org.matsim.core.utils.geometry.geotools.MGC;
-import org.matsim.core.utils.io.IOUtils;
-import org.matsim.utils.gis.matsim2esri.network.FeatureGeneratorBuilderImpl;
-import org.matsim.utils.gis.matsim2esri.network.LanesBasedWidthCalculator;
-import org.matsim.utils.gis.matsim2esri.network.LineStringBasedFeatureGenerator;
-import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-
-import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 
 /**
  * This reads the provided evacuation to safe node priority list for each subsector.
