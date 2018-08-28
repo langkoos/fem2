@@ -8,12 +8,12 @@ import org.matsim.api.core.v01.network.Node;
  * Keeps track of nodes by time, and allows potential for varying rates of evacuation and number of vehicles evacuated to safe node, and simultaneous evacuation of allocation of vehicles to multiple safe nodes.
  */
 public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
+	private final double startTime;
+	private final Node node;
+	private final SubsectorData container;
 	Logger log = Logger.getLogger(SafeNodeAllocation.class);
-	public final double startTime;
-	public double endTime = Double.NEGATIVE_INFINITY;
-	public final Node node;
-	public int vehicles = -Integer.MAX_VALUE;
-	public final SubsectorData container;
+	private double endTime = Double.NEGATIVE_INFINITY;
+	private int vehicles = -Integer.MAX_VALUE;
 
 	SafeNodeAllocation(double startTime, Node node, int vehicles, SubsectorData container) {
 		this.startTime = startTime;
@@ -21,7 +21,6 @@ public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
 		this.node = node;
 		this.vehicles = vehicles;
 	}
-
 	SafeNodeAllocation(double startTime, Node node, SubsectorData container) {
 		this.startTime = startTime;
 		this.container = container;
@@ -59,6 +58,10 @@ public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
 		this.container = container;
 	}
 
+	public SubsectorData getContainer() {
+		return container;
+	}
+
 	public double getStartTime() {
 		return startTime;
 	}
@@ -67,12 +70,20 @@ public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
 		return endTime;
 	}
 
+	public void setEndTime(double endTime) {
+		this.endTime = endTime;
+	}
+
 	public Node getNode() {
 		return node;
 	}
 
 	public int getVehicles() {
 		return vehicles;
+	}
+
+	public void setVehicles(int vehicles) {
+		this.vehicles = vehicles;
 	}
 
 	@Override
@@ -85,5 +96,14 @@ public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
 			return -1;
 		else
 			return 1;
+	}
+
+	public double getDuration() {
+		if(startTime > endTime) {
+			log.warn("Invalid end time for SafeNodeAllocation for Subsector " + container.getSubsector() + ". Overriding with one hour duration.");
+			return 3600;
+		}else {
+			return endTime - startTime;
+		}
 	}
 }

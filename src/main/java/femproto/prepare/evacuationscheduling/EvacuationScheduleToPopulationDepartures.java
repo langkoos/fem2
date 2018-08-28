@@ -43,7 +43,7 @@ public class EvacuationScheduleToPopulationDepartures {
 			for (SafeNodeAllocation safeNodeAllocation : subsectorData.getSafeNodesByTime()) {
 
 				// find a qualifying outgoing link
-				Node evacuationNode = safeNodeAllocation.container.getEvacuationNode();
+				Node evacuationNode = safeNodeAllocation.getContainer().getEvacuationNode();
 				Link startLink = null;
 				for (Link link : evacuationNode.getOutLinks().values()) {
 					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
@@ -62,7 +62,7 @@ public class EvacuationScheduleToPopulationDepartures {
 					}
 				}
 
-				Node safeNode = safeNodeAllocation.node;
+				Node safeNode = safeNodeAllocation.getNode();
 				Link safeLink = null;
 				for (Link link : safeNode.getInLinks().values()) {
 					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
@@ -82,9 +82,9 @@ public class EvacuationScheduleToPopulationDepartures {
 				}
 
 
-				int totalVehicles = safeNodeAllocation.vehicles;
+				int totalVehicles = safeNodeAllocation.getVehicles();
 				int safeNodeAllocationPaxCounter = 0;
-				for (int i = 0; i < safeNodeAllocation.vehicles; i++) {
+				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
 					person.getAttributes().putAttribute("SUBSECTOR", subsectorData.getSubsector());
 					Plan plan = pf.createPlan();

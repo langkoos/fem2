@@ -47,6 +47,11 @@ public class EvacuationSchedule {
 		return subsectorData;
 	}
 
+	public void completeAllocations(){
+		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
+			subsectorData.completeAllocations();
+		}
 
+	}
 }
 

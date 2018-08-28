@@ -2,24 +2,28 @@ package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.bean.CsvBindByName;
 
-public final class EvacuationScheduleRecord {
-	@CsvBindByName
+
+/**
+ * this basic version of an evac schedule does not have number of vehicles allocated, nor end time.
+ */
+public class EvacuationScheduleRecordV1 {
+	@CsvBindByName(required = true)
 	private  int time;
-	@CsvBindByName
+	@CsvBindByName(required = true)
 	private  String subsector;
-	@CsvBindByName
+	@CsvBindByName(required = true)
 	private  String evac_node;
-	@CsvBindByName
+	@CsvBindByName(required = true)
 	private  String safe_node;
 
-	public EvacuationScheduleRecord(int time, String subsector, String evac_node, String safe_node) {
+	public EvacuationScheduleRecordV1(int time, String subsector, String evac_node, String safe_node) {
 		this.time = time;
 		this.subsector = subsector;
 		this.evac_node = evac_node;
 		this.safe_node = safe_node;
 	}
 	//yoyo need default constructor otherwise opencsv throws instantiationexception
-	public EvacuationScheduleRecord() {
+	public EvacuationScheduleRecordV1() {
 	}
 
 	public int getTime() {

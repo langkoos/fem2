@@ -86,11 +86,11 @@ public class SubsectorData {
 	public Node getSafeNodeForTime(double time) {
 		Node node = null;
 		for (SafeNodeAllocation safeNodeAllocation : safeNodesByTime) {
-			if (safeNodeAllocation.startTime <= time)
-				node = safeNodeAllocation.node;
+			if (safeNodeAllocation.getStartTime() <= time)
+				node = safeNodeAllocation.getNode();
 		}
 		if (node == null)
-			node = safeNodesByTime.first().node;
+			node = safeNodesByTime.first().getNode();
 
 		return node;
 
@@ -124,12 +124,12 @@ public class SubsectorData {
 
 
 		for (SafeNodeAllocation safeNodeAllocation : safeNodesByTime) {
-			vehiclesAllocated += safeNodeAllocation.vehicles > 0 ? safeNodeAllocation.vehicles : 0;
-			sumTimeWeights += safeNodeAllocation.endTime > safeNodeAllocation.startTime ? safeNodeAllocation.endTime - safeNodeAllocation.startTime : 0;
+			vehiclesAllocated += safeNodeAllocation.getVehicles() > 0 ? safeNodeAllocation.getVehicles() : 0;
+			sumTimeWeights += safeNodeAllocation.getEndTime() > safeNodeAllocation.getStartTime() ? safeNodeAllocation.getEndTime() - safeNodeAllocation.getStartTime() : 0;
 
-			if(safeNodeAllocation.vehicles < 0)
+			if(safeNodeAllocation.getVehicles() < 0)
 				noVehicles.add(safeNodeAllocation);
-			if(safeNodeAllocation.endTime < safeNodeAllocation.startTime)
+			if(safeNodeAllocation.getEndTime() < safeNodeAllocation.getStartTime())
 				noDurations.add(safeNodeAllocation);
 
 		}
@@ -145,7 +145,7 @@ public class SubsectorData {
 			if(noDurations.size()>0){
 				for (SafeNodeAllocation noDuration : noDurations) {
 					//just allocate acording to evac rate
-					noDuration.endTime = noDuration.startTime + noDuration.vehicles * 3600 / FEMAttributes.EVAC_FLOWRATE;
+					noDuration.setEndTime( noDuration.getStartTime() + noDuration.getVehicles() * 3600 / FEMAttributes.EVAC_FLOWRATE);
 				}
 			}
 			return;
@@ -154,11 +154,11 @@ public class SubsectorData {
 		// split the remaining vehicles equally between allocations
 		if(noVehicles.size()>0 ){
 			for (SafeNodeAllocation nodeAllocation : noVehicles) {
-				nodeAllocation.vehicles = remainingVehicles/noVehicles.size();
-				remainingVehicles -= nodeAllocation.vehicles;
+				nodeAllocation.setVehicles(remainingVehicles / noVehicles.size());
+				remainingVehicles -= nodeAllocation.getVehicles();
 			}
 			if(remainingVehicles > 0)
-				noVehicles.getLast().vehicles += remainingVehicles;
+				noVehicles.getLast().setVehicles(noVehicles.getLast().getVehicles() + remainingVehicles);
 			// run the whole thing again to do the rest of rebalancing
 			completeAllocations();
 
