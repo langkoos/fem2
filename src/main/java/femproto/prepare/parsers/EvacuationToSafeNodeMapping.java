@@ -1,4 +1,4 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.parsers;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBean;

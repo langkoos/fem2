@@ -1,16 +1,12 @@
 package femproto.prepare.evacuationscheduling;
 
 import femproto.globals.FEMAttributes;
-import femproto.prepare.evacuationdata.SafeNodeAllocation;
-import femproto.prepare.evacuationdata.SubsectorData;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
-
-import java.util.List;
 
 import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;

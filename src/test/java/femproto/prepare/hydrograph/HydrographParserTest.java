@@ -1,5 +1,7 @@
 package femproto.prepare.hydrograph;
 
+import femproto.prepare.parsers.HydrographParser;
+import femproto.prepare.parsers.HydrographPoint;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.core.config.ConfigUtils;
@@ -31,7 +33,7 @@ public class HydrographParserTest {
 
 		int linkCount = 0;
 		for (Map.Entry<String, HydrographPoint> stringEntry : hydrographParser.getHydrographPointMap().entrySet()) {
-			System.out.printf("%s:\t%s\t%s\n",stringEntry.getKey(),java.util.Arrays.toString(stringEntry.getValue().linkIds), stringEntry.getValue().ALT_AHD);
+			System.out.printf("%s:\t%s\t%s\n",stringEntry.getKey(),java.util.Arrays.toString(stringEntry.getValue().getLinkIds()), stringEntry.getValue().getALT_AHD());
 			if (stringEntry.getValue().mappedToNetworkLink()) {
 				linkCount++;
 			}

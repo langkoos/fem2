@@ -1,9 +1,8 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.evacuationscheduling;
 
 import femproto.globals.FEMAttributes;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.core.utils.collections.CollectionUtils;
 
 import java.util.*;
 

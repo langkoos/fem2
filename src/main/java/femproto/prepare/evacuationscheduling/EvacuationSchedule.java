@@ -1,8 +1,5 @@
 package femproto.prepare.evacuationscheduling;
 
-import femproto.prepare.evacuationdata.SafeNodeAllocation;
-import femproto.prepare.evacuationdata.SubsectorData;
-
 import java.util.*;
 
 /**

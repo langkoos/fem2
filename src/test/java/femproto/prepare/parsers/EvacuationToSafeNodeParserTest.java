@@ -1,4 +1,4 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.parsers;
 
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import org.junit.Test;

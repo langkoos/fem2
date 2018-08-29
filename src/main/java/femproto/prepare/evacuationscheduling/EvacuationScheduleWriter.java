@@ -4,8 +4,6 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import femproto.prepare.evacuationdata.SafeNodeAllocation;
-import femproto.prepare.evacuationdata.SubsectorData;
 
 import java.io.IOException;
 import java.io.Writer;

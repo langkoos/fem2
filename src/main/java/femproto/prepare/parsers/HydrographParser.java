@@ -1,9 +1,9 @@
-package femproto.prepare.hydrograph;
+package femproto.prepare.parsers;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import femproto.globals.Gis;
-import femproto.prepare.hydrograph.HydrographPoint.HydrographPointData;
+import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -19,7 +19,6 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 

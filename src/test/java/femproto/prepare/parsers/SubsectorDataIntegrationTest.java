@@ -1,4 +1,4 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.parsers;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
@@ -60,7 +60,7 @@ public class SubsectorDataIntegrationTest {
 	public void testReadWriteV1() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
 		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
-		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationdata/simpleEvacuationScheduleV1.csv";
+		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/simpleEvacuationScheduleV1.csv";
 		String outputFile = utils.getOutputDirectory() + "simpleEvacuationScheduleCopyV1.csv";
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
@@ -88,7 +88,7 @@ public class SubsectorDataIntegrationTest {
 	public void testReadWriteV2() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
 		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
-		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationdata/simpleEvacuationScheduleV2.csv";
+		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/simpleEvacuationScheduleV2.csv";
 		String outputFile = utils.getOutputDirectory() + "simpleEvacuationScheduleCopyV2.csv";
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
@@ -116,7 +116,7 @@ public class SubsectorDataIntegrationTest {
 	public void testReadWriteV3() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
 		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
-		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationdata/simpleEvacuationScheduleV3.csv";
+		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/simpleEvacuationScheduleV3.csv";
 		String outputFile = utils.getOutputDirectory() + "simpleEvacuationScheduleCopyV3.csv";
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();

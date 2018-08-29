@@ -2,7 +2,6 @@ package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import femproto.prepare.evacuationdata.SubsectorData;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
