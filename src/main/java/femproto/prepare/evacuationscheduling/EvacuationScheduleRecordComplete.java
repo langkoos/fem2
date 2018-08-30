@@ -2,16 +2,16 @@ package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.bean.CsvBindByName;
 
-public class EvacuationScheduleRecordV3 extends EvacuationScheduleRecordV2 {
+public class EvacuationScheduleRecordComplete extends EvacuationScheduleRecordNoDurations {
 	@CsvBindByName(required = true)
 	private int duration;
 
-	public EvacuationScheduleRecordV3(int time, String subsector, String evac_node, String safe_node, int vehicles, int duration) {
+	public EvacuationScheduleRecordComplete(int time, String subsector, String evac_node, String safe_node, int vehicles, int duration) {
 		super(time, subsector, evac_node, safe_node, vehicles);
 		this.duration = duration;
 	}
 
-	public EvacuationScheduleRecordV3() {
+	public EvacuationScheduleRecordComplete() {
 		super();
 	}
 

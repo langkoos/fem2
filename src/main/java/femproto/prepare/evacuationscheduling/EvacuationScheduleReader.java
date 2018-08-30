@@ -35,10 +35,10 @@ public class EvacuationScheduleReader {
 		try (final FileReader reader = new FileReader(fileName)) {
 
 			// construct the csv reader:
-			final CsvToBean<EvacuationScheduleRecordV3> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecordV3>(reader).withType(EvacuationScheduleRecordV3.class).build();
+			final CsvToBean<EvacuationScheduleRecordComplete> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecordComplete>(reader).withType(EvacuationScheduleRecordComplete.class).build();
 
-			for (Iterator<EvacuationScheduleRecordV3> it = reader2.iterator(); it.hasNext(); ) {
-				EvacuationScheduleRecordV3 record = it.next();
+			for (Iterator<EvacuationScheduleRecordComplete> it = reader2.iterator(); it.hasNext(); ) {
+				EvacuationScheduleRecordComplete record = it.next();
 				SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(record.getSubsector());
 				subsectorData.setEvacuationNode(getNode(record.getEvac_node()));
 				subsectorData.addSafeNodeAllocation(record.getTime(), record.getTime() + record.getDuration(), getNode(record.getSafe_node()), record.getVehicles());
@@ -52,10 +52,10 @@ public class EvacuationScheduleReader {
 
 
 			// construct the csv reader:
-			final CsvToBean<EvacuationScheduleRecordV2> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecordV2>(reader).withType(EvacuationScheduleRecordV2.class).build();
+			final CsvToBean<EvacuationScheduleRecordNoDurations> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecordNoDurations>(reader).withType(EvacuationScheduleRecordNoDurations.class).build();
 
-			for (Iterator<EvacuationScheduleRecordV2> it = reader2.iterator(); it.hasNext(); ) {
-				EvacuationScheduleRecordV2 record = it.next();
+			for (Iterator<EvacuationScheduleRecordNoDurations> it = reader2.iterator(); it.hasNext(); ) {
+				EvacuationScheduleRecordNoDurations record = it.next();
 				SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(record.getSubsector());
 				subsectorData.setEvacuationNode(getNode(record.getEvac_node()));
 				subsectorData.addSafeNodeAllocation(record.getTime(), getNode(record.getSafe_node()),record.getVehicles());
@@ -66,11 +66,11 @@ public class EvacuationScheduleReader {
 		}
 
 		try (final FileReader reader = new FileReader(fileName)) {
-			final CsvToBean<EvacuationScheduleRecordV1> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecordV1>(reader).withType(EvacuationScheduleRecordV1.class).build();
+			final CsvToBean<EvacuationScheduleRecordNoVehiclesNoDurations> reader2 = new CsvToBeanBuilder<EvacuationScheduleRecordNoVehiclesNoDurations>(reader).withType(EvacuationScheduleRecordNoVehiclesNoDurations.class).build();
 
 			// go through the records:
-			for (Iterator<EvacuationScheduleRecordV1> it = reader2.iterator(); it.hasNext(); ) {
-				EvacuationScheduleRecordV1 record = it.next();
+			for (Iterator<EvacuationScheduleRecordNoVehiclesNoDurations> it = reader2.iterator(); it.hasNext(); ) {
+				EvacuationScheduleRecordNoVehiclesNoDurations record = it.next();
 				SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(record.getSubsector());
 				subsectorData.setEvacuationNode(getNode(record.getEvac_node()));
 				subsectorData.addSafeNodeAllocation(record.getTime(), getNode(record.getSafe_node()));

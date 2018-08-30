@@ -21,34 +21,57 @@ public class EvacuationScheduleWriter {
 		evacuationSchedule.createSchedule();
 	}
 
-	public void writeScheduleV1(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+	public void writeEvacuationScheduleRecordNoVehiclesNoDurations(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		Writer writer = Files.newBufferedWriter(Paths.get(fileName));
 
-		StatefulBeanToCsv<EvacuationScheduleRecordV1> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordV1>(writer).withQuotechar('"').build();
+		StatefulBeanToCsv<EvacuationScheduleRecordNoVehiclesNoDurations> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordNoVehiclesNoDurations>(writer).withQuotechar('"').build();
 
-		List<EvacuationScheduleRecordV1> records = new ArrayList<>();
+		List<EvacuationScheduleRecordNoVehiclesNoDurations> records = new ArrayList<>();
 
 		for (SafeNodeAllocation safeNodeAllocation : evacuationSchedule.getSubsectorsByEvacuationTime()) {
 			int time = (int) (double) safeNodeAllocation.getStartTime();
 			SubsectorData subsectorData = safeNodeAllocation.getContainer();
-			records.add(new EvacuationScheduleRecordV1( time, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), subsectorData.getSafeNodeForTime(time).getId().toString()));
+			records.add(new EvacuationScheduleRecordNoVehiclesNoDurations( time, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), subsectorData.getSafeNodeForTime(time).getId().toString()));
 
 		}
 		beanToCsv.write(records);
 		writer.close();
 	}
 
-	public void writeScheduleV2(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+	public void writeEvacuationScheduleRecordNoVehicles(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		Writer writer = Files.newBufferedWriter(Paths.get(fileName));
 
-		StatefulBeanToCsv<EvacuationScheduleRecordV2> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordV2>(writer).withQuotechar('"').build();
+		StatefulBeanToCsv<EvacuationScheduleRecordNoVehicles> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordNoVehicles>(writer).withQuotechar('"').build();
 
-		List<EvacuationScheduleRecordV2> records = new ArrayList<>();
+		List<EvacuationScheduleRecordNoVehicles> records = new ArrayList<>();
 
 		for (SafeNodeAllocation safeNodeAllocation : evacuationSchedule.getSubsectorsByEvacuationTime()) {
 			int time = (int) (double) safeNodeAllocation.getStartTime();
 			SubsectorData subsectorData = safeNodeAllocation.getContainer();
-			records.add(new EvacuationScheduleRecordV2(
+			records.add(new EvacuationScheduleRecordNoVehicles(
+					time,
+					subsectorData.getSubsector(),
+					subsectorData.getEvacuationNode().getId().toString(),
+					subsectorData.getSafeNodeForTime(time).getId().toString(),
+					(int) safeNodeAllocation.getDuration()
+			));
+
+		}
+		beanToCsv.write(records);
+		writer.close();
+	}
+
+	public void writeEvacuationScheduleRecordNoDurations(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+		Writer writer = Files.newBufferedWriter(Paths.get(fileName));
+
+		StatefulBeanToCsv<EvacuationScheduleRecordNoDurations> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordNoDurations>(writer).withQuotechar('"').build();
+
+		List<EvacuationScheduleRecordNoDurations> records = new ArrayList<>();
+
+		for (SafeNodeAllocation safeNodeAllocation : evacuationSchedule.getSubsectorsByEvacuationTime()) {
+			int time = (int) (double) safeNodeAllocation.getStartTime();
+			SubsectorData subsectorData = safeNodeAllocation.getContainer();
+			records.add(new EvacuationScheduleRecordNoDurations(
 					time,
 					subsectorData.getSubsector(),
 					subsectorData.getEvacuationNode().getId().toString(),
@@ -61,17 +84,17 @@ public class EvacuationScheduleWriter {
 		writer.close();
 	}
 
-	public void writeScheduleV3(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+	public void writeEvacuationScheduleRecordComplete(String fileName) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 		Writer writer = Files.newBufferedWriter(Paths.get(fileName));
 
-		StatefulBeanToCsv<EvacuationScheduleRecordV3> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordV3>(writer).withQuotechar('"').build();
+		StatefulBeanToCsv<EvacuationScheduleRecordComplete> beanToCsv= new StatefulBeanToCsvBuilder<EvacuationScheduleRecordComplete>(writer).withQuotechar('"').build();
 
-		List<EvacuationScheduleRecordV3> records = new ArrayList<>();
+		List<EvacuationScheduleRecordComplete> records = new ArrayList<>();
 
 		for (SafeNodeAllocation safeNodeAllocation : evacuationSchedule.getSubsectorsByEvacuationTime()) {
 			int time = (int) (double) safeNodeAllocation.getStartTime();
 			SubsectorData subsectorData = safeNodeAllocation.getContainer();
-			records.add(new EvacuationScheduleRecordV3(
+			records.add(new EvacuationScheduleRecordComplete(
 					time,
 					subsectorData.getSubsector(),
 					subsectorData.getEvacuationNode().getId().toString(),

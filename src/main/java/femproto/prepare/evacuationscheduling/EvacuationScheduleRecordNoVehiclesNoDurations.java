@@ -6,7 +6,7 @@ import com.opencsv.bean.CsvBindByName;
 /**
  * this basic version of an evac schedule does not have number of vehicles allocated, nor end time.
  */
-public class EvacuationScheduleRecordV1 {
+public class EvacuationScheduleRecordNoVehiclesNoDurations {
 	@CsvBindByName(required = true)
 	private  int time;
 	@CsvBindByName(required = true)
@@ -16,14 +16,14 @@ public class EvacuationScheduleRecordV1 {
 	@CsvBindByName(required = true)
 	private  String safe_node;
 
-	public EvacuationScheduleRecordV1(int time, String subsector, String evac_node, String safe_node) {
+	public EvacuationScheduleRecordNoVehiclesNoDurations(int time, String subsector, String evac_node, String safe_node) {
 		this.time = time;
 		this.subsector = subsector;
 		this.evac_node = evac_node;
 		this.safe_node = safe_node;
 	}
 	//yoyo need default constructor otherwise opencsv throws instantiationexception
-	public EvacuationScheduleRecordV1() {
+	public EvacuationScheduleRecordNoVehiclesNoDurations() {
 	}
 
 	public int getTime() {

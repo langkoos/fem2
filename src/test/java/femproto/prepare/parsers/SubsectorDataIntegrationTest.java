@@ -44,12 +44,12 @@ public class SubsectorDataIntegrationTest {
 		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(network,evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
 
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleV1(utils.getOutputDirectory()+"simpleEvacuationScheduleV1.csv");
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoVehiclesNoDurations(utils.getOutputDirectory()+"simpleEvacuationScheduleV1.csv");
 
 		evacuationSchedule.createSchedule();
 		evacuationSchedule.completeAllocations();
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleV2(utils.getOutputDirectory()+"simpleEvacuationScheduleV2.csv");
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleV3(utils.getOutputDirectory()+"simpleEvacuationScheduleV3.csv");
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoDurations(utils.getOutputDirectory()+"simpleEvacuationScheduleV2.csv");
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(utils.getOutputDirectory()+"simpleEvacuationScheduleV3.csv");
 
 
 
@@ -76,7 +76,7 @@ public class SubsectorDataIntegrationTest {
 
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleV1(outputFile);
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoVehiclesNoDurations(outputFile);
 
 
 		long input = CRCChecksum.getCRCFromFile(inputEvacScheduleFile);
@@ -104,7 +104,7 @@ public class SubsectorDataIntegrationTest {
 
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleV2(outputFile);
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoDurations(outputFile);
 
 
 		long input = CRCChecksum.getCRCFromFile(inputEvacScheduleFile);
@@ -132,7 +132,7 @@ public class SubsectorDataIntegrationTest {
 
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
-		new EvacuationScheduleWriter(evacuationSchedule).writeScheduleV3(outputFile);
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputFile);
 
 
 		long input = CRCChecksum.getCRCFromFile(inputEvacScheduleFile);
