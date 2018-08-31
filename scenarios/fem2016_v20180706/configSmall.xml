@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
 <config>
+	<module name="FEM" >
+		<!-- FEM run type.  Options: justRunInputPlansFile optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
+		<param name="FEMRunType" value="justRunInputPlansFile" />
+		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputSubsectorsShapefile" value="null" />
+		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
+	</module>
 	<module name="network" >
 		<param name="inputChangeEventsFile" value="d06391_H_change_events.xml.gz" />
 		<param name="inputNetworkFile" value="hn_net_ses_emme_2016_V12_network.xml.gz" />
@@ -11,5 +18,8 @@
 	</module>
 	<module name="qsim" >
 		<!--<param name="endTime" value="264:00:00" />-->
+	</module>
+	<module name="controler">
+		<param name="lastIteration" value="0" />
 	</module>
 </config>
