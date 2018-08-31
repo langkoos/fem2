@@ -263,7 +263,7 @@ public class RunMatsim4FloodEvacuation {
 		// yyyyyy fem2016 network seems to have unconnected pieces.
 		
 		// yyyyyy reduce to sample for debugging:
-		FEMUtils.sampleDown( scenario, 0.01 );
+		FEMUtils.sampleDown( scenario, femConfig.getSampleSize());
 		// yyyy decide how to do this for UI. kai, jul'18
 		
 		FEMUtils.giveAllSafeNodesToAllAgents( scenario );

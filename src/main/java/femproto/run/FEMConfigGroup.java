@@ -31,6 +31,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 		map.put( INPUT_SUBSECTORS_SHAPEFILE, INPUT_SUBSECTORS_SHAPEFILE_CMT ) ;
 		return map ;
 	}
+
 	// ===
 	enum FEMRoutingMode {preferEvacuationLinks}
 	private FEMRoutingMode femRoutingMode = preferEvacuationLinks ;
@@ -90,4 +91,14 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 		inputSubsectorsToSafeNodesMappingsFile = str ;
 	}
 	// ---
+	private double sampleSize = 0.01;
+	private static final String SAMPLE_SIZE = "sampleSize";
+	@StringGetter( SAMPLE_SIZE )
+	public double getSampleSize() {
+		return this.sampleSize;
+	}
+	@StringSetter( SAMPLE_SIZE )
+	public void setSampleSize(double sampleSize){
+		this.sampleSize = sampleSize;
+	}
 }
