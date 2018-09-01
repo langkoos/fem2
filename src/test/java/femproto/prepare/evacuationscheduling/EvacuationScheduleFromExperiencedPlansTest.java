@@ -38,7 +38,7 @@ public class EvacuationScheduleFromExperiencedPlansTest {
 		evacuationScheduleFromExperiencedPlans.parseExperiencedPlans(scenario.getPopulation(),network);
 
 		EvacuationSchedule evacuationSchedule = evacuationScheduleFromExperiencedPlans.createEvacuationSchedule();
-		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoVehicles(outputScheduleFile);
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputScheduleFile);
 
 	}
 

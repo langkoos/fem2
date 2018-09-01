@@ -28,7 +28,7 @@ public class EvacuationToSafeNodeParser {
 	private final EvacuationSchedule evacuationSchedule;
 
 	@Inject
-	EvacuationToSafeNodeParser(Network network, EvacuationSchedule evacuationSchedule) {
+	public EvacuationToSafeNodeParser(Network network, EvacuationSchedule evacuationSchedule) {
 		this.network = network;
 		this.evacuationSchedule = evacuationSchedule;
 	}

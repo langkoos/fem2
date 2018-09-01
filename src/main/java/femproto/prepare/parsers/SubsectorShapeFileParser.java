@@ -28,7 +28,7 @@ public class SubsectorShapeFileParser {
 
 	//yoyo at some point this should work with injection. pieter aug'18
 	@Inject
-	SubsectorShapeFileParser(EvacuationSchedule evacuationSchedule, Network network) {
+	public SubsectorShapeFileParser(EvacuationSchedule evacuationSchedule, Network network) {
 //		log.setLevel(Level.DEBUG);
 		this.evacuationSchedule = evacuationSchedule;
 		this.network = network;

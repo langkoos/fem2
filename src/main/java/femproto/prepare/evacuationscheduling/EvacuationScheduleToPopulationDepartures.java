@@ -26,7 +26,7 @@ public class EvacuationScheduleToPopulationDepartures {
 		this.evacuationSchedule = evacuationSchedule;
 	}
 
-	public void writePopulation(String fileName) {
+	public void createPlans() {
 		// assume that the evacuation schedule has created all relevant subsector data
 
 		PopulationFactory pf = scenario.getPopulation().getFactory();
@@ -102,7 +102,10 @@ public class EvacuationScheduleToPopulationDepartures {
 
 			}
 		}
+	}
 
+	public void writePopulation(String fileName) {
+		createPlans();
 		new PopulationWriter(scenario.getPopulation()).write(fileName);
 	}
 }
