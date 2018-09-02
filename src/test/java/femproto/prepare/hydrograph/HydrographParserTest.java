@@ -48,7 +48,7 @@ public class HydrographParserTest {
 
 //		hydrographParser.readEvacAndSafeNodes( "test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/subsectorMappingTravTimeRanked.csv");
 
-		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz",36000,60/360, 300);
+//		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz",36000,60/360, 300);
 
 	}
 }
