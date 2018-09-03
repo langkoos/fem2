@@ -27,7 +27,8 @@ public class HydrographParserTest {
 		HydrographParser hydrographParser = new HydrographParser();
 		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork());
 
-		hydrographParser.readHydrographData(inputDirectory + "/d06391_H_TS.csv.gz");
+//		hydrographParser.readHydrographData(inputDirectory + "/d06391_H_TS.csv.gz");
+		hydrographParser.readHydrographData(inputDirectory + "/d00285_H_TS.csv.gz");
 		hydrographParser.removeHydrographPointsWithNoData();
 		hydrographParser.setHydroFloodTimes();
 
@@ -44,7 +45,8 @@ public class HydrographParserTest {
 
 		hydrographParser.hydrographToViaLinkAttributes(utils.getOutputDirectory()+"hydro_linkattrs.txt.gz",scenario.getNetwork());
 
-		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d06391_H_change_events.xml.gz");
+		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d00285_H_change_events.xml.gz");
+//		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d06391_H_change_events.xml.gz");
 
 //		hydrographParser.readEvacAndSafeNodes( "test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/subsectorMappingTravTimeRanked.csv");
 

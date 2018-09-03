@@ -42,6 +42,7 @@ import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
@@ -257,7 +258,7 @@ public class RunMatsim4FloodEvacuation {
 		}
 		
 		// ---
-		
+
 		hasPreparedConfig = true ;
 	}
 	
@@ -281,8 +282,10 @@ public class RunMatsim4FloodEvacuation {
 		// yyyyyy reduce to sample for debugging:
 		FEMUtils.sampleDown( scenario, femConfig.getSampleSize());
 		// yyyy decide how to do this for UI. kai, jul'18
-		
-		FEMUtils.giveAllSafeNodesToAllAgents( scenario );
+
+		if(femConfig.getFemRunType().equals(FEMConfigGroup.FEMRunType.optimizeSafeNodesByPerson) ||
+				femConfig.getFemRunType().equals(FEMConfigGroup.FEMRunType.optimizeSafeNodesBySubsector))
+				FEMUtils.giveAllSafeNodesToAllAgents( scenario );
 		// yyyy will we get valid initial mappings?  kai, jul'18
 		
 		switch( femConfig.getFemEvacuationTimeAdjustment() ) {
@@ -352,7 +355,7 @@ public class RunMatsim4FloodEvacuation {
 					default:
 						throw new RuntimeException( "not implemented" );
 				}
-				
+
 				// scoring such that routes on SES links are strongly preferred
 				this.bindScoringFunctionFactory().to( NonEvacLinkPenalizingScoringFunctionFactory.class );
 				// yy (this is mostly necessary since the "to-all-safe-nodes" initial router also accepts short

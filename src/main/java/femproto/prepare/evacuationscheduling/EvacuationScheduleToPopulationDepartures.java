@@ -1,12 +1,23 @@
 package femproto.prepare.evacuationscheduling;
 
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import femproto.globals.FEMAttributes;
+import femproto.prepare.parsers.EvacuationToSafeNodeParser;
+import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
+import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.io.IOUtils;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
@@ -24,6 +35,32 @@ public class EvacuationScheduleToPopulationDepartures {
 	public EvacuationScheduleToPopulationDepartures(Scenario scenario, EvacuationSchedule evacuationSchedule) {
 		this.scenario = scenario;
 		this.evacuationSchedule = evacuationSchedule;
+	}
+
+	public static void main(String[] args) throws CsvRequiredFieldEmptyException, IOException, CsvDataTypeMismatchException {
+		String inputshapefile = args[0];
+		String networkFile = args[1];
+		String inputEvactoSafeNode = args[2];
+
+		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
+		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
+
+		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork());
+		try {
+			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
+		} catch (IOException e) {
+			throw new RuntimeException("Input shapefile not found, or some other IO error");
+		}
+
+		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(scenario.getNetwork(),evacuationSchedule);
+		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
+
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoVehicles("inputSchedule.csv");
+
+		new EvacuationScheduleToPopulationDepartures(scenario,evacuationSchedule).writePopulation("pop.xml.gz");
+
+		new EvacuationScheduleToPopulationDepartures(scenario,evacuationSchedule).writeAttributes("pop_attribs.txt.gz");
 	}
 
 	public void createPlans() {
@@ -107,5 +144,20 @@ public class EvacuationScheduleToPopulationDepartures {
 	public void writePopulation(String fileName) {
 		createPlans();
 		new PopulationWriter(scenario.getPopulation()).write(fileName);
+	}
+
+
+	private void writeAttributes(String fileName) {
+		// yoyo writing out attributes to a separate file for diagnostics
+		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
+		try {
+			writer.write("id\tsubsector\n");
+			for (Person person : scenario.getPopulation().getPersons().values()) {
+				writer.write(person.getId()+"\t"+person.getAttributes().getAttribute("SUBSECTOR").toString()+"\n");
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

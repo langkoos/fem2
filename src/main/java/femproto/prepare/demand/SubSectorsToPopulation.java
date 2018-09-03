@@ -44,7 +44,7 @@ public class SubSectorsToPopulation {
 		subSectorsToPopulation.writePopulation(args[3]);
 		subSectorsToPopulation.writeAttributes(args[4]);
 		// yyyy do we need to write the attributes, or is this now (also) in the population?  kai, aug'18
-		// yoyo I put this here for joining results in external packages like tableau - pieter
+		// yoyo I put this here for joining results in external packages like tableau. Via also doens't read attributes from population yet - pieter
 
 		// TODO if we really want to leave it like this, then put in a more expressive command passing syntax (see bdi-abm-integration project).  kai, feb'18
 	}

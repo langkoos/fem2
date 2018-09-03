@@ -31,7 +31,7 @@ public class EvacuationScheduleFromExperiencedPlansTest {
 
 		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(populationFile);
-		evacuationScheduleFromExperiencedPlans.personToSubsectorCollection(scenario.getPopulation());
+		evacuationScheduleFromExperiencedPlans.personToSubsectorCollection(scenario.getPopulation(), network);
 
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(experiencedPlansFile);

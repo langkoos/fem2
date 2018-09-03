@@ -43,7 +43,7 @@ public class EvacuationScheduleFromExperiencedPlans {
 
 		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(populationFile);
-		evacuationScheduleFromExperiencedPlans.personToSubsectorCollection(scenario.getPopulation());
+		evacuationScheduleFromExperiencedPlans.personToSubsectorCollection(scenario.getPopulation(),network);
 
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(experiencedPlansFile);
@@ -57,10 +57,29 @@ public class EvacuationScheduleFromExperiencedPlans {
 	 *
 	 * @param population
 	 */
-	public void personToSubsectorCollection(Population population) {
+	public void personToSubsectorCollection(Population population, Network network) {
 		pax2SubSectors = new HashMap<>(population.getPersons().size());
 		for (Person person : population.getPersons().values()) {
 			pax2SubSectors.put(person.getId(), person.getAttributes().getAttribute("SUBSECTOR").toString());
+			Node origin = null;
+			Node destin = null;
+			double startTime = Double.POSITIVE_INFINITY;
+			double endTime = Double.NEGATIVE_INFINITY;
+
+			for (PlanElement planElement : person.getPlans().get(0).getPlanElements()) {
+				if (planElement instanceof Activity) {
+					Activity activity = (Activity) planElement;
+					if (origin == null && activity.getType().equals(FEMAttributes.EVACUATION_ACTIVITY)) {
+						origin = network.getLinks().get(activity.getLinkId()).getFromNode();
+						startTime = activity.getEndTime();
+					}
+					if (destin == null && activity.getType().equals(FEMAttributes.SAFE_ACTIVITY)) {
+						destin = network.getLinks().get(activity.getLinkId()).getToNode();
+						endTime = activity.getStartTime();
+					}
+				}
+			}
+			ODFlowCounter odFlowCounter = addOrCreateODFlowCounter(person.getAttributes().getAttribute("SUBSECTOR").toString(), origin, destin);
 		}
 	}
 
@@ -104,6 +123,8 @@ public class EvacuationScheduleFromExperiencedPlans {
 			flowCounters.put(flowCounter,flowCounter);
 			outflowCounter = flowCounter;
 		}
+		if(flowCounter.destin == null)
+			outflowCounter.setEndTime(200*3600);
 		return outflowCounter;
 	}
 
@@ -146,7 +167,8 @@ public class EvacuationScheduleFromExperiencedPlans {
 		public int compareTo(ODFlowCounter o) {
 			if (subSector.equals(o.subSector)) {
 				if (origin == o.origin)
-					if (destin == o.destin)
+					//yoyoyo bad fix for dealing with stranded guys - need to come up with something better
+					if (destin == null || destin == o.destin)
 						return 0;
 					else
 						return destin.getId().toString().compareTo(o.destin.getId().toString());

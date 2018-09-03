@@ -11,9 +11,13 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
+import org.matsim.core.population.io.PopulationReader;
+import org.matsim.core.scenario.MutableScenario;
+import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -34,6 +38,7 @@ public class HydrographParser {
 	}
 
 	private Map<String, HydrographPoint> hydrographPointMap;
+
 
 	/**
 	 * This initialises the data structure and populates it with the subsectors and/or link ids that this point may affect,
