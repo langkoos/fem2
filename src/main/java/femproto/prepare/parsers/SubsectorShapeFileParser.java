@@ -1,12 +1,12 @@
-package femproto.prepare.evacuationdata;
+package femproto.prepare.parsers;
 
 import com.google.inject.Inject;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.SubsectorData;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -28,7 +28,7 @@ public class SubsectorShapeFileParser {
 
 	//yoyo at some point this should work with injection. pieter aug'18
 	@Inject
-	SubsectorShapeFileParser(EvacuationSchedule evacuationSchedule, Network network) {
+	public SubsectorShapeFileParser(EvacuationSchedule evacuationSchedule, Network network) {
 //		log.setLevel(Level.DEBUG);
 		this.evacuationSchedule = evacuationSchedule;
 		this.network = network;

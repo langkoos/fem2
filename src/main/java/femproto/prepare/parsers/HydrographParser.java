@@ -1,15 +1,18 @@
-package femproto.prepare.hydrograph;
+package femproto.prepare.parsers;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import femproto.globals.FEMAttributes;
 import femproto.globals.Gis;
-import femproto.prepare.hydrograph.HydrographPoint.HydrographPointData;
+import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.network.NetworkChangeEvent;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -19,13 +22,12 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
 public class HydrographParser {
 
-	private double minTime = Double.POSITIVE_INFINITY;
+	Logger log = Logger.getLogger(HydrographParser.class);
 
 	public Map<String, HydrographPoint> getHydrographPointMap() {
 		return hydrographPointMap;
@@ -33,6 +35,12 @@ public class HydrographParser {
 
 	private Map<String, HydrographPoint> hydrographPointMap;
 
+	/**
+	 * This initialises the data structure and populates it with the subsectors and/or link ids that this point may affect,
+	 * as well as its altitude.
+	 * @param shapefile
+	 * @param network
+	 */
 	public void hydroPointsShapefile2HydrographPointMap(String shapefile, Network network) {
 
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile);
@@ -43,20 +51,21 @@ public class HydrographParser {
 			wkt = IOUtils.getBufferedReader(shapefile.replaceAll("shp$", "prj")).readLine().toString();
 			transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 		} catch (IOException e) {
-			System.err.println("The shapefile doesn't have a .prj file; continuing, but no guarantees on projection.");
+			log.warn("The shapefile doesn't have a .prj file; continuing, but no guarantees on projection.");
 		}
 
 		hydrographPointMap = new HashMap<>();
 
-		//iterate through features and generate pax by subsector
+		//iterate through features and generate hydrograph data points
 		Iterator<SimpleFeature> iterator = features.iterator();
 		long id = 0L;
 		while (iterator.hasNext()) {
 			SimpleFeature feature = iterator.next();
-			String pointID = feature.getAttribute("ID").toString();
-			String linkIDs = feature.getAttribute("links_ids").toString();
-			String subsector = feature.getAttribute("SUBSECTOR").toString();
-			final Double ALT_AHD = Double.valueOf(feature.getAttribute("ALT_AHD").toString());
+
+			String pointID = feature.getAttribute(FEMAttributes.HYDROGRAPH_POINT_ID_FIELD).toString();
+			String linkIDs = feature.getAttribute(FEMAttributes.HYDROGRAPH_LINK_IDS).toString();
+			String subsector = feature.getAttribute(FEMAttributes.HYDROGRAPH_SUBSECTOR).toString();
+			final Double ALT_AHD = Double.valueOf(feature.getAttribute(FEMAttributes.HYDROGRAPH_ALT_AHD).toString());
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
 			Coord coord = new Coord(lonlat.x, lonlat.y);
 			if (transformation != null)
@@ -71,6 +80,12 @@ public class HydrographParser {
 		}
 	}
 
+	/**
+	 * This reads the  time series from the hydrograph file, and populates the relevant point data structures.
+	 *
+	 * <b>It  also finds the minimum time and subtracts that from all time values, so simulations can start at zero hours.</b>
+	 * @param fileName
+	 */
 	public void readHydrographData(String fileName) {
 		BufferedReader reader = IOUtils.getBufferedReader(fileName);
 		List<List<Double>> entries = new ArrayList<>();
@@ -94,16 +109,21 @@ public class HydrographParser {
 			e.printStackTrace();
 			throw new RuntimeException("Something went wrong while reading the hydrograph data");
 		}
+
+
+
+		double minTime = entries.get(0).get(0) * 3600;
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
 				for (int j = 0; j < entries.get(i).size(); j++) {
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600, entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime, entries.get(i).get(j));
 				}
 			}
 		}
 		//find minimum time value
-		minTime = Math.min(entries.get(0).get(0) * 3600, minTime);
+		//normalise all
+
 	}
 
 	public void removeHydrographPointsWithNoData() {
@@ -157,16 +177,15 @@ public class HydrographParser {
 						ids.remove(Id.createLinkId(linkId));
 						writer.write(String.format("%s\t%f\t%d\n", linkId, pointDatum.getTime(), pointDatum.getLevel_ahd() - point.getALT_AHD() > 0 ? 1 : 0));
 					}
-
 				}
-
 			}
-			for (Id<Link> id : ids) {
-				writer.write(String.format("%s\t%f\t%d\n", id, 240 * 3600f, 0));
 
+			for (Id<Link> id : ids) {
+				writer.write(String.format("%s\t%f\t%d\n", id,  0f , 0));
 			}
 
 			writer.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Something went wrong writing the links plotfile.");
@@ -212,69 +231,5 @@ public class HydrographParser {
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
 
-	/**
-	 * This method should not be used, as Hydrograph parsing and construction of the data structure should be separate from interpreting hydrograph data for evacuation scheduling
-	 * @param population
-	 * @param modifiedPopulationOutputFile
-	 * @param timeBuffer
-	 * @param rate
-	 * @param staggerTime
-	 */
-	@Deprecated
-	public void triggerPopulationDepartures(Population population, String modifiedPopulationOutputFile, double timeBuffer, double rate, double staggerTime) {
-		Set<String> subsectors = new HashSet<>();
-		Set<String> hydroSubsectors = new HashSet<>();
-		double paxCounter = 0;
-		double lastDeparture = minTime;
 
-		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
-			if (hydrographPoint.getSubSector() == null || hydrographPoint.getFloodTime() < 0) {
-				continue;
-			}
-			hydroSubsectors.add(hydrographPoint.getSubSector());
-			System.out.println(hydrographPoint.getSubSector());
-			for (Person person : population.getPersons().values()) {
-				subsectors.add((String) person.getAttributes().getAttribute("SUBSECTOR"));
-				paxCounter += 1;
-				String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
-//				if (subsector.equals(hydrographPoint.getSubSector())) {
-//					paxCounter += 1;
-//					for (Plan plan : person.getPlans()) {
-//						Activity departure = (Activity) plan.getPlanElements().get(0);
-//						departure.setEndTime( hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate);
-//					}
-//				}
-			}
-			System.out.println("flooding subsector "+hydrographPoint.getSubSector()+" ends departing at " +  (hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate));
-			lastDeparture = Math.max(lastDeparture, hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate);
-			minTime = Math.min(minTime, hydrographPoint.getFloodTime() - timeBuffer - paxCounter * rate);
-		}
-//		subsectors.removeAll(hydroSubsectors);
-		//set the rest to depart at the latest departure from the high priority subsectors plus staggerTime for each zone
-		lastDeparture = minTime;
-		for (String sub : subsectors) {
-			paxCounter = 0;
-			for (Person person : population.getPersons().values()) {
-				paxCounter += 1;
-				String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
-				if (subsector.equals(sub)) {
-					for (Plan plan : person.getPlans()) {
-						Activity departure = (Activity) plan.getPlanElements().get(0);
-						departure.setEndTime(lastDeparture + paxCounter * rate);
-					}
-				}
-			}
-			lastDeparture = lastDeparture + staggerTime ;
-			System.out.println("non-flooding subsector "+sub+" starts departing at " +  lastDeparture);
-		}
-		for (Person person : population.getPersons().values()) {
-				for (Plan plan : person.getPlans()) {
-					Activity departure = (Activity) plan.getPlanElements().get(0);
-					departure.setEndTime(departure.getEndTime() - minTime);
-			}
-		}
-		System.out.println("mintime is "+ minTime);
-		System.out.println("Expected EVAC TIME IS "+ ((lastDeparture - minTime)/3600));
-		new PopulationWriter(population).write(modifiedPopulationOutputFile);
-	}
 }

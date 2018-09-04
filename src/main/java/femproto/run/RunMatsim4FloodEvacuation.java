@@ -110,6 +110,22 @@ public class RunMatsim4FloodEvacuation {
 		// catch log entries early (before the output directory is there):
 		OutputDirectoryLogging.catchLogEntries();
 	}
+
+	/**
+	 * Assume that you have constructred a scenario elsewhere and just want to run
+	 * @param scenario
+	 */
+	public RunMatsim4FloodEvacuation(Scenario scenario) {
+		// catch log entries early (before the output directory is there):
+		OutputDirectoryLogging.catchLogEntries();
+		this.scenario = scenario;
+		this.config = scenario.getConfig();
+		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
+		hasLoadedConfig = true;
+		prepareConfig();
+		hasPreparedScenario = true;
+
+	}
 	
 	Config loadConfig( final String[] args ) {
 		if ( args == null || args.length == 0 || args[0] == "" ) {
@@ -263,7 +279,7 @@ public class RunMatsim4FloodEvacuation {
 		// yyyyyy fem2016 network seems to have unconnected pieces.
 		
 		// yyyyyy reduce to sample for debugging:
-		FEMUtils.sampleDown( scenario, 0.01 );
+		FEMUtils.sampleDown( scenario, femConfig.getSampleSize());
 		// yyyy decide how to do this for UI. kai, jul'18
 		
 		FEMUtils.giveAllSafeNodesToAllAgents( scenario );

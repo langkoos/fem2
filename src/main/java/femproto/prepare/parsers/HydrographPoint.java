@@ -1,4 +1,4 @@
-package femproto.prepare.hydrograph;
+package femproto.prepare.parsers;
 
 import org.matsim.api.core.v01.Coord;
 
@@ -9,7 +9,7 @@ public class HydrographPoint {
 	final String pointId;
 	final Double ALT_AHD;
 	final Coord coord;
-	String[] linkIds;
+	private String[] linkIds;
 	List<HydrographPointData> data;
 	private String subSector;
 	private double floodTime;
