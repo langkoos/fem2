@@ -5,10 +5,10 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import femproto.globals.Gis;
 import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
@@ -31,8 +31,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-
-import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 
 public class EvacuationToSafeNodeMapping {
 	private static final Logger log = Logger.getLogger(EvacuationToSafeNodeMapping.class);
@@ -187,26 +185,26 @@ public class EvacuationToSafeNodeMapping {
 		// yoyoyo?? currently we only use the ifrst of the safe nodes,
 		// upodate 2018.3.7 access to these are cordoned off in order as the previous nodes become inaccesssible
 		String defaultSafeNode = record.SAFE_NODE1;
-		Link defaultLink = getLinkFromSafeNode(defaultSafeNode);
+		Link defaultLink = FEMUtils.getLinkFromSafeNode(defaultSafeNode, scenario );
 		if (defaultLink != null)
 			safeLinks.add(defaultLink);
 		if (record.SAFE_NODE2 != null) {
-			defaultLink = getLinkFromSafeNode(record.SAFE_NODE2);
+			defaultLink = FEMUtils.getLinkFromSafeNode(record.SAFE_NODE2, scenario );
 			if (defaultLink != null)
 				safeLinks.add(defaultLink);
 		}
 		if (record.SAFE_NODE3 != null) {
-			defaultLink = getLinkFromSafeNode(record.SAFE_NODE3);
+			defaultLink = FEMUtils.getLinkFromSafeNode(record.SAFE_NODE3, scenario );
 			if (defaultLink != null)
 				safeLinks.add(defaultLink);
 		}
 		if (record.SAFE_NODE4 != null) {
-			defaultLink = getLinkFromSafeNode(record.SAFE_NODE4);
+			defaultLink = FEMUtils.getLinkFromSafeNode(record.SAFE_NODE4, scenario );
 			if (defaultLink != null)
 				safeLinks.add(defaultLink);
 		}
 		if (record.SAFE_NODE5 != null) {
-			defaultLink = getLinkFromSafeNode(record.SAFE_NODE5);
+			defaultLink = FEMUtils.getLinkFromSafeNode(record.SAFE_NODE5, scenario );
 			if (defaultLink != null)
 				safeLinks.add(defaultLink);
 		}
@@ -231,33 +229,7 @@ public class EvacuationToSafeNodeMapping {
 		}
 		return safeNodes;
 	}
-
-	public Link getLinkFromSafeNode(String defaultSafeNode) {
-		Link endLink = null;
-		Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
-		Gbl.assertNotNull(node);
-
-		// yoyo find an incoming link, preferably an EVAC_SES one.
-		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
-		for (Link link : node.getInLinks().values()) {
-			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
-				endLink = link;
-			}
-		}
-		if (endLink == null) {
-			String msg = "There seems to be no incoming car mode evac link for SAFE node " + defaultSafeNode + ". Defaulting to the highest capacity car link.";
-			log.warn(msg);
-			double maxCap = Double.NEGATIVE_INFINITY;
-			for (Link link : node.getInLinks().values()) {
-				if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
-					maxCap = link.getCapacity();
-					endLink = link;
-				}
-			}
-		}
-		return endLink;
-	}
-
+	
 	public Node getEvacNode(String subsector) {
 		Node node = this.scenario.getNetwork().getNodes().get(Id.createNodeId(subsectorToEvacAndSafeNodes.get(subsector).EVAC_NODE));
 		Gbl.assertNotNull(node);

@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.gbl.Gbl;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ import java.util.Iterator;
 /**
  * reads an evacuation schedule file and updates the evacuation data
  */
-public class EvacuationScheduleReader {
+public final class EvacuationScheduleReader {
 	private final EvacuationSchedule evacuationSchedule;
 	private final Network network;
 	Logger log = Logger.getLogger(EvacuationScheduleReader.class);
@@ -30,7 +31,7 @@ public class EvacuationScheduleReader {
 	 * @param fileName
 	 * @throws IOException
 	 */
-	public void readFile(String fileName) throws IOException {
+	public void readFile(String fileName) {
 
 		try (final FileReader reader = new FileReader(fileName)) {
 
@@ -75,8 +76,9 @@ public class EvacuationScheduleReader {
 				subsectorData.setEvacuationNode(getNode(record.getEvac_node()));
 				subsectorData.addSafeNodeAllocation(record.getTime(), getNode(record.getSafe_node()));
 			}
-			return;
-
+			
+		} catch ( IOException e ) {
+			throw new RuntimeException(e) ;
 		}
 	}
 

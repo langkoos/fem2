@@ -98,6 +98,8 @@ public class SafeNodeAllocation implements Comparable<SafeNodeAllocation> {
 	}
 
 	public double getDuration() {
+		// yyyy what does it mean to have both duration and endTime?  I am not even sure what it means ... interval when I can evacuate? kai, sep'18
+		
 		if(startTime > endTime) {
 			log.warn("Invalid end time for SafeNodeAllocation for Subsector " + container.getSubsector() + ". Overriding with one hour duration.");
 			return 3600;

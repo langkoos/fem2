@@ -2,6 +2,7 @@ package femproto.prepare.demand;
 
 import femproto.prepare.parsers.EvacuationToSafeNodeMapping;
 import femproto.globals.Gis;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -108,6 +109,8 @@ public class SubSectorsToPopulation {
 				// yoyo I think it's better to check for an evac link, preferably the one that gives the shortest path to evac node.
 				// this means, though, that we might need to assign a different link for each possible evac node, for each plan in the agent's memory
 				for (Link link : node.getOutLinks().values()) {
+					// yyyy the comment above says "incoming", the code does "outgoing".  Spatially, the link entry points is closer to the node for
+					// incoming links.  kai, sep'18
 					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
 						startLink = link;
 					}
@@ -130,7 +133,7 @@ public class SubSectorsToPopulation {
 			int totalVehicles = (int) (double) feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(personCnt++));
-				person.getAttributes().putAttribute("SUBSECTOR", subsector);
+				FEMUtils.setSubsectorName( subsector, person );
 				List<Link> safeLinks = evacuationToSafeNodeMapping.getSafeLinks(subsector);
 				for (Link safeLink : safeLinks) {
 
@@ -157,14 +160,8 @@ public class SubSectorsToPopulation {
 		}
 		
 	}
-
-
-
-
-
-
-
-
+	
+	
 	private void writePopulation(String filename) {
 		log.info( "entering writePopulation with fileName=" + filename ) ;
 
@@ -175,18 +172,15 @@ public class SubSectorsToPopulation {
 
 	private void writeAttributes(String fileName) {
 		// yoyo writing out attributes to a separate file for diagnostics
-		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
-		try {
-			writer.write("id\tsubsector\n");
-		for (Person person : scenario.getPopulation().getPersons().values()) {
-			writer.write(person.getId()+"\t"+person.getAttributes().getAttribute("SUBSECTOR").toString()+"\n");
-		}
-		writer.close();
-		} catch (IOException e) {
+		try ( BufferedWriter writer = IOUtils.getBufferedWriter( fileName ) ) {
+			writer.write( "id\tsubsector\n" );
+			for ( Person person : scenario.getPopulation().getPersons().values() ) {
+				writer.write( person.getId() + "\t" + FEMUtils.getSubsectorName( person ) + "\n" );
+			}
+		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	
 }

@@ -5,7 +5,7 @@ import org.matsim.core.config.ReflectiveConfigGroup;
 
 import java.util.Map;
 
-import static femproto.run.FEMConfigGroup.FEMEvacuationTimeAdjustment.takeTimesFromInputPlans;
+import static femproto.run.FEMConfigGroup.FEMEvacuationTimeAdjustment.takeTimesFromInput;
 import static femproto.run.FEMConfigGroup.FEMRoutingMode.preferEvacuationLinks;
 
 public final class FEMConfigGroup extends ReflectiveConfigGroup{
@@ -41,8 +41,8 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	// would need a setter if we needed a second routing mode.  kai, jul'18
 
 	// ---
-	enum FEMEvacuationTimeAdjustment{takeTimesFromInputPlans, allDepartAtMidnight } ;
-	private FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment = takeTimesFromInputPlans;
+	enum FEMEvacuationTimeAdjustment{takeTimesFromInput, allDepartAtMidnight } ;
+	private FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment = takeTimesFromInput;
 	public FEMEvacuationTimeAdjustment getFemEvacuationTimeAdjustment() {
 		return femEvacuationTimeAdjustment;
 	}
@@ -51,9 +51,8 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	}
 
 	// ---
-	enum FEMRunType {
-		justRunInputPlansFile, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector }
-	private FEMRunType femRunType = FEMRunType.justRunInputPlansFile;
+	enum FEMRunType {justRunInputPlansFile, runFromEvacuationSchedule, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector }
+	private FEMRunType femRunType = FEMRunType.runFromEvacuationSchedule;
 	private static final String FEM_RUN_TYPE="FEMRunType" ;
 	private static final String FEM_RUN_TYPE_CMT = "FEM run type. ";
 	@StringGetter( FEM_RUN_TYPE )
@@ -67,10 +66,8 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	// ---
 	private String inputSubsectorsShapefile = null ;
 	private static final String INPUT_SUBSECTORS_SHAPEFILE="inputSubsectorsShapefile" ;
-	private static final String INPUT_SUBSECTORS_SHAPEFILE_CMT="Shapefile that contains the " +
-												     "subsector shapes, and the number of vehicles per subsector.  " +
-												     "Also contains connection to a network node, although MATSim " +
-												     "would not really need that." ;
+	private static final String INPUT_SUBSECTORS_SHAPEFILE_CMT="Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  " +
+												     "Also contains connection to a network node, although MATSim would not really need that." ;
 	@StringGetter( INPUT_SUBSECTORS_SHAPEFILE )
 	public String getInputSubsectorsShapefile() {
 		return inputSubsectorsShapefile ;
@@ -100,5 +97,16 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup{
 	@StringSetter( SAMPLE_SIZE )
 	public void setSampleSize(double sampleSize){
 		this.sampleSize = sampleSize;
+	}
+	// ---
+	private String evacuationScheduleFile ;
+	private static final String EVACUATION_SCHEDULE_FILE = "evacuationScheduleFile" ;
+	@StringGetter( EVACUATION_SCHEDULE_FILE )
+	public String getEvacuationScheduleFile() {
+		return this.evacuationScheduleFile ;
+	}
+	@StringSetter( EVACUATION_SCHEDULE_FILE )
+	public void setEvacuationScheduleFile( String filename ) {
+		this.evacuationScheduleFile = filename ;
 	}
 }

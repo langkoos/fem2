@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import femproto.globals.FEMAttributes;
 import femproto.prepare.parsers.EvacuationToSafeNodeParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
+import femproto.run.FEMUtils;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -27,7 +28,7 @@ import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
  *
  * This will only work for a certification run. Each agent gets only one plan.
  */
-public class EvacuationScheduleToPopulationDepartures {
+public final class EvacuationScheduleToPopulationDepartures {
 	private Scenario scenario;
 	private EvacuationSchedule evacuationSchedule;
 
@@ -119,7 +120,7 @@ public class EvacuationScheduleToPopulationDepartures {
 				int safeNodeAllocationPaxCounter = 0;
 				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
-					person.getAttributes().putAttribute("SUBSECTOR", subsectorData.getSubsector());
+					FEMUtils.setSubsectorName( subsectorData.getSubsector(), person ) ;
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());

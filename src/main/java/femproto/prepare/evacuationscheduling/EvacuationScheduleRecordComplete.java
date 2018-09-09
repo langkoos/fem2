@@ -3,6 +3,8 @@ package femproto.prepare.evacuationscheduling;
 import com.opencsv.bean.CsvBindByName;
 
 public class EvacuationScheduleRecordComplete extends EvacuationScheduleRecordNoDurations {
+	// needs to be public otherwise the CsvBind magic does not work. kai, sep'18
+	
 	@CsvBindByName(required = true)
 	private int duration;
 

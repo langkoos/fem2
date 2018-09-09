@@ -6,11 +6,7 @@ import java.util.*;
  * The idea with this class is to provide several different mappings to evacuation staging data,
  * allowing evacuation strategies to schedule timings at a higher level than the population
  */
-public class EvacuationSchedule {
-	public Map<String, SubsectorData> getSubsectorsBySubsectorName() {
-		return subsectorsBySubsectorName;
-	}
-
+public final class EvacuationSchedule {
 	/**
 	 * arguably not the best way to organise these, but for a start, assuming that, for most cases, everybody will evacuate to the same safe node,
 	 * organising subsectors by evacuation time will allow for overall scheduling.
@@ -21,10 +17,6 @@ public class EvacuationSchedule {
 	 * Likely will need to access a subsector's information directly.
 	 */
 	private Map<String, SubsectorData> subsectorsBySubsectorName = new HashMap<>();
-
-	public Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
-		return subsectorsByEvacuationTime;
-	}
 
 	public void createSchedule() {
 		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
@@ -50,5 +42,15 @@ public class EvacuationSchedule {
 		}
 
 	}
+	
+	Map<String, SubsectorData> getSubsectorsBySubsectorName() {
+		return subsectorsBySubsectorName;
+	}
+	Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
+		return subsectorsByEvacuationTime;
+	}
+	
+	
+	
 }
 

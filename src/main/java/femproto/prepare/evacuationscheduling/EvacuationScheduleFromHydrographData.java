@@ -6,7 +6,7 @@ import org.matsim.api.core.v01.population.*;
 import java.util.HashSet;
 import java.util.Set;
 //todo write this class as well as its instrumentation
-public class EvacuationScheduleFromHydrographData {
+public final class EvacuationScheduleFromHydrographData {
 
 	@Deprecated
 	public void triggerPopulationDepartures(EvacuationSchedule schedule,  double timeBuffer, double rate, double staggerTime) {

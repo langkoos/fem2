@@ -1,10 +1,13 @@
 package femproto.run;
 
+import femproto.globals.FEMAttributes;
+import femproto.prepare.parsers.EvacuationToSafeNodeMapping;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -22,9 +25,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 import static org.matsim.core.network.NetworkUtils.getEuclideanDistance;
 
-class FEMUtils {
+public class FEMUtils {
 	private static final Logger log = Logger.getLogger(FEMUtils.class) ;
 	
 	private FEMUtils(){} // do not instantiate
@@ -133,8 +137,14 @@ class FEMUtils {
 	
 	static void sampleDown( Scenario scenario, double sample ) {
 		List<Id<Person>> list = new ArrayList<>();
+		boolean first = true ;
 		for (Person person : scenario.getPopulation().getPersons().values()) {
-			if ( MatsimRandom.getRandom().nextDouble() < (1. - sample)) {
+			final double rnd = MatsimRandom.getRandom().nextDouble();
+			if ( first ) {
+				first = false ;
+				log.info("going into the sampling with first rnd=" + rnd ) ;
+			}
+			if ( rnd < (1. - sample)) {
 				list.add(person.getId());
 			}
 			
@@ -210,5 +220,39 @@ class FEMUtils {
 			}
 			person.setSelectedPlan(person.getPlans().get(0));
 		}
+	}
+	
+	public static void setSubsectorName( final String subsector, final Person person ) {
+		person.getAttributes().putAttribute( FEMAttributes.SUBSECTOR, subsector);
+	}
+	
+	public static String getSubsectorName( final Person person ) {
+		return (String) person.getAttributes().getAttribute( FEMAttributes.SUBSECTOR );
+	}
+	
+	public static Link getLinkFromSafeNode( String defaultSafeNode, final Scenario scenario ) {
+		Link endLink = null;
+		Node node = scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
+		Gbl.assertNotNull(node);
+
+		// yoyo find an incoming link, preferably an EVAC_SES one.
+		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
+		for (Link link : node.getInLinks().values()) {
+			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
+				endLink = link;
+			}
+		}
+		if (endLink == null) {
+			String msg = "There seems to be no incoming car mode evac link for SAFE node " + defaultSafeNode + ". Defaulting to the highest capacity car link.";
+			log.warn(msg);
+			double maxCap = Double.NEGATIVE_INFINITY;
+			for (Link link : node.getInLinks().values()) {
+				if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
+					maxCap = link.getCapacity();
+					endLink = link;
+				}
+			}
+		}
+		return endLink;
 	}
 }

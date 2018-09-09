@@ -19,6 +19,12 @@
 package femproto.run;
 
 import com.google.inject.Inject;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleFromExperiencedPlans;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleReader;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
+import femproto.prepare.evacuationscheduling.SafeNodeAllocation;
+import femproto.prepare.evacuationscheduling.SubsectorData;
 import femproto.prepare.network.NetworkConverter;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
@@ -32,6 +38,7 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.analysis.kai.KaiAnalysisListener;
 import org.matsim.contrib.decongestion.DecongestionConfigGroup;
 import org.matsim.contrib.decongestion.DecongestionConfigGroup.DecongestionApproach;
@@ -42,15 +49,18 @@ import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
-import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.controler.PrepareForSim;
 import org.matsim.core.controler.PrepareForSimImpl;
+import org.matsim.core.controler.events.ShutdownEvent;
+import org.matsim.core.controler.listener.ShutdownListener;
 import org.matsim.core.gbl.Gbl;
+import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
 import org.matsim.core.router.ActivityWrapperFacility;
@@ -62,6 +72,7 @@ import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.scoring.ExperiencedPlansService;
 import org.matsim.core.scoring.ScoringFunction;
 import org.matsim.core.scoring.ScoringFunctionFactory;
 import org.matsim.core.scoring.SumScoringFunction;
@@ -79,6 +90,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,6 +108,8 @@ public class RunMatsim4FloodEvacuation {
 	// be too restrictive, but for the time being this is what it is.  kai, jul'18
 	
 	private static final Logger log = Logger.getLogger( RunMatsim4FloodEvacuation.class );
+	
+	private static final String EVACUATION_SCHEDULE_FOR_VERIFICATION = "optimized_evacuationSchedule.csv";
 	
 	private boolean hasLoadedConfig = false ;
 	private boolean hasPreparedConfig = false ;
@@ -132,8 +146,9 @@ public class RunMatsim4FloodEvacuation {
 		if ( args == null || args.length == 0 || args[0] == "" ) {
 			
 //			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-just-run-plans-file.xml" );
-			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config.xml" );
-
+//			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config.xml" );
+			config = ConfigUtils.loadConfig( "scenarios/00sandbox/00config.xml" );
+			
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
 //			config.plans().setInputFile("plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz");
@@ -155,15 +170,19 @@ public class RunMatsim4FloodEvacuation {
 	
 	void prepareConfig() {
 		// division into loadConfig and prepareConfig is necessary since some configuration depends
-		// on (FEM)config switches, and thus configuration-in-code needs to be done before
+		// on (FEM)config switches, and thus external configuration-in-code needs to be done before
 		// prepareConfig.   kai, jul'18
 		
 		if ( !hasLoadedConfig ) {
 			loadConfig( null ) ;
 		}
+
+		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 		
 		// --- controler config group:
-		final int lastIteration = 100;
+		final int lastIteration = 0;
+		// yyyyyy for debugging!!!  kai, sep'18
+		
 		config.controler().setLastIteration( lastIteration );
 		
 		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
@@ -210,8 +229,6 @@ public class RunMatsim4FloodEvacuation {
 		
 		// --- fem:
 		
-		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
-		
 		log.warn( "runType=" + femConfig.getFemRunType() ) ;
 		
 		switch( femConfig.getFemRunType() ) {
@@ -250,12 +267,16 @@ public class RunMatsim4FloodEvacuation {
 			}
 			break;
 			case justRunInputPlansFile:
+			case runFromEvacuationSchedule:
 				config.controler().setLastIteration( 0 );
 				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
 				break;
 			default:
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;
 		}
+		
+		MatsimRandom.reset();
+		// need this stable so that the sampling is stable.  not sure why it is unstable without this.  kai, sep'18
 		
 		// ---
 
@@ -272,8 +293,12 @@ public class RunMatsim4FloodEvacuation {
 		
 		// === prepare scenario === :
 		
+		log.info("here10") ;
+		
 		scenario = ScenarioUtils.loadScenario( config );
 		
+		log.info("here20") ;
+
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 
 //		new NetworkCleaner().run(scenario.getNetwork());
@@ -283,13 +308,64 @@ public class RunMatsim4FloodEvacuation {
 		FEMUtils.sampleDown( scenario, femConfig.getSampleSize());
 		// yyyy decide how to do this for UI. kai, jul'18
 
-		if(femConfig.getFemRunType().equals(FEMConfigGroup.FEMRunType.optimizeSafeNodesByPerson) ||
-				femConfig.getFemRunType().equals(FEMConfigGroup.FEMRunType.optimizeSafeNodesBySubsector))
+		
+		switch ( femConfig.getFemRunType() ) {
+			case justRunInputPlansFile:
+				break;
+			case runFromEvacuationSchedule:
+				log.info("here30") ;
+
+				final String fileName = config.controler().getOutputDirectory() + "/" + FEMConfigGroup.FEMRunType.optimizeSafeNodesBySubsector + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION ;
+				final EvacuationSchedule evacSched = new EvacuationSchedule() ;
+				new EvacuationScheduleReader( evacSched, scenario.getNetwork() ).readFile( fileName );
+				
+				log.info("here40") ;
+
+				log.info("here50") ;
+
+				for ( Person person : scenario.getPopulation().getPersons().values() ) {
+					// remove unselected plans:
+					person.getPlans().removeIf( plan -> !person.getSelectedPlan().equals( plan ) );
+					// get subsector info:
+					final SubsectorData data = evacSched.getOrCreateSubsectorData( FEMUtils.getSubsectorName( person ) );
+					final Set<SafeNodeAllocation> set = data.getSafeNodesByTime();
+					if ( set.size() > 1 ) {
+						throw new RuntimeException( "more than one safe node for a subsector.  cannot deal with this in verification run. Aborting ...") ;
+					}
+					if ( set.size()==0 ) {
+						log.info( "subsectorName=" + FEMUtils.getSubsectorName( person ) ) ;
+						log.info( "set=" + set ) ;
+						throw new RuntimeException("somehow, there is no safe node for the subsector.  cannot deal with this in verification run.  Aborting ...");
+					}
+					final SafeNodeAllocation alloc = set.iterator().next(); // there should now be only one!
+					
+					final List<PlanElement> planElements = person.getSelectedPlan().getPlanElements();
+
+					// set evacuation time:
+					final Activity initialAct = (Activity) planElements.get(0) ;
+					initialAct.setEndTime( alloc.getStartTime() );  // yyyy or getEndTime?
+
+					// remove route so that it will be re-computed:
+					final Leg evacLeg = (Leg) planElements.get( 1 );
+					evacLeg.setRoute( null );
+					
+					// set safe node:
+					final Activity safeAct = (Activity) planElements.get(2) ;
+					safeAct.setLinkId( FEMUtils.getLinkFromSafeNode( alloc.getNode().getId().toString(), scenario ).getId()  );
+					// yy arrrggghhh ... kai, sep'18
+					
+				}
+				break;
+
+			case optimizeSafeNodesByPerson:
+			case optimizeSafeNodesBySubsector:
 				FEMUtils.giveAllSafeNodesToAllAgents( scenario );
-		// yyyy will we get valid initial mappings?  kai, jul'18
+				// yyyy will we get valid initial mappings?  kai, jul'18
+				break;
+		}
 		
 		switch( femConfig.getFemEvacuationTimeAdjustment() ) {
-			case takeTimesFromInputPlans:
+			case takeTimesFromInput:
 				FEMUtils.haveOneAgentStartOneSecondEarlierThanEverybodyElse( scenario );
 				break;
 			case allDepartAtMidnight:
@@ -300,6 +376,10 @@ public class RunMatsim4FloodEvacuation {
 		}
 		
 		//		preparationsForRmitHawkesburyScenario();
+		
+		config.controler().setOutputDirectory( config.controler().getOutputDirectory() + "/" + femConfig.getFemRunType().name() );
+		// yyyy this needs to be _after_ the evac schedule was read in the verification run since otherwise I can't
+		// find the directory.  Probably do in some other way. kai, sep'18
 		
 		// ---
 		hasPreparedScenario = true ;
@@ -421,6 +501,52 @@ public class RunMatsim4FloodEvacuation {
 						delegate.run();
 					}
 				} );
+				this.addControlerListenerBinding().toInstance( new ShutdownListener() {
+					@Inject private ExperiencedPlansService eps ;
+					@Inject private Network network ;
+					@Inject private Population population ;
+					@Inject private OutputDirectoryHierarchy outDirs ;
+					@Override public void notifyShutdown( final ShutdownEvent event ) {
+						if ( event.isUnexpected() ) {
+							return ;
+						}
+						final EvacuationScheduleFromExperiencedPlans converter = new EvacuationScheduleFromExperiencedPlans(population,network);
+						converter.parseExperiencedPlans( eps.getExperiencedPlans(), network ) ;
+						final EvacuationSchedule schedule = converter.createEvacuationSchedule();
+						EvacuationScheduleWriter writer = new EvacuationScheduleWriter( schedule ) ;
+						writer.writeEvacuationScheduleRecordComplete( outDirs.getOutputFilename( Controler.OUTPUT_PREFIX + "evacuationSchedule.csv" ) );
+						switch ( ConfigUtils.addOrGetModule( config, FEMConfigGroup.class ).getFemRunType() ) {
+							case justRunInputPlansFile:
+							case runFromEvacuationSchedule:
+								break;
+
+							case optimizeSafeNodesByPerson:
+							case optimizeSafeNodesBySubsector:
+								writer.writeEvacuationScheduleRecordNoVehiclesNoDurations( config.controler().getOutputDirectory() + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION ) ;
+								break;
+						}
+					}
+				} );
+				// Notes:
+				
+				// Some ground rules:
+				
+				// * we do not overwrite material written in earlier stage
+				
+				// * we write both output_evacuationSchedule and optimized_evacuationSchedule.  The former is meant as input
+				// to analysis.  The latter is meant to be manually modified, and is input for the verification run.
+				
+				// * if the verification run wants automatic access to the optimized_evacuationSchedule, it needs to be
+				// directly in the "output" directory.  In contrast, the output dir of the verification run could be in
+				// "outputDir + runType".  This would also have the consequence that a new optimization run would remove the
+				// previous verification run.  This implies that a scenario construction run should remove the previous
+				// optimization run.
+				
+				// In first cut, assumption was to have departure times as input to optimization, and safe nodes as output.
+				
+				// So the verification run would have subsector, dpTime, safeNode as input.
+				
+				// Could alternatively also optimize departure times.
 			}
 		} );
 		
@@ -443,6 +569,7 @@ public class RunMatsim4FloodEvacuation {
 				// computed in prepareForSim. kai, jul'18
 				break;
 			case justRunInputPlansFile:
+			case runFromEvacuationSchedule:
 				break;
 			default:
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;

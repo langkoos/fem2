@@ -7,6 +7,8 @@ import com.opencsv.bean.CsvBindByName;
  * this basic version of an evac schedule does not have number of vehicles allocated, nor end time.
  */
 public class EvacuationScheduleRecordNoVehiclesNoDurations {
+	// needs to be public otherwise the CsvBind magic does not work. kai, sep'18
+
 	@CsvBindByName(required = true)
 	private  int time;
 	@CsvBindByName(required = true)
