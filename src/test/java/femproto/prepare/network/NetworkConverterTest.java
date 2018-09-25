@@ -21,7 +21,7 @@ public class NetworkConverterTest {
 		String testOutputDir = utils.getOutputDirectory() ;
 
 		final String nodesFilename = dir + basename2016 + "nodes.shp";
-		final String linksFilename = dir + basename2016 + "links_July_2018.shp";
+		final String linksFilename = dir + basename2016 + "links_CLEAN.shp";
 //		final String linksFilename = dir + basename2016 + "links.shp";
 		final String outputFilePrefix = testOutputDir + "/" + basename2016 + "network" ;
 

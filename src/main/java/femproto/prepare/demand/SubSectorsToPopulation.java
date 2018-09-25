@@ -44,10 +44,11 @@ public class SubSectorsToPopulation {
 		subSectorsToPopulation.readSubSectorsShapeFile(args[0]);
 		subSectorsToPopulation.writePopulation(args[3]);
 		subSectorsToPopulation.writeAttributes(args[4]);
-		// yyyy do we need to write the attributes, or is this now (also) in the population?  kai, aug'18
-		// yoyo I put this here for joining results in external packages like tableau. Via also doens't read attributes from population yet - pieter
+		// do we need to write the attributes, or is this now (also) in the population?  kai, aug'18
+		// I put this here for joining results in external packages like tableau. Via also doens't read attributes from population yet - pieter
 
-		// TODO if we really want to leave it like this, then put in a more expressive command passing syntax (see bdi-abm-integration project).  kai, feb'18
+		//  if we really want to leave it like this, then put in a more expressive command passing syntax (see bdi-abm-integration project).  kai, feb'18
+		// resolved as we don't allow this level of control - pieter, sep'18
 	}
 
 	private void initializeEvacuationStaging(String arg) {
@@ -68,14 +69,10 @@ public class SubSectorsToPopulation {
 
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
 		
-		// coordinate transformation:
-		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$", "prj")).readLine().toString();
-		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
-		// yyyy this coord transformation is never used.  is this a problem?  kai, aug'18
-		
 		//iterate through features and generate pax by subsector
 		Iterator<SimpleFeature> iterator = features.iterator();
 		long personCnt=0L;
+		boolean linkErrors = false;
 		while (iterator.hasNext()){
 			SimpleFeature feature = iterator.next();
 			
@@ -108,23 +105,38 @@ public class SubSectorsToPopulation {
 				// yyyyyy??
 				// yoyo I think it's better to check for an evac link, preferably the one that gives the shortest path to evac node.
 				// this means, though, that we might need to assign a different link for each possible evac node, for each plan in the agent's memory
-				for (Link link : node.getOutLinks().values()) {
-					// yyyy the comment above says "incoming", the code does "outgoing".  Spatially, the link entry points is closer to the node for
+				for (Link link : node.getInLinks().values()) {
+					// the comment above says "incoming", the code does "outgoing".  Spatially, the link entry points is closer to the node for
 					// incoming links.  kai, sep'18
+					// resolved: DP accepted request for using incoming links so agents travel the full centroid connector distance.
 					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
 						startLink = link;
 					}
 				}
-				if (startLink == null){
-					String msg = "There seems to be no outgoing car mode EVAC link for evac node " + evacNodeFromCorrespondancesFile +". Defaulting to the highest capacity car link.";
-					log.warn(msg) ;
-					double maxCap = Double.NEGATIVE_INFINITY;
-					for (Link link : node.getOutLinks().values()) {
-						if ( link.getAllowedModes().contains( TransportMode.car) && link.getCapacity() > maxCap) {
-							maxCap = link.getCapacity();
-							startLink = link;
-						}
+				boolean badOutlink = true;
+				for (Link link : node.getOutLinks().values()){
+					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
+						badOutlink = false;
 					}
+				}
+				if (startLink == null || badOutlink){
+					String msg = String.format("There seems to be no incoming/outgoing car mode EVAC link for evac node %s, subsector %s. The link IDs to check are as follows:",evacNodeFromCorrespondancesFile,subsector);
+					log.error(msg); ;
+					double maxCap = Double.NEGATIVE_INFINITY;
+					msg = "INCOMING links: ";
+					log.error(msg);
+					for (Link link : node.getInLinks().values()) {
+						msg = String.format("%s: modes = %12s , evac link = %s",link.getId(),link.getAllowedModes(),link.getAttributes().getAttribute(EVACUATION_LINK).toString());
+						log.error(msg);
+					}
+					msg = "OUTGOING links: ";
+					log.error(msg);
+					for (Link link : node.getOutLinks().values()) {
+						msg = String.format("%s: modes = %12s , evac link = %s",link.getId(),link.getAllowedModes(),link.getAttributes().getAttribute(EVACUATION_LINK).toString());
+						log.error(msg);
+					}
+					linkErrors = true;
+					continue;
 				}
 			}
 
@@ -158,6 +170,9 @@ public class SubSectorsToPopulation {
 				scenario.getPopulation().addPerson(person);
 			}
 		}
+
+		if(linkErrors)
+			throw new RuntimeException("Review list of link Errors for fixing");
 		
 	}
 	

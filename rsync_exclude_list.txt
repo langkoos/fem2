@@ -10,3 +10,4 @@ clone_to_dropbox.sh
 .*
 .*/
 ITERS
+scratch*
