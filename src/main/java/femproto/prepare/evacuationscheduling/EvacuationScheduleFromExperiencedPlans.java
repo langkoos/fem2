@@ -73,7 +73,7 @@ public final class EvacuationScheduleFromExperiencedPlans {
 //			double endTime = Double.NEGATIVE_INFINITY;
 //
 //			for (PlanElement planElement : person.getPlans().get(0).getPlanElements()) {
-//				// yyyy why get(0)?  If anything, then it should be the selected plan.  kai, sep'18
+//				// yyyy yoyo (probably solved with task below) why get(0)?  If anything, then it should be the selected plan.  kai, sep'18
 //				if (planElement instanceof Activity) {
 //					Activity activity = (Activity) planElement;
 //					if (origin == null && activity.getType().equals(FEMAttributes.EVACUATION_ACTIVITY)) {
@@ -87,7 +87,8 @@ public final class EvacuationScheduleFromExperiencedPlans {
 //				}
 //			}
 //			ODFlowCounter odFlowCounter = addOrCreateODFlowCounter(FEMUtils.getSubsectorName( person ), origin, destin);
-			// yyyy is any of the now commented out material truly needed?  kai, sep'18
+			// yyyy yoyo is any of the now commented out material truly needed?  kai, sep'18
+			// yoyo check
 		}
 	}
 

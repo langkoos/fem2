@@ -180,8 +180,8 @@ public class RunMatsim4FloodEvacuation {
 		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 		
 		// --- controler config group:
-		final int lastIteration = 0;
-		// yyyyyy for debugging!!!  kai, sep'18
+		final int lastIteration = 100;
+		// yyyy should come from config file so user can change it.
 		
 		config.controler().setLastIteration( lastIteration );
 		
@@ -307,6 +307,8 @@ public class RunMatsim4FloodEvacuation {
 		// yyyyyy reduce to sample for debugging:
 		FEMUtils.sampleDown( scenario, femConfig.getSampleSize());
 		// yyyy decide how to do this for UI. kai, jul'18
+		// yyyy try running validation run always on 100%.  Does not work because 1% has subsectors with no departures, thus no safe node.
+		// woud need to have sub-sector-based stratified sampling.
 
 		
 		switch ( femConfig.getFemRunType() ) {
@@ -343,7 +345,8 @@ public class RunMatsim4FloodEvacuation {
 
 					// set evacuation time:
 					final Activity initialAct = (Activity) planElements.get(0) ;
-					initialAct.setEndTime( alloc.getStartTime() );  // yyyy or getEndTime?
+					initialAct.setEndTime( alloc.getStartTime() );
+					// (start time is indeed the departure time)
 
 					// remove route so that it will be re-computed:
 					final Leg evacLeg = (Leg) planElements.get( 1 );
@@ -471,6 +474,8 @@ public class RunMatsim4FloodEvacuation {
 									
 									// Exceptions here are ignored since the network may be disconnected, and so there may be no route from
 									// some subsector to some safe node. yyyy maybe rather throw the exception?  kai, jul'18
+									// tendency to tell them that it needs to be connected, and throw exceptions early.
+									// yyyy means network connector needs to complain if subsectors/safeNodes are cut off from the main component.
 								}
 							}
 							for ( Plan planToRemove : plansToRemove ) {
