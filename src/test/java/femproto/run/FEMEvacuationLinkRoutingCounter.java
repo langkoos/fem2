@@ -50,6 +50,7 @@ public class FEMEvacuationLinkRoutingCounter implements LinkLeaveEventHandler{
 			totalLinkEnterEventCount++;
 			map.put( event.getVehicleId(), event.getLinkId() );
 		} else {
+			log.info( "vehId=" + event.getVehicleId() + "; linkId=" + event.getLinkId() + "; isEvacLink=" + isEvacLink );
 			badLinkEnterEventCount++;
 			Id<Link> prevLinkId = map.get(event.getVehicleId());
 			if ( prevLinkId!=null ) {

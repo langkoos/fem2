@@ -73,12 +73,13 @@ public class RunMatsim4FloodEvacuationTestIT {
 		
 		// ---
 
+			Config config = null;
 		try {
-			
+
 			final RunMatsim4FloodEvacuation evac = new RunMatsim4FloodEvacuation();;
-			
-			Config config = evac.loadConfig( new String [] {configFilename} ) ;
-			
+
+			config = evac.loadConfig( new String [] {configFilename} );
+
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			
 			// ---
@@ -95,13 +96,13 @@ public class RunMatsim4FloodEvacuationTestIT {
 		EventsManager eventsManager = new EventsManagerImpl();
 		Network network = NetworkUtils.createNetwork();
 //		new MatsimNetworkReader(network).readFile("scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz");
-		new MatsimNetworkReader(network).readFile(utils.getOutputDirectory()+"output_network.xml.gz");
+		new MatsimNetworkReader(network).readFile(config.controler().getOutputDirectory()+"/output_network.xml.gz");
 		FEMEvacuationLinkRoutingCounter counter = new FEMEvacuationLinkRoutingCounter(network);
 		eventsManager.addHandler(counter);
 
 		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
 
-		matsimEventsReader.readFile(utils.getOutputDirectory()+"output_events.xml.gz");
+		matsimEventsReader.readFile(config.controler().getOutputDirectory()+"/output_events.xml.gz");
 
 		log.info(counter.getBadLinkEnterEventCount() + " out of "+ counter.getTotalLinkEnterEventCount() + " link entries on non-evac links.");
 		
