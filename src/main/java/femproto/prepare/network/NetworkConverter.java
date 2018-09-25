@@ -92,7 +92,7 @@ public class NetworkConverter {
 						case 'c' : modes.add(TransportMode.car);break;
 						case 'b' : modes.add("bus");break;
 						case 'r' : modes.add("rail");break;
-//						case 'y' : modes.add("y");break; //yyyy what is y mode? //yoyo our 2016 files dont have this so removing it; raise error in future for weird stuff
+//						case 'y' : modes.add("y");break; // what is y mode? //yoyo our 2016 files dont have this so removing it; raise error in future for weird stuff
 						default:  throw new RuntimeException("No mode specified for link ");
 					}
 				}
@@ -112,7 +112,9 @@ public class NetworkConverter {
 	private void writeNetwork(String fileName){
 		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml.gz");
 		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
-		// yyyy original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
+		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
+		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
+		// But that output shapefile produces different columns.  So better not write it.
 	}
 
 	public static void main(String[] args) throws IOException, FactoryException {

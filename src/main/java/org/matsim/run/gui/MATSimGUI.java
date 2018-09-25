@@ -69,6 +69,7 @@ public class MATSimGUI {
 		}
 		{
 			// button is grayed out until config is loaded yyyyyy which is wrong, should wait until end of optim run. kai, sep'18
+			// decision to have only 3 buttons: prepare, optimize, verify.  Still an issue, but not so large any more. kai/pieter, sep'18
 
 			btnVerificationRun = new JButton( "Start " + VERIFICATION_RUN );
 			gui.addPostprocessButton( "def", btnVerificationRun );

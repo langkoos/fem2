@@ -35,9 +35,10 @@ public class FEMUtils {
 	
 	static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {
 		
-		// yy That population (e.g. haw_pop_route_defined.xml.gz) has an "Evacuation" activity in between
+		// That population (e.g. haw_pop_route_defined.xml.gz) has an "Evacuation" activity in between
 		// "Home" and "Safe".  Without documentation I don't know what that means.  Thus removing it here. kai, jan/apr'18
-		// yyyy Why did this work without also removing the routes? kai, apr'18
+		// Why did this work without also removing the routes? kai, apr'18
+		// not resolved, but also not important for current FEM project. kai, sep'18
 		for ( Person person : scenario.getPopulation().getPersons().values() ) {
 			List<PlanElement> toRemove = new ArrayList<>() ;
 			boolean justRemoved = false ;
