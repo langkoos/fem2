@@ -36,7 +36,6 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.analysis.kai.KaiAnalysisListener;
@@ -61,12 +60,8 @@ import org.matsim.core.controler.events.ShutdownEvent;
 import org.matsim.core.controler.listener.ShutdownListener;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
-import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
-import org.matsim.core.router.ActivityWrapperFacility;
 import org.matsim.core.router.NetworkRoutingProvider;
-import org.matsim.core.router.TripRouter;
-import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.router.util.TravelDisutility;
@@ -83,14 +78,10 @@ import org.matsim.core.scoring.functions.CharyparNagelMoneyScoring;
 import org.matsim.core.scoring.functions.ScoringParameters;
 import org.matsim.core.scoring.functions.ScoringParametersForPerson;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.core.utils.misc.Counter;
-import org.matsim.facilities.Facility;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -399,41 +390,41 @@ public class RunMatsim4FloodEvacuation {
 		controler.addOverridingModule( new AbstractModule() {
 			@Override
 			public void install() {
-				
+
 				// analysis:
 				this.addControlerListenerBinding().to( KaiAnalysisListener.class );
 				this.addControlerListenerBinding().to( OutputEvents2TravelDiaries.class );
-				
+
 				// routing:
 				switch ( femConfig.getFemRoutingMode() ) {
 					case preferEvacuationLinks:
 						final String routingMode = TransportMode.car;
 						// (the "routingMode" can be different from the "mode".  useful if, say, different cars should follow different routing
 						// algorithms, but still executed as "car" on the network.  Ask me if this might be useful for this project.  kai, feb'18)
-						
+
 						// register this routing mode:
 						addRoutingModuleBinding( routingMode ).toProvider( new NetworkRoutingProvider( TransportMode.car, routingMode ) );
-						
+
 						// define how the travel time is computed:
 //						addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
-						
+
 						// congested travel time:
 //						bind(WithinDayTravelTime.class).in(Singleton.class);
 //						addEventHandlerBinding().to(WithinDayTravelTime.class);
 //						addMobsimListenerBinding().to(WithinDayTravelTime.class);
 //						addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
-						
+
 						// define how the travel disutility is computed:
 						TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory();
 
 //						TravelDisutilityFactory delegateFactory = new TollTimeDistanceTravelDisutilityFactory() ;
 						// NOT using the toll based travel disutility, since we are routing without toll, on the
 						// empty network, before the iterations start, and then never again.  kai, jul'18
-						
+
 						addTravelDisutilityFactoryBinding( routingMode ).toInstance(
 								new FEMPreferEmergencyLinksTravelDisutility.Factory( scenario.getNetwork(), delegateFactory )
 						);
-						
+
 						break;
 					default:
 						throw new RuntimeException( "not implemented" );
@@ -444,68 +435,11 @@ public class RunMatsim4FloodEvacuation {
 				// yy (this is mostly necessary since the "to-all-safe-nodes" initial router also accepts short
 				// non-SES links (e.g. ferry links), and if they are not strongly penalized in the iterations, the simulation
 				// will use them.  kai, aug'18)
-				
+
 				// calculating all routes at initialization (assuming that they are sufficiently defined by the evac
 				// network).  kai, may'18
 				this.bind( PrepareForSimImpl.class );
-				this.bind( PrepareForSim.class ).toInstance( new PrepareForSim() {
-					@Inject TripRouter tripRouter;
-					@Inject PrepareForSimImpl delegate;
-					@Override public void run() {
-						log.info( "running local PrepareForSim implementation ..." );
-						long exceptionCnt = 0;
-						Counter counter = new Counter( "person # " );
-						for ( Person person : scenario.getPopulation().getPersons().values() ) {
-							counter.incCounter();
-							List<Plan> plansToRemove = new ArrayList<>();
-							for ( Plan plan : person.getPlans() ) {
-								List<Activity> acts = TripStructureUtils.getActivities( plan, tripRouter.getStageActivityTypes() );
-								Activity origAct = acts.get( 0 );
-								Activity destAct = acts.get( 1 );
-								Facility fromFacility = new ActivityWrapperFacility( origAct );
-								Facility toFacility = new ActivityWrapperFacility( destAct );
-								try {
-									List<? extends PlanElement> trip = tripRouter.calcRoute( TransportMode.car, fromFacility, toFacility, origAct.getEndTime(), person );
-									TripRouter.insertTrip( plan, origAct, trip, destAct );
-								} catch ( Exception ee ) {
-//									ee.printStackTrace();
-									exceptionCnt++;
-									plansToRemove.add( plan );
-									
-									// Exceptions here are ignored since the network may be disconnected, and so there may be no route from
-									// some subsector to some safe node. yyyy maybe rather throw the exception?  kai, jul'18
-									// tendency to tell them that it needs to be connected, and throw exceptions early.
-									// yyyy means network connector needs to complain if subsectors/safeNodes are cut off from the main component.
-								}
-							}
-							for ( Plan planToRemove : plansToRemove ) {
-								person.removePlan( planToRemove );
-							}
-						}
-						if ( exceptionCnt > 0 ) {
-							log.warn( "exceptionCnt=" + exceptionCnt + "; presumably that many person--safeNode combinations cannot be routed." );
-						}
-						
-						// remove persons that don't have a plan:
-						scenario.getPopulation().getPersons().values().removeIf( person -> person.getPlans().isEmpty() ) ;
-						// This can, in principle, happen when a person sits in a subsector that does not have a network
-						// connection to any of the safe nodes. yyyy maybe we should rather throw an exception here?
-						// kai, jul'18
-						
-						// going through all plans of all persons and certify that we have valid plans:
-						for ( Person person : scenario.getPopulation().getPersons().values() ) {
-							for ( Plan plan : person.getPlans() ) {
-								for ( Leg leg : TripStructureUtils.getLegs( plan ) ) {
-									Gbl.assertNotNull( leg.getRoute() );
-									Gbl.assertIf( leg.getRoute() instanceof NetworkRoute );
-								}
-							}
-						}
-						
-						// run the default PrepareForSimImpl:
-						delegate.run();
-					}
-				} );
+				this.bind( PrepareForSim.class ).to(FEMPrepareForSim.class);
 				this.addControlerListenerBinding().toInstance( new ShutdownListener() {
 					@Inject private ExperiencedPlansService eps ;
 					@Inject private Network network ;
@@ -533,24 +467,24 @@ public class RunMatsim4FloodEvacuation {
 					}
 				} );
 				// Notes:
-				
+
 				// Some ground rules:
-				
+
 				// * we do not overwrite material written in earlier stage
-				
+
 				// * we write both output_evacuationSchedule and optimized_evacuationSchedule.  The former is meant as input
 				// to analysis.  The latter is meant to be manually modified, and is input for the verification run.
-				
+
 				// * if the verification run wants automatic access to the optimized_evacuationSchedule, it needs to be
 				// directly in the "output" directory.  In contrast, the output dir of the verification run could be in
 				// "outputDir + runType".  This would also have the consequence that a new optimization run would remove the
 				// previous verification run.  This implies that a scenario construction run should remove the previous
 				// optimization run.
-				
+
 				// In first cut, assumption was to have departure times as input to optimization, and safe nodes as output.
-				
+
 				// So the verification run would have subsector, dpTime, safeNode as input.
-				
+
 				// Could alternatively also optimize departure times.
 			}
 		} );
@@ -655,6 +589,7 @@ public class RunMatsim4FloodEvacuation {
 		
 		
 	}
+
 }
 	
 class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScoring {
