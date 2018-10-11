@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import femproto.globals.FEMAttributes;
 import femproto.globals.Gis;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
@@ -39,6 +40,8 @@ public class HydrographParser {
 
 	private Map<String, HydrographPoint> hydrographPointMap;
 
+	Network network;
+	EvacuationSchedule evacuationSchedule;
 
 	/**
 	 * This initialises the data structure and populates it with the subsectors and/or link ids that this point may affect,
@@ -46,8 +49,8 @@ public class HydrographParser {
 	 * @param shapefile
 	 * @param network
 	 */
-	public void hydroPointsShapefile2HydrographPointMap(String shapefile, Network network) {
-
+	public void hydroPointsShapefile2HydrographPointMap(String shapefile, Network network, EvacuationSchedule evacuationSchedule) {
+		this.network = network;
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile);
 		CoordinateTransformation transformation = null;
 		// coordinate transformation:

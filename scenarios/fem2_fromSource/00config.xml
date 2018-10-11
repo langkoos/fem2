@@ -7,7 +7,6 @@
 		<param name="inputSubsectorsShapefile" value="subsectorshapefile/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="2016_subsectors_safe_node_mapping.txt" />
-		<param name="evacuationScheduleFile" value="null" />
 		<!-- Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields:
 			ID       Integer unique id of point
 			links_ids     [sic, this typo now sticks] String referring to EMME link ids.
