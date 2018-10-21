@@ -31,6 +31,8 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 			map.put(FEM_RUN_TYPE, str);
 		}
 		map.put(INPUT_SUBSECTORS_SHAPEFILE, INPUT_SUBSECTORS_SHAPEFILE_CMT);
+		map.put(INPUT_NETWORK_NODES_SHAPEFILE, INPUT_NETWORK_NODES_SHAPEFILE_CMT);
+		map.put(INPUT_NETWORK_LINKS_SHAPEFILE, INPUT_NETWORK_LINKS_SHAPEFILE_CMT);
 		map.put(HYDROGRAPH_SHAPE_FILE, HYDROGRAPH_SHAPE_FILE_CMT);
 		return map;
 	}
@@ -80,6 +82,38 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	@StringSetter(FEM_RUN_TYPE)
 	public void setFemRunType(final FEMRunType femRunType) {
 		this.femRunType = femRunType;
+	}
+
+	// ---
+	private String inputNetworkNodesShapefile = null;
+	private static final String INPUT_NETWORK_NODES_SHAPEFILE = "inputNetworkNodesShapefile";
+	private static final String INPUT_NETWORK_NODES_SHAPEFILE_CMT = "EMME nodes in a shapefile. " +
+			"Also contains connection to a network node, although MATSim would not really need that.";
+
+	@StringGetter(INPUT_NETWORK_NODES_SHAPEFILE)
+	public String getInputNetworkNodesShapefile() {
+		return inputNetworkNodesShapefile;
+	}
+
+	@StringSetter(INPUT_NETWORK_NODES_SHAPEFILE)
+	public void setInputNetworkNodesShapefile(String str) {
+		inputNetworkNodesShapefile = str;
+	}
+
+	// ---
+	private String inputNetworkLinksShapefile = null;
+	private static final String INPUT_NETWORK_LINKS_SHAPEFILE = "inputNetworkLinksShapefile";
+	private static final String INPUT_NETWORK_LINKS_SHAPEFILE_CMT = "EMME nodes in a shapefile. " +
+			"Also contains connection to a network node, although MATSim would not really need that.";
+
+	@StringGetter(INPUT_NETWORK_LINKS_SHAPEFILE)
+	public String getInputNetworkLinksShapefile() {
+		return inputNetworkLinksShapefile;
+	}
+
+	@StringSetter(INPUT_NETWORK_LINKS_SHAPEFILE)
+	public void setInputNetworkLinksShapefile(String str) {
+		inputNetworkLinksShapefile = str;
 	}
 
 	// ---

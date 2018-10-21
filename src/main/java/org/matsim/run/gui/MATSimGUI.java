@@ -123,7 +123,7 @@ public class MATSimGUI {
 					absoluteClasspaths.append(new File(cpPart).getAbsolutePath());
 				}
 				
-				final String inputShapeFile = femConfig.getInputSubsectorsShapefile();;
+				final String inputShapeFile = femConfig. getInputSubsectorsShapefile();;
 				final String networkFile = config.network().getInputFile() ;
 				final String evacNodesFile = femConfig.getInputSubsectorsToSafeNodesMappingsFile() ;
 				final String outputPopFile = config.plans().getInputFile() ;

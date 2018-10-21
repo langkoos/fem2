@@ -43,13 +43,12 @@ public class NetworkConverter {
 
 	public NetworkConverter(String nodesFile, String linksFile) {
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-
 	}
 
 
 	private void parseNodes(String fileName) throws IOException, FactoryException {
 		File dataFile = new File(fileName) ;
-		log.info( "will try to read from " + dataFile.getAbsolutePath() ) ;
+		log.info( "Will attempr to convert nodes from " + dataFile.getAbsolutePath() ) ;
 		Gbl.assertIf( dataFile.exists() );
 	
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
@@ -68,6 +67,7 @@ public class NetworkConverter {
 			}
 		}
 	}
+
 	private void parseLinks(String fileName) {
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
