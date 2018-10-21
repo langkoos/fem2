@@ -64,9 +64,9 @@ public class HydrographParserTest {
 
 		hydrographParser.hydrographToViaXY(utils.getOutputDirectory()+"hydroxy.txt.gz");
 
-		hydrographParser.hydrographToViaLinkAttributes(utils.getOutputDirectory()+"hydro_linkattrs.txt.gz",scenario.getNetwork());
+		hydrographParser.hydrographToViaLinkAttributesFromLinkData(utils.getOutputDirectory()+"hydro_linkattrs.txt.gz",scenario.getNetwork());
 
-		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d00285_H_change_events.xml.gz");
+		hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(),utils.getOutputDirectory()+"d00285_H_change_events.xml.gz");
 
 
 	}

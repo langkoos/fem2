@@ -40,6 +40,8 @@ public class HydrographParser {
 
 	private Map<String, HydrographPoint> hydrographPointMap;
 
+	private Map<String, HydrographPoint> consolidatedHydrographPointMap;
+
 	private final Network network;
 
 	private final EvacuationSchedule evacuationSchedule;
@@ -85,7 +87,7 @@ public class HydrographParser {
 			HydrographPoint hydrographPoint = new HydrographPoint(pointID, ALT_AHD, coord);
 			hydrographPoint.setSubSector(subsector);
 			hydrographPointMap.put(pointID, hydrographPoint);
-			//yoyo for hydrpogrpah points with no link id associated with them, this will use the centroid connector instead
+			//yoyo for hydrogrpah points with no link id associated with them, this will use the centroid connector instead
 			if (linkIDs.equals("") && !subsector.equals("")) {
 				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
 				if (evacuationNode == null) {
@@ -146,11 +148,13 @@ public class HydrographParser {
 				for (int j = 0; j < entries.get(i).size(); j++) {
 					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime + FEMAttributes.BUFFER_TIME * 3600, entries.get(i).get(j));
 				}
-				hydrographPoint.setHydrographFloodTimes();
+				hydrographPoint.calculateFloodTimeFromData();
 			}
 		}
 
 		removeHydrographPointsWithNoData();
+
+		consolidateHydrographPointsByLink();
 
 	}
 
@@ -166,6 +170,31 @@ public class HydrographParser {
 		for (String badkey : badkeys) {
 			hydrographPointMap.remove(badkey);
 			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
+		}
+	}
+
+	private void consolidateHydrographPointsByLink() {
+		consolidatedHydrographPointMap = new HashMap<>();
+		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
+			for (String linkId : hydrographPoint.getLinkIds()) {
+				HydrographPoint linkHydroPoint = consolidatedHydrographPointMap.get(linkId);
+				if (linkHydroPoint == null) {
+					linkHydroPoint = new HydrographPoint(linkId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
+					linkHydroPoint.setSubSector(hydrographPoint.getSubSector());
+					linkHydroPoint.addLinkId(linkId);
+					linkHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
+					consolidatedHydrographPointMap.put(linkId,linkHydroPoint);
+				} else {
+					// yoyo set the flood time to the minimum of the exisiting and new data point
+					double currentFloodTime = linkHydroPoint.getFloodTime();
+					double newFloodTime = hydrographPoint.getFloodTime();
+					if(currentFloodTime > 0 && newFloodTime >0)
+						linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
+					else
+						linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
+
+				}
+			}
 		}
 	}
 
@@ -190,27 +219,59 @@ public class HydrographParser {
 
 	}
 
-	public void hydrographToViaLinkAttributes(String fileName, Network network) {
-		Set<Id<Link>> ids = new HashSet<>();
+	public void hydrographToViaLinkAttributesFromPointData(String fileName, Network network) {
+		Set<Id<Link>> ids = new TreeSet<>();
 		ids.addAll(network.getLinks().keySet());
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		try {
 			writer.write("ID\ttime\tflooded\n");
 
+			for (Id<Link> id : ids) {
+				writer.write(String.format("%s\t%f\t%d\n", id, 0f, 0));
+			}
+
 			for (HydrographPoint point : hydrographPointMap.values()) {
 				if (!point.mappedToNetworkLink())
 					continue;
 				for (String linkId : point.getLinkIds()) {
-					ids.remove(Id.createLinkId(linkId));
 					List<HydrographPointData> pointData = point.getData();
 					for (HydrographPointData pointDatum : pointData) {
-						writer.write(String.format("%s\t%f\t%d\n", linkId, pointDatum.getTime(), pointDatum.getLevel_ahd() - point.getALT_AHD() > 0 ? 1 : 0));
+						writer.write(String.format("%s\t%f\t%d\n", linkId, pointDatum.getTime(),
+								pointDatum.getLevel_ahd() - point.getALT_AHD() > 0 ? 1 : 0));
 					}
 				}
 			}
 
+			writer.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			String message = "Something went wrong writing the Via attributes file.";
+			log.error(message);
+			throw new RuntimeException(message);
+		}
+
+	}
+
+
+	public void hydrographToViaLinkAttributesFromLinkData(String fileName, Network network) {
+		Set<Id<Link>> ids = new TreeSet<>();
+		ids.addAll(network.getLinks().keySet());
+		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
+		try {
+			writer.write("ID\ttime\tflooded\n");
 			for (Id<Link> id : ids) {
 				writer.write(String.format("%s\t%f\t%d\n", id, 0f, 0));
+			}
+
+			for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
+				if (!point.mappedToNetworkLink())
+					continue;
+
+				for (String linkId : point.getLinkIds()) {
+					writer.write(String.format("%s\t%f\t%d\n", linkId, point.getFloodTime(), 1));
+
+				}
 			}
 
 			writer.close();
@@ -228,6 +289,30 @@ public class HydrographParser {
 	public void networkChangeEventsFromHydrographData(Network network, String outputFileName) {
 		Set<NetworkChangeEvent> networkChangeEvents = new HashSet<>();
 		for (HydrographPoint point : hydrographPointMap.values()) {
+			if (point.getFloodTime() < 0)
+				continue;
+			if (point.mappedToNetworkLink()) {
+				for (String linkId : point.getLinkIds()) {
+					Link link = network.getLinks().get(Id.createLinkId(linkId));
+					if (link != null) {
+						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
+						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+						changeEvent.setFlowCapacityChange(flowChange);
+						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+						changeEvent.setFreespeedChange(speedChange);
+						changeEvent.addLink(link);
+						networkChangeEvents.add(changeEvent);
+					}
+				}
+			} else {
+
+			}
+		}
+		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
+	}
+	public void networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network, String outputFileName) {
+		Set<NetworkChangeEvent> networkChangeEvents = new HashSet<>();
+		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
 			if (point.getFloodTime() < 0)
 				continue;
 			if (point.mappedToNetworkLink()) {

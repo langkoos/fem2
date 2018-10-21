@@ -14,7 +14,12 @@ public class HydrographPoint {
 	private Set<String> linkIds = new HashSet<>();
 	List<HydrographPointData> data;
 	private String subSector;
-	private double floodTime;
+
+	public void setFloodTime(double floodTime) {
+		this.floodTime = floodTime;
+	}
+
+	private double floodTime = -1.0;
 	public HydrographPoint(String pointId, Double alt_ahd, Coord coord) {
 		this.pointId = pointId;
 		ALT_AHD = alt_ahd;
@@ -70,16 +75,14 @@ public class HydrographPoint {
 	}
 
 
-	public void setHydrographFloodTimes() {
-			double floodtime = -1;
+	public void calculateFloodTimeFromData() {
 			for (HydrographPointData pointDatum : this.getData()) {
 				if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
-					floodtime = pointDatum.getTime();
+					floodTime = pointDatum.getTime();
 					System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
 					break;
 				}
 			}
-			this.floodTime = floodtime;
 	}
 
 	public class HydrographPointData{
