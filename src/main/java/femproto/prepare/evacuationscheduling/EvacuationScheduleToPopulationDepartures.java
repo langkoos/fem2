@@ -70,7 +70,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 		PopulationFactory pf = scenario.getPopulation().getFactory();
 		long personCnt = 0L;
 
-		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorsBySubsectorName().values()) {
+		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
 
 			subsectorData.completeAllocations();
 

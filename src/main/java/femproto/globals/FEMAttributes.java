@@ -13,6 +13,7 @@ import java.util.Properties;
 public class FEMAttributes {
 	private static Logger log = Logger.getLogger(FEMAttributes.class);
 	private static Properties FEMProperties = new Properties();
+	public static final double BUFFER_TIME;
 	public static final String SUBSECTOR;
 	public static final String SAFE_ACTIVITY;
 	public static final String EVACUATION_ACTIVITY;
@@ -40,6 +41,8 @@ public class FEMAttributes {
 				log.error("Could not load the FEMGlobalAttributes.properties file from resources. Something is seriously wrong, get help.");
 			}
 		}
+		//yoyoyo if any of these attributes are loaded incorrectly, or are missing, will get an unhandled exception...
+		BUFFER_TIME= Double.parseDouble(FEMProperties.getProperty("BUFFER_TIME"));
 		SUBSECTOR = FEMProperties.getProperty("SUBSECTOR");
 		SAFE_ACTIVITY = FEMProperties.getProperty("SAFE_ACTIVITY");
 		EVACUATION_ACTIVITY = FEMProperties.getProperty("EVACUATION_ACTIVITY");

@@ -8,11 +8,8 @@ import femproto.prepare.parsers.HydrographPoint;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.junit.Rule;
 import org.junit.Test;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
-import org.matsim.core.population.io.PopulationReader;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.testcases.MatsimTestUtils;
@@ -50,13 +47,11 @@ public class HydrographParserTest {
 		evacuationSchedule.completeAllocations();
 		String inputDirectory = utils.getPackageInputDirectory()+"v20180706/";
 
-		HydrographParser hydrographParser = new HydrographParser();
-		hydrographParser.hydroPointsShapefile2HydrographPointMap(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp", scenario.getNetwork(),evacuationSchedule);
+		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
+		hydrographParser.parseHydrographShapefile(inputDirectory + "/wma_ref_points_1_to_2056_link_nodesV12_2016.shp");
 
 //		hydrographParser.readHydrographData(inputDirectory + "/d06391_H_TS.csv.gz");
 		hydrographParser.readHydrographData(inputDirectory + "/d00285_H_TS.csv.gz");
-		hydrographParser.removeHydrographPointsWithNoData();
-		hydrographParser.setHydroFloodTimes();
 
 		int linkCount = 0;
 		for (Map.Entry<String, HydrographPoint> stringEntry : hydrographParser.getHydrographPointMap().entrySet()) {
@@ -72,11 +67,7 @@ public class HydrographParserTest {
 		hydrographParser.hydrographToViaLinkAttributes(utils.getOutputDirectory()+"hydro_linkattrs.txt.gz",scenario.getNetwork());
 
 		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d00285_H_change_events.xml.gz");
-//		hydrographParser.networkChangeEventsFromHydrographData(scenario.getNetwork(),utils.getOutputDirectory()+"d06391_H_change_events.xml.gz");
 
-//		hydrographParser.readEvacAndSafeNodes( "test/output/femproto/demand/SubSectorsToPopulationTest/readSubSectorsShapeFile/subsectorMappingTravTimeRanked.csv");
-
-//		hydrographParser.triggerPopulationDepartures(scenario.getPopulation(),utils.getOutputDirectory()+"/plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz",36000,60/360, 300);
 
 	}
 }

@@ -16,10 +16,10 @@ public final class EvacuationSchedule {
 	/**
 	 * Likely will need to access a subsector's information directly.
 	 */
-	private Map<String, SubsectorData> subsectorsBySubsectorName = new HashMap<>();
+	private Map<String, SubsectorData> subsectorDataMap = new HashMap<>();
 
 	public void createSchedule() {
-		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
+		for (SubsectorData subsectorData : subsectorDataMap.values()) {
 			subsectorsByEvacuationTime.addAll(subsectorData.getSafeNodesByTime());
 		}
 
@@ -28,23 +28,23 @@ public final class EvacuationSchedule {
 	// this is called if not sure that data has been initialised
 	public SubsectorData getOrCreateSubsectorData(String subsector) {
 		SubsectorData subsectorData;
-		subsectorData = subsectorsBySubsectorName.get(subsector);
+		subsectorData = subsectorDataMap.get(subsector);
 		if (subsectorData == null) {
 			subsectorData = new SubsectorData(subsector);
-			subsectorsBySubsectorName.put(subsectorData.getSubsector(), subsectorData);
+			subsectorDataMap.put(subsectorData.getSubsector(), subsectorData);
 		}
 		return subsectorData;
 	}
 
 	public void completeAllocations(){
-		for (SubsectorData subsectorData : subsectorsBySubsectorName.values()) {
+		for (SubsectorData subsectorData : subsectorDataMap.values()) {
 			subsectorData.completeAllocations();
 		}
 
 	}
 	
-	Map<String, SubsectorData> getSubsectorsBySubsectorName() {
-		return subsectorsBySubsectorName;
+	Map<String, SubsectorData> getSubsectorDataMap() {
+		return subsectorDataMap;
 	}
 	Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
 		return subsectorsByEvacuationTime;

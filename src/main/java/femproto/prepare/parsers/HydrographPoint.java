@@ -3,13 +3,15 @@ package femproto.prepare.parsers;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HydrographPoint {
 	final String pointId;
 	final Double ALT_AHD;
 	final Coord coord;
-	private String[] linkIds;
+	private Set<String> linkIds = new HashSet<>();
 	List<HydrographPointData> data;
 	private String subSector;
 	private double floodTime;
@@ -32,11 +34,17 @@ public class HydrographPoint {
 	}
 
 	public String[] getLinkIds() {
-		return linkIds;
+		return linkIds.toArray(new String[linkIds.size()]);
 	}
 
-	public void setLinkIds(String[] linkIds) {
-		this.linkIds = linkIds;
+	public void addLinkId(String linkId) {
+			this.linkIds.add(linkId);
+	}
+
+	public void addLinkIds(String[] linkIds) {
+		for (String linkId : linkIds) {
+			this.linkIds.add(linkId);
+		}
 	}
 
 	public List<HydrographPointData> getData() {
@@ -61,8 +69,17 @@ public class HydrographPoint {
 		return floodTime;
 	}
 
-	public void setFloodTime(double floodTime) {
-		this.floodTime = floodTime;
+
+	public void setHydrographFloodTimes() {
+			double floodtime = -1;
+			for (HydrographPointData pointDatum : this.getData()) {
+				if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
+					floodtime = pointDatum.getTime();
+					System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
+					break;
+				}
+			}
+			this.floodTime = floodtime;
 	}
 
 	public class HydrographPointData{

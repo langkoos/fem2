@@ -11,14 +11,9 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.*;
-import org.matsim.core.config.ConfigUtils;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.network.NetworkChangeEvent;
-import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
-import org.matsim.core.population.io.PopulationReader;
-import org.matsim.core.scenario.MutableScenario;
-import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -34,23 +29,33 @@ public class HydrographParser {
 
 	Logger log = Logger.getLogger(HydrographParser.class);
 
+	public HydrographParser(Network network, EvacuationSchedule evacuationSchedule) {
+		this.network = network;
+		this.evacuationSchedule = evacuationSchedule;
+	}
+
 	public Map<String, HydrographPoint> getHydrographPointMap() {
 		return hydrographPointMap;
 	}
 
 	private Map<String, HydrographPoint> hydrographPointMap;
 
-	Network network;
-	EvacuationSchedule evacuationSchedule;
+	private final Network network;
+
+	private final EvacuationSchedule evacuationSchedule;
+
+
 
 	/**
 	 * This initialises the data structure and populates it with the subsectors and/or link ids that this point may affect,
 	 * as well as its altitude.
+	 *
+	 * If a point has link ids associated with it, these are recorded, otherwise the subsector's centroid connectors are recorded and
+	 * network change events will be generated for these later on.
+	 *
 	 * @param shapefile
-	 * @param network
 	 */
-	public void hydroPointsShapefile2HydrographPointMap(String shapefile, Network network, EvacuationSchedule evacuationSchedule) {
-		this.network = network;
+	public void parseHydrographShapefile(String shapefile) {
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile);
 		CoordinateTransformation transformation = null;
 		// coordinate transformation:
@@ -81,10 +86,24 @@ public class HydrographParser {
 			HydrographPoint hydrographPoint = new HydrographPoint(pointID, ALT_AHD, coord);
 			hydrographPoint.setSubSector(subsector);
 			hydrographPointMap.put(pointID, hydrographPoint);
-			if (linkIDs.equals(""))
-				continue;
+			//yoyo for hydrpogrpah points with no link id associated with them, this will use the centroid connector instead
+			if (linkIDs.equals("") && !subsector.equals("")){
+				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
+				if(evacuationNode == null){
+					String message = "The evacuation schedule has not been properly initialised for hydrograph parsing. No evacuation node for subsector " + subsector;
+					log.error(message);
+					throw new RuntimeException(message);
+				}
+				Set<Id<Link>> evacLinkIds = new HashSet<>();
+				evacLinkIds.addAll(evacuationNode.getOutLinks().keySet());
+				evacLinkIds.addAll(evacuationNode.getInLinks().keySet());
+				for (Id<Link> evacLinkId : evacLinkIds) {
+					hydrographPoint.addLinkId(evacLinkId.toString());
+				}
+
+			}
 			else
-				hydrographPoint.setLinkIds(linkIDs.split(","));
+				hydrographPoint.addLinkIds(linkIDs.split(","));
 		}
 	}
 
@@ -92,6 +111,7 @@ public class HydrographParser {
 	 * This reads the  time series from the hydrograph file, and populates the relevant point data structures.
 	 *
 	 * <b>It  also finds the minimum time and subtracts that from all time values, so simulations can start at zero hours.</b>
+	 *
 	 * @param fileName
 	 */
 	public void readHydrographData(String fileName) {
@@ -119,22 +139,24 @@ public class HydrographParser {
 		}
 
 
-
+		//find minimum time value
+		//normalise all
 		double minTime = entries.get(0).get(0) * 3600;
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
 				for (int j = 0; j < entries.get(i).size(); j++) {
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime, entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime + FEMAttributes.BUFFER_TIME * 3600, entries.get(i).get(j));
 				}
+				hydrographPoint.setHydrographFloodTimes();
 			}
 		}
-		//find minimum time value
-		//normalise all
+
+		removeHydrographPointsWithNoData();
 
 	}
 
-	public void removeHydrographPointsWithNoData() {
+	private void removeHydrographPointsWithNoData() {
 		Set<String> badkeys = new HashSet<>();
 		badkeys.addAll(hydrographPointMap.keySet());
 
@@ -145,6 +167,7 @@ public class HydrographParser {
 
 		for (String badkey : badkeys) {
 			hydrographPointMap.remove(badkey);
+			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.",badkey));
 		}
 	}
 
@@ -189,7 +212,7 @@ public class HydrographParser {
 			}
 
 			for (Id<Link> id : ids) {
-				writer.write(String.format("%s\t%f\t%d\n", id,  0f , 0));
+				writer.write(String.format("%s\t%f\t%d\n", id, 0f, 0));
 			}
 
 			writer.close();
@@ -202,38 +225,27 @@ public class HydrographParser {
 
 	}
 
-	public void setHydroFloodTimes() {
-		for (HydrographPoint point : hydrographPointMap.values()) {
-			double floodtime = -1;
-			for (HydrographPointData pointDatum : point.getData()) {
-				if (pointDatum.getLevel_ahd() - point.getALT_AHD() > 0) {
-					floodtime = pointDatum.getTime();
-					System.out.println("flooding subsector "+point.getSubSector()+" starts flooding at " +  pointDatum.getTime());
-					break;
-				}
-			}
-			point.setFloodTime(floodtime);
-		}
-	}
 
 	public void networkChangeEventsFromHydrographData(Network network, String outputFileName) {
 		Set<NetworkChangeEvent> networkChangeEvents = new HashSet<>();
 		for (HydrographPoint point : hydrographPointMap.values()) {
-			if (!point.mappedToNetworkLink())
-				continue;
 			if (point.getFloodTime() < 0)
 				continue;
-			for (String linkId : point.getLinkIds()) {
-				Link link = network.getLinks().get(Id.createLinkId(linkId));
-				if (link != null) {
-					NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
-					NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
-					changeEvent.setFlowCapacityChange(flowChange);
-					NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
-					changeEvent.setFreespeedChange(speedChange);
-					changeEvent.addLink(link);
-					networkChangeEvents.add(changeEvent);
+			if (point.mappedToNetworkLink()) {
+				for (String linkId : point.getLinkIds()) {
+					Link link = network.getLinks().get(Id.createLinkId(linkId));
+					if (link != null) {
+						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
+						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+						changeEvent.setFlowCapacityChange(flowChange);
+						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+						changeEvent.setFreespeedChange(speedChange);
+						changeEvent.addLink(link);
+						networkChangeEvents.add(changeEvent);
+					}
 				}
+			} else {
+
 			}
 		}
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);

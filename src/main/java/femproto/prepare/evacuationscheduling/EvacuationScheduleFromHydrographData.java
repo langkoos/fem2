@@ -9,10 +9,7 @@ import java.util.Set;
 public final class EvacuationScheduleFromHydrographData {
 
 	@Deprecated
-	public void triggerPopulationDepartures(EvacuationSchedule schedule,  double timeBuffer, double rate, double staggerTime) {
-		Set<String> subsectors = new HashSet<>();
-		Set<String> hydroSubsectors = new HashSet<>();
-		double paxCounter = 0;
+	public void triggerPopulationDepartures(EvacuationSchedule schedule,  double rate, double staggerTime) {
 //		double lastDeparture = minTime;
 //
 //		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
