@@ -45,11 +45,10 @@ public class HydrographParser {
 	private final EvacuationSchedule evacuationSchedule;
 
 
-
 	/**
 	 * This initialises the data structure and populates it with the subsectors and/or link ids that this point may affect,
 	 * as well as its altitude.
-	 *
+	 * <p>
 	 * If a point has link ids associated with it, these are recorded, otherwise the subsector's centroid connectors are recorded and
 	 * network change events will be generated for these later on.
 	 *
@@ -87,9 +86,9 @@ public class HydrographParser {
 			hydrographPoint.setSubSector(subsector);
 			hydrographPointMap.put(pointID, hydrographPoint);
 			//yoyo for hydrpogrpah points with no link id associated with them, this will use the centroid connector instead
-			if (linkIDs.equals("") && !subsector.equals("")){
+			if (linkIDs.equals("") && !subsector.equals("")) {
 				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
-				if(evacuationNode == null){
+				if (evacuationNode == null) {
 					String message = "The evacuation schedule has not been properly initialised for hydrograph parsing. No evacuation node for subsector " + subsector;
 					log.error(message);
 					throw new RuntimeException(message);
@@ -101,8 +100,7 @@ public class HydrographParser {
 					hydrographPoint.addLinkId(evacLinkId.toString());
 				}
 
-			}
-			else
+			} else
 				hydrographPoint.addLinkIds(linkIDs.split(","));
 		}
 	}
@@ -167,7 +165,7 @@ public class HydrographParser {
 
 		for (String badkey : badkeys) {
 			hydrographPointMap.remove(badkey);
-			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.",badkey));
+			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
 		}
 	}
 
@@ -202,10 +200,10 @@ public class HydrographParser {
 			for (HydrographPoint point : hydrographPointMap.values()) {
 				if (!point.mappedToNetworkLink())
 					continue;
-				List<HydrographPointData> pointData = point.getData();
-				for (HydrographPointData pointDatum : pointData) {
-					for (String linkId : point.getLinkIds()) {
-						ids.remove(Id.createLinkId(linkId));
+				for (String linkId : point.getLinkIds()) {
+					ids.remove(Id.createLinkId(linkId));
+					List<HydrographPointData> pointData = point.getData();
+					for (HydrographPointData pointDatum : pointData) {
 						writer.write(String.format("%s\t%f\t%d\n", linkId, pointDatum.getTime(), pointDatum.getLevel_ahd() - point.getALT_AHD() > 0 ? 1 : 0));
 					}
 				}
@@ -219,8 +217,9 @@ public class HydrographParser {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Something went wrong writing the links plotfile.");
-			throw new RuntimeException();
+			String message = "Something went wrong writing the Via attributes file.";
+			log.error(message);
+			throw new RuntimeException(message);
 		}
 
 	}
