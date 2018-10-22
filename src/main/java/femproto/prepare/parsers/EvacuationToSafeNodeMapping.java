@@ -51,18 +51,7 @@ public class EvacuationToSafeNodeMapping {
 		this.scenario = scenario;
 	}
 
-	LeastCostPathCalculator.Path getFreeSpeedPath(Id<Node> fromNode, Id<Node> toNode) {
-		TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory() ;
-		TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork(), delegateFactory);
-		FreeSpeedTravelTime freeSpeedTravelTime = new FreeSpeedTravelTime();
-		LeastCostPathCalculator dijkstra = new DijkstraFactory().createPathCalculator(scenario.getNetwork(),
-				disutilityFactory.createTravelDisutility(freeSpeedTravelTime), freeSpeedTravelTime
-		);
-		Node from = this.scenario.getNetwork().getNodes().get(fromNode);
-		Node to = this.scenario.getNetwork().getNodes().get(toNode);
 
-		return dijkstra.calcLeastCostPath(from, to, 3600, null, null);
-	}
 
 	/**
 	 * This looks at the mapping of evac to safe nodes, then creates a small disconnected network from the mapping,

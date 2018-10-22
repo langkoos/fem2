@@ -1,53 +1,96 @@
 package femproto.prepare.evacuationscheduling;
 
+import femproto.globals.FEMAttributes;
+import femproto.prepare.parsers.HydrographParser;
 import femproto.prepare.parsers.HydrographPoint;
-import org.matsim.api.core.v01.population.*;
+import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.Node;
+import org.matsim.core.router.DijkstraFactory;
+import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
+import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
 import java.util.HashSet;
 import java.util.Set;
+
 //todo write this class as well as its instrumentation
 public final class EvacuationScheduleFromHydrographData {
 
-	@Deprecated
-	public void triggerPopulationDepartures(EvacuationSchedule schedule,  double rate, double staggerTime) {
-//		double lastDeparture = minTime;
-//
-//		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
-//			if (hydrographPoint.getSubSector() == null || hydrographPoint.getFloodTime() < 0) {
-//				continue;
-//			}
-//			hydroSubsectors.add(hydrographPoint.getSubSector());
-//			System.out.println(hydrographPoint.getSubSector());
-//			System.out.println("flooding subsector "+hydrographPoint.getSubSector()+" ends departing at " +  (hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate));
-//			lastDeparture = Math.max(lastDeparture, hydrographPoint.getFloodTime() - timeBuffer + paxCounter * rate);
-//			minTime = Math.min(minTime, hydrographPoint.getFloodTime() - timeBuffer - paxCounter * rate);
-//		}
-////		subsectors.removeAll(hydroSubsectors);
-//		//set the rest to depart at the latest departure from the high priority subsectors plus staggerTime for each zone
-//		lastDeparture = minTime;
-//		for (String sub : subsectors) {
-//			paxCounter = 0;
-//			for (Person person : population.getPersons().values()) {
-//				paxCounter += 1;
-//				String subsector = (String) person.getAttributes().getAttribute("SUBSECTOR");
-//				if (subsector.equals(sub)) {
-//					for (Plan plan : person.getPlans()) {
-//						Activity departure = (Activity) plan.getPlanElements().get(0);
-//						departure.setEndTime(lastDeparture + paxCounter * rate);
-//					}
-//				}
-//			}
-//			lastDeparture = lastDeparture + staggerTime ;
-//			System.out.println("non-flooding subsector "+sub+" starts departing at " +  lastDeparture);
-//		}
-//		for (Person person : population.getPersons().values()) {
-//			for (Plan plan : person.getPlans()) {
-//				Activity departure = (Activity) plan.getPlanElements().get(0);
-//				departure.setEndTime(departure.getEndTime() - minTime);
-//			}
-//		}
-//		System.out.println("mintime is "+ minTime);
-//		System.out.println("Expected EVAC TIME IS "+ ((lastDeparture - minTime)/3600));
-//		new PopulationWriter(population).write(modifiedPopulationOutputFile);
+
+	private final Network network;
+	private final EvacuationSchedule evacuationSchedule;
+	private final HydrographParser hydrographParser;
+	private final FEMPathCalculator femPathCalculator;
+
+	public EvacuationScheduleFromHydrographData(Network network, EvacuationSchedule evacuationSchedule, HydrographParser hydrographParser) {
+		this.network = network;
+		this.evacuationSchedule = evacuationSchedule;
+		this.hydrographParser = hydrographParser;
+		femPathCalculator = new FEMPathCalculator();
 	}
+
+	class FEMPathCalculator {
+		TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory();
+		TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory(network, delegateFactory);
+		FreeSpeedTravelTime freeSpeedTravelTime = new FreeSpeedTravelTime();
+		// define how the travel disutility is computed:
+		LeastCostPathCalculator dijkstra = new DijkstraFactory().createPathCalculator(network,
+				disutilityFactory.createTravelDisutility(freeSpeedTravelTime), freeSpeedTravelTime
+		);
+
+		private LeastCostPathCalculator.Path getPath(Id<Node> fromNode, Id<Node> toNode, double time) {
+			Node from = network.getNodes().get(fromNode);
+			Node to = network.getNodes().get(toNode);
+
+			return dijkstra.calcLeastCostPath(from, to, time, null, null);
+		}
+
+	}
+
+	/**
+	 * This goes through each subsector in the input schedule, then checks the path to its first safe node.
+	 * If the path contains a link in the hydrograph map, then the flood time for that link is checked.
+	 * If the link gets flooded, departures are scheduled to start BUFFER_TIME (see {@link femproto.globals.FEMAttributes})
+	 * before flooding starts.
+	 */
+	public void createEvacuationSchedule() {
+		double lastPriorityEvacuationStartTime = 0;
+		Set<String> prioritySubsectors = new HashSet<>();
+		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
+
+			subsectorData.clearSafeNodesByTime();
+
+			Node prioritySafeNode = subsectorData.getSafeNodesByDecreasingPriority().iterator().next();
+			LeastCostPathCalculator.Path path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+					prioritySafeNode.getId(), 0);
+
+			double floodTime = Double.POSITIVE_INFINITY;
+			for (Link link : path.links) {
+				HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(link.getId().toString());
+				if (hydrographPoint != null && hydrographPoint.getFloodTime() > 0)
+					floodTime = Math.min(floodTime, hydrographPoint.getFloodTime());
+
+			}
+
+			if (floodTime < Double.POSITIVE_INFINITY) {
+				subsectorData.addSafeNodeAllocation(floodTime - FEMAttributes.BUFFER_TIME * 3600, prioritySafeNode);
+				lastPriorityEvacuationStartTime = Math.max(lastPriorityEvacuationStartTime, floodTime);
+				prioritySubsectors.add(subsectorData.getSubsector());
+			}
+		}
+		// go through the other subsectors and make them depart after the last scheduled priority departure.
+		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
+			if (prioritySubsectors.contains(subsectorData.getSubsector()))
+				continue;
+			subsectorData.addSafeNodeAllocation(lastPriorityEvacuationStartTime, subsectorData.getSafeNodesByDecreasingPriority().iterator().next());
+		}
+		evacuationSchedule.createSchedule();
+		evacuationSchedule.completeAllocations();
+
+	}
+
 }

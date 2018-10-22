@@ -40,6 +40,10 @@ public class HydrographParser {
 
 	private Map<String, HydrographPoint> hydrographPointMap;
 
+	public Map<String, HydrographPoint> getConsolidatedHydrographPointMap() {
+		return consolidatedHydrographPointMap;
+	}
+
 	private Map<String, HydrographPoint> consolidatedHydrographPointMap;
 
 	private final Network network;

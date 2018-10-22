@@ -1,6 +1,8 @@
 package femproto.prepare.hydrograph;
 
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleFromHydrographData;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleToPopulationDepartures;
 import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
 import femproto.prepare.parsers.EvacuationToSafeNodeParser;
 import femproto.prepare.parsers.HydrographParser;
@@ -8,6 +10,7 @@ import femproto.prepare.parsers.HydrographPoint;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.junit.Rule;
 import org.junit.Test;
+import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.MutableScenario;
@@ -41,10 +44,6 @@ public class HydrographParserTest {
 		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(scenario.getNetwork(),evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
 
-		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoVehiclesNoDurations(utils.getOutputDirectory()+"simpleEvacuationScheduleV1.csv");
-
-		evacuationSchedule.createSchedule();
-		evacuationSchedule.completeAllocations();
 		String inputDirectory = utils.getPackageInputDirectory()+"v20180706/";
 
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
@@ -68,6 +67,11 @@ public class HydrographParserTest {
 
 		hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(),utils.getOutputDirectory()+"d00285_H_change_events.xml.gz");
 
+		new EvacuationScheduleFromHydrographData(scenario.getNetwork(), evacuationSchedule, hydrographParser).createEvacuationSchedule();
+
+		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(utils.getOutputDirectory()+"hydroEvacSchedule.csv");
+
+		new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).writePopulation(utils.getOutputDirectory()+"hydroPop.xml.gz");
 
 	}
 }
