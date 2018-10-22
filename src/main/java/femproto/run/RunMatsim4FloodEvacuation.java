@@ -194,10 +194,10 @@ public class RunMatsim4FloodEvacuation {
 		config.plansCalcRoute().setInsertingAccessEgressWalk( true );
 
 		// --- qsim:
-		config.qsim().setRemoveStuckVehicles( true );
-		config.qsim().setStuckTime( 86400 );
+		config.qsim().setRemoveStuckVehicles( false );
+		config.qsim().setStuckTime( 10 );
 		
-		//		config.qsim().setEndTime(264 * 3600);
+//		config.qsim().setEndTime(600 * 3600);
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
 		
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles( true );

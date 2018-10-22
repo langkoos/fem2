@@ -187,12 +187,12 @@ public class HydrographParser {
 					linkHydroPoint.setSubSector(hydrographPoint.getSubSector());
 					linkHydroPoint.addLinkId(linkId);
 					linkHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
-					consolidatedHydrographPointMap.put(linkId,linkHydroPoint);
+					consolidatedHydrographPointMap.put(linkId, linkHydroPoint);
 				} else {
 					// yoyo set the flood time to the minimum of the exisiting and new data point
 					double currentFloodTime = linkHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
-					if(currentFloodTime > 0 && newFloodTime >0)
+					if (currentFloodTime > 0 && newFloodTime > 0)
 						linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
 					else
 						linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
@@ -314,8 +314,11 @@ public class HydrographParser {
 		}
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
+
+
 	public void networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network, String outputFileName) {
 		Set<NetworkChangeEvent> networkChangeEvents = new HashSet<>();
+		double maxTime = Double.NEGATIVE_INFINITY;
 		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
 			if (point.getFloodTime() < 0)
 				continue;
@@ -324,18 +327,29 @@ public class HydrographParser {
 					Link link = network.getLinks().get(Id.createLinkId(linkId));
 					if (link != null) {
 						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
-						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
 						changeEvent.setFlowCapacityChange(flowChange);
-						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
-						changeEvent.setFreespeedChange(speedChange);
+//						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
+//						changeEvent.setFreespeedChange(speedChange);
 						changeEvent.addLink(link);
 						networkChangeEvents.add(changeEvent);
+						maxTime = Math.max(maxTime, changeEvent.getStartTime());
 					}
 				}
-			} else {
-
 			}
 		}
+		//reset the capcity of dead links a long time after the last one has died so that agents make it to destinations,
+		// with a bad score.
+		Set<NetworkChangeEvent> networkChangeEvents1 = new HashSet<>();
+		networkChangeEvents1.addAll(networkChangeEvents);
+		for (NetworkChangeEvent capacityReductionEvent : networkChangeEvents1) {
+			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(capacityReductionEvent.getStartTime()+maxTime+86400);
+			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 6000);
+			capacityResetEvent.setFlowCapacityChange(flowChange);
+			capacityResetEvent.addLinks(capacityReductionEvent.getLinks());
+			networkChangeEvents.add(capacityResetEvent);
+		}
+
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 	}
 

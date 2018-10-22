@@ -82,11 +82,12 @@ public final class EvacuationScheduleFromHydrographData {
 				prioritySubsectors.add(subsectorData.getSubsector());
 			}
 		}
-		// go through the other subsectors and make them depart after the last scheduled priority departure.
+		// go through the other subsectors and set them to have zero departures
 		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
 			if (prioritySubsectors.contains(subsectorData.getSubsector()))
 				continue;
-			subsectorData.addSafeNodeAllocation(lastPriorityEvacuationStartTime, subsectorData.getSafeNodesByDecreasingPriority().iterator().next());
+			subsectorData.setVehicleCount(0);
+//			evacuationSchedule.removeSubSectorData(subsectorData);
 		}
 		evacuationSchedule.createSchedule();
 		evacuationSchedule.completeAllocations();
