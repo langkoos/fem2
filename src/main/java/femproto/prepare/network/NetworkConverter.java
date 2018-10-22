@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import femproto.globals.FEMAttributes;
 import femproto.globals.Gis;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
@@ -48,7 +49,7 @@ public class NetworkConverter {
 
 	private void parseNodes(String fileName) throws IOException, FactoryException {
 		File dataFile = new File(fileName) ;
-		log.info( "Will attempr to convert nodes from " + dataFile.getAbsolutePath() ) ;
+		log.info( "Will attempt to convert nodes from " + dataFile.getAbsolutePath() ) ;
 		Gbl.assertIf( dataFile.exists() );
 	
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
@@ -65,6 +66,21 @@ public class NetworkConverter {
 			}catch (IllegalArgumentException e){
 				System.err.println("Duplicate node id "+ feature.getAttribute("ID").toString());
 			}
+			// add dummy link at evacuation node
+			if((Integer)feature.getAttribute("EVAC_SES") == 1) {
+				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
+				link.setLength(1);
+				link.setNumberOfLanes(1);
+				link.setFreespeed(17);
+				link.setCapacity(FEMAttributes.EVAC_FLOWRATE);
+				HashSet<String> modes = new HashSet<>();
+				modes.add(TransportMode.car);
+				link.setAllowedModes(modes);
+				link.getAttributes().putAttribute(EVACUATION_LINK, true);
+				link.getAttributes().putAttribute(DESCRIPTION, "dummy");
+				scenario.getNetwork().addLink(link);
+			}
+
 		}
 	}
 

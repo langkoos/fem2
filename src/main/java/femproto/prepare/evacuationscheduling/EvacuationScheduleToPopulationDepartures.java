@@ -25,7 +25,7 @@ import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 
 /**
  * Once a schedule has been determined from various scheduling strategies, it needs to be translated to population departures.
- *
+ * <p>
  * This will only work for a certification run. Each agent gets only one plan.
  */
 public final class EvacuationScheduleToPopulationDepartures {
@@ -54,14 +54,14 @@ public final class EvacuationScheduleToPopulationDepartures {
 			throw new RuntimeException("Input shapefile not found, or some other IO error");
 		}
 
-		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(scenario.getNetwork(),evacuationSchedule);
+		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(scenario.getNetwork(), evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
 
 		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordNoVehicles("inputSchedule.csv");
 
-		new EvacuationScheduleToPopulationDepartures(scenario,evacuationSchedule).writePopulation("pop.xml.gz");
+		new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).writePopulation("pop.xml.gz");
 
-		new EvacuationScheduleToPopulationDepartures(scenario,evacuationSchedule).writeAttributes("pop_attribs.txt.gz");
+		new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).writeAttributes("pop_attribs.txt.gz");
 	}
 
 	public void createPlans() {
@@ -80,20 +80,28 @@ public final class EvacuationScheduleToPopulationDepartures {
 				Node evacuationNode = safeNodeAllocation.getContainer().getEvacuationNode();
 				Link startLink = null;
 				for (Link link : evacuationNode.getOutLinks().values()) {
-					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+//					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+					if (link.getId().toString().equals(evacuationNode.getId().toString())) {
 						startLink = link;
 					}
 				}
+//				if (startLink == null) {
+//					String msg = "There seems to be no outgoing car mode EVAC link for EVAC node " +
+//							evacuationNode + ". Defaulting to the highest capacity car link.";
+//					log.warn(msg);
+//					double maxCap = Double.NEGATIVE_INFINITY;
+//					for (Link link : evacuationNode.getOutLinks().values()) {
+//						if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
+//							maxCap = link.getCapacity();
+//							startLink = link;
+//						}
+//					}
+//				}
 				if (startLink == null) {
-					String msg = "There seems to be no outgoing car mode EVAC link for EVAC node " + evacuationNode + ". Defaulting to the highest capacity car link.";
-					log.warn(msg);
-					double maxCap = Double.NEGATIVE_INFINITY;
-					for (Link link : evacuationNode.getOutLinks().values()) {
-						if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
-							maxCap = link.getCapacity();
-							startLink = link;
-						}
-					}
+					String msg = String.format("The evacuation node %s for subsector %s has no dummy link associated with it." +
+							"Run the network converter.", evacuationNode.getId().toString(), subsectorData.getSubsector());
+					log.error(msg);
+					throw new RuntimeException(msg);
 				}
 
 				Node safeNode = safeNodeAllocation.getNode();
@@ -120,11 +128,11 @@ public final class EvacuationScheduleToPopulationDepartures {
 				int safeNodeAllocationPaxCounter = 0;
 				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
-					FEMUtils.setSubsectorName( subsectorData.getSubsector(), person ) ;
+					FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());
-					startAct.setEndTime(safeNodeAllocation.getStartTime() +  safeNodeAllocationPaxCounter++ * (3600 / FEMAttributes.EVAC_FLOWRATE));
+					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / FEMAttributes.EVAC_FLOWRATE));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
@@ -154,7 +162,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 		try {
 			writer.write("id\tsubsector\n");
 			for (Person person : scenario.getPopulation().getPersons().values()) {
-				writer.write(person.getId()+"\t"+person.getAttributes().getAttribute("SUBSECTOR").toString()+"\n");
+				writer.write(person.getId() + "\t" + person.getAttributes().getAttribute("SUBSECTOR").toString() + "\n");
 			}
 			writer.close();
 		} catch (IOException e) {
