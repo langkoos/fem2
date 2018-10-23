@@ -27,6 +27,7 @@ public class EvacuationToSafeNodeParser {
 	private final Network network;
 	private final EvacuationSchedule evacuationSchedule;
 
+	//yoyoyo this will become a comma-separated list as an attribute of the subsector shapefile
 	@Inject
 	public EvacuationToSafeNodeParser(Network network, EvacuationSchedule evacuationSchedule) {
 		this.network = network;

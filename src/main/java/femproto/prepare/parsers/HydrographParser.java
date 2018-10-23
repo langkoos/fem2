@@ -83,7 +83,7 @@ public class HydrographParser {
 			String pointID = feature.getAttribute(FEMAttributes.HYDROGRAPH_POINT_ID_FIELD).toString();
 			String linkIDs = feature.getAttribute(FEMAttributes.HYDROGRAPH_LINK_IDS).toString();
 			String subsector = feature.getAttribute(FEMAttributes.HYDROGRAPH_SUBSECTOR).toString();
-			final Double ALT_AHD = Double.valueOf(feature.getAttribute(FEMAttributes.HYDROGRAPH_ALT_AHD).toString());
+			final Double ALT_AHD = Double.valueOf(feature.getAttribute(FEMAttributes.HYDROGRAPH_SELECTED_ALT_AHD).toString());
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
 			Coord coord = new Coord(lonlat.x, lonlat.y);
 			if (transformation != null)
@@ -145,11 +145,13 @@ public class HydrographParser {
 
 		//find minimum time value
 		//normalise all
+		// yoyoyo note that Peter said the 3rd row of the hydrograph is actually time 0
 		double minTime = entries.get(0).get(0) * 3600;
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
 				for (int j = 0; j < entries.get(i).size(); j++) {
+					// yoyoyo it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
 					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime + FEMAttributes.BUFFER_TIME * 3600, entries.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
@@ -177,6 +179,10 @@ public class HydrographParser {
 		}
 	}
 
+	/**
+	 * For now this consolidates hyrograph data for many points associated with a subsector into a single one, taking the minimum of the recprded flood times as its value.
+	 * David et al will remove excess points so that ultimately only a single point is associated with a subsector, which will make this method redundant.
+	 */
 	private void consolidateHydrographPointsByLink() {
 		consolidatedHydrographPointMap = new HashMap<>();
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {

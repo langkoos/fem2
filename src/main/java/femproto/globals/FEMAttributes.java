@@ -2,7 +2,6 @@ package femproto.globals;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.jfree.io.FileUtilities;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +22,7 @@ public class FEMAttributes {
 	public static final String HYDROGRAPH_POINT_ID_FIELD;
 	public static final String HYDROGRAPH_LINK_IDS;
 	public static final String HYDROGRAPH_SUBSECTOR;
-	public static final String HYDROGRAPH_ALT_AHD;
+	public static final String HYDROGRAPH_SELECTED_ALT_AHD;
 
 	//static initializer
 	static {
@@ -50,7 +49,7 @@ public class FEMAttributes {
 		HYDROGRAPH_POINT_ID_FIELD = FEMProperties.getProperty("HYDROGRAPH_POINT_ID_FIELD");
 		HYDROGRAPH_LINK_IDS = FEMProperties.getProperty("HYDROGRAPH_LINK_IDS");
 		HYDROGRAPH_SUBSECTOR = FEMProperties.getProperty("HYDROGRAPH_SUBSECTOR");
-		HYDROGRAPH_ALT_AHD = FEMProperties.getProperty("HYDROGRAPH_ALT_AHD");
+		HYDROGRAPH_SELECTED_ALT_AHD = FEMProperties.getProperty("HYDROGRAPH_SELECTED_ALT_AHD");
 	}
 
 	public static void writeDefaultPropertiesFile() {

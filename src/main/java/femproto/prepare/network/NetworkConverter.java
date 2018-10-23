@@ -37,6 +37,7 @@ public class NetworkConverter {
 	
 	private static final double MIN_DISTANCE = 5.0;
 
+	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Proabably a global parameter in FEMATtributes
 	public static final String EVACUATION_LINK = "evacSES";
 	public static final String DESCRIPTION = "T_DES";
 
@@ -55,6 +56,7 @@ public class NetworkConverter {
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
 		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$","prj")).readLine().toString() ;
 		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
+
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
 		for (SimpleFeature feature : features) {
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
@@ -64,9 +66,12 @@ public class NetworkConverter {
 			try {
 				scenario.getNetwork().addNode(node);
 			}catch (IllegalArgumentException e){
-				System.err.println("Duplicate node id "+ feature.getAttribute("ID").toString());
+				String message = "Duplicate node id " + feature.getAttribute("ID").toString();
+				log.error(message);
+				throw new RuntimeException(message);
 			}
-			// add dummy link at evacuation node
+			// yoyo after discussion with DP, decided that we will not use randdom incoming link to evac node, but rather loop link
+			// in case random link leg start interferes with traffic
 			if((Integer)feature.getAttribute("EVAC_SES") == 1) {
 				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
 				link.setLength(1);
@@ -90,12 +95,15 @@ public class NetworkConverter {
 		Map<Id<Node>, ? extends Node> nodes = scenario.getNetwork().getNodes();
 
 		for (SimpleFeature feature : features) {
+			// yoyo client will refactor node ids to be integer not floating point
 			Id<Node> fromNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute("INODE").toString()));
 			Id<Node> toNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute("JNODE").toString()));
+			// yoyo needs more explicit and case specific exception handling
 			try {
 				Node fromNode = nodes.get(fromNodeId);
 				Node toNode = nodes.get(toNodeId);
 				Link link = networkFactory.createLink(Id.createLinkId(feature.getAttribute("ID").toString()), fromNode, toNode);
+				// yo if euclidean distance is substantially different then raise error
 				link.setLength(Double.parseDouble(feature.getAttribute("LENGTH").toString()) * 1000 );
 				link.setNumberOfLanes(Double.parseDouble(feature.getAttribute("LANES").toString()));
 				link.setFreespeed(Double.parseDouble(feature.getAttribute("SPEED").toString())/3.6);
@@ -109,7 +117,10 @@ public class NetworkConverter {
 						case 'b' : modes.add("bus");break;
 						case 'r' : modes.add("rail");break;
 //						case 'y' : modes.add("y");break; // what is y mode? //yoyo our 2016 files dont have this so removing it; raise error in future for weird stuff
-						default:  throw new RuntimeException("No mode specified for link ");
+						default:
+							String message = String.format("Unknown mode \"%s\" specified for link %s ",modeChar,link.getId().toString());
+							log.error(message);
+							throw new RuntimeException(message);
 					}
 				}
 				link.setAllowedModes(modes);
@@ -127,10 +138,12 @@ public class NetworkConverter {
 
 	private void writeNetwork(String fileName){
 		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml.gz");
-		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
+//		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
 		// But that output shapefile produces different columns.  So better not write it.
+		// yoyo D61 has matsim network parsing capability so rendering output shapefile is redundant. pieter oct '18
+
 	}
 
 	public static void main(String[] args) throws IOException, FactoryException {

@@ -17,11 +17,11 @@ import java.util.Iterator;
 /**
  * I am trying to break the demand generation process up into subsector data parsing,
  * contained in a schedule that interprets subsector data to have departures from evacuation to safe nodes.
- *<p/>
+ * <p/>
  * Such a schedule can then be used to be re-organised into a new schedule, or to produce a plans file
  */
 public class SubsectorShapeFileParser {
-	private static final Logger log = Logger.getLogger(SubsectorShapeFileParser.class) ;
+	private static final Logger log = Logger.getLogger(SubsectorShapeFileParser.class);
 
 	private final EvacuationSchedule evacuationSchedule;
 	private final Network network;
@@ -53,35 +53,43 @@ public class SubsectorShapeFileParser {
 			int subsectorVehicleCount;
 			try {
 				subsectorVehicleCount = (int) (double) feature.getAttribute("Totalvehic");
-				log.debug("Subsector "+subsector+" contains "+subsectorVehicleCount+" vehicles.");
-			} catch (NullPointerException ne){
+				log.info("Subsector " + subsector + " contains " + subsectorVehicleCount + " vehicles.");
+			} catch (NullPointerException ne) {
 				subsectorVehicleCount = 0;
+				log.warn("Subsector " + subsector + " had null vehicles to evacuate, setting to zero.");
 			}
-			if (subsectorVehicleCount <= 0){
-				log.warn("Subsector "+subsector+" had zero or null vehicles to evacuate.");
+			if (subsectorVehicleCount <= 0) {
+				log.warn("Subsector " + subsector + " had zero or less than zero vehicles to evacuate, setting to zero.");
+				subsectorVehicleCount = 0;
 			}
 			subsectorData.setVehicleCount(subsectorVehicleCount);
 			totalVehicleCount += subsectorVehicleCount;
-
+			// yoyoyo parse the BUFFER_TIME for the subsector
+			double bufferTime;
+			try {
+				bufferTime = Double.parseDouble(feature.getAttribute("BUFFER_TIME").toString());
+			}catch (NullPointerException ne){
+				log.warn("Need to define BUFFER_TIME on a subsector basis");
+			}
 			String evacNodeFromShp;
 			try {
 				evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
-			}catch (NullPointerException ne){
+			} catch (NullPointerException ne) {
 				String message = "Subsector " + subsector + " has no EVAC_NODE attribute.";
 				log.warn(message);
-				throw new RuntimeException(message) ;
+				throw new RuntimeException(message);
 			}
 			Node node = network.getNodes().get(Id.createNodeId(evacNodeFromShp));
-			if ( node==null ) {
-				String msg = "did not find evacNode in matsim network file: " + evacNodeFromShp ;
-				log.warn(msg) ;
-				throw new RuntimeException(msg) ;
+			if (node == null) {
+				String msg = "did not find evacNode in matsim network file: " + evacNodeFromShp;
+				log.warn(msg);
+				throw new RuntimeException(msg);
 			}
-				subsectorData.setEvacuationNode(node);
+			subsectorData.setEvacuationNode(node);
 
 
 		}
 
-		log.info("Parsed subsector shapefile. A total of "+totalVehicleCount+" vehicles need to be evacuated.");
+		log.info("Parsed subsector shapefile. A total of " + totalVehicleCount + " vehicles need to be evacuated.");
 	}
 }
