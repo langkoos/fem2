@@ -1,8 +1,9 @@
 package femproto.prepare.evacuationscheduling;
 
+import com.google.inject.Inject;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import femproto.globals.FEMAttributes;
+import femproto.globals.FEMGlobalConfig;
 import femproto.run.FEMUtils;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -22,7 +23,6 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * When an optimization run has been performed, use this to construct an {@link EvacuationSchedule} for review and certification run.
@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 public final class EvacuationScheduleFromExperiencedPlans {
 	private Map<Id<Person>, String> pax2SubSectors;
 	private TreeMap<ODFlowCounter,ODFlowCounter> flowCounters = new TreeMap<>();
+	@Inject
+	FEMGlobalConfig globalConfig;
 
 	/**
 	 * Run this in an output folder
@@ -76,11 +78,11 @@ public final class EvacuationScheduleFromExperiencedPlans {
 //				// yyyy yoyo (probably solved with task below) why get(0)?  If anything, then it should be the selected plan.  kai, sep'18
 //				if (planElement instanceof Activity) {
 //					Activity activity = (Activity) planElement;
-//					if (origin == null && activity.getType().equals(FEMAttributes.EVACUATION_ACTIVITY)) {
+//					if (origin == null && activity.getType().equals(FEMGlobalConfig.EVACUATION_ACTIVITY)) {
 //						origin = network.getLinks().get(activity.getLinkId()).getFromNode();
 //						startTime = activity.getEndTime();
 //					}
-//					if (destin == null && activity.getType().equals(FEMAttributes.SAFE_ACTIVITY)) {
+//					if (destin == null && activity.getType().equals(FEMGlobalConfig.SAFE_ACTIVITY)) {
 //						destin = network.getLinks().get(activity.getLinkId()).getToNode();
 //						endTime = activity.getStartTime();
 //					}
@@ -109,11 +111,11 @@ public final class EvacuationScheduleFromExperiencedPlans {
 			for (PlanElement planElement : plan.getPlanElements()) {
 				if (planElement instanceof Activity) {
 					Activity activity = (Activity) planElement;
-					if (origin == null && activity.getType().equals(FEMAttributes.EVACUATION_ACTIVITY)) {
+					if (origin == null && activity.getType().equals(globalConfig.getEvacuationActivity())) {
 						origin = network.getLinks().get(activity.getLinkId()).getFromNode();
 						startTime = activity.getEndTime();
 					}
-					if (destin == null && activity.getType().equals(FEMAttributes.SAFE_ACTIVITY)) {
+					if (destin == null && activity.getType().equals(globalConfig.getSafeActivity())) {
 						destin = network.getLinks().get(activity.getLinkId()).getToNode();
 						endTime = activity.getStartTime();
 					}

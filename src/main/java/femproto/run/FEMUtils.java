@@ -1,12 +1,14 @@
 package femproto.run;
 
-import femproto.globals.FEMAttributes;
-import femproto.prepare.parsers.EvacuationToSafeNodeMapping;
+import com.google.inject.Inject;
+import femproto.globals.FEMGlobalConfig;
 import org.apache.log4j.Logger;
+import org.matsim.analysis.VolumesAnalyzer;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
@@ -14,11 +16,18 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.core.events.EventsManagerImpl;
+import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.algorithms.NetworkSimplifier;
+import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.utils.io.IOUtils;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -32,7 +41,8 @@ public class FEMUtils {
 	private static final Logger log = Logger.getLogger(FEMUtils.class) ;
 	
 	private FEMUtils(){} // do not instantiate
-	
+
+	@Inject	static FEMGlobalConfig globalConfig;
 	static void preparationsForRmitHawkesburyScenario( Scenario scenario ) {
 		
 		// That population (e.g. haw_pop_route_defined.xml.gz) has an "Evacuation" activity in between
@@ -222,13 +232,13 @@ public class FEMUtils {
 			person.setSelectedPlan(person.getPlans().get(0));
 		}
 	}
-	
+
 	public static void setSubsectorName( final String subsector, final Person person ) {
-		person.getAttributes().putAttribute( FEMAttributes.SUBSECTOR, subsector);
+		person.getAttributes().putAttribute( globalConfig.getAttribSubsector(), subsector);
 	}
-	
+
 	public static String getSubsectorName( final Person person ) {
-		return (String) person.getAttributes().getAttribute( FEMAttributes.SUBSECTOR );
+		return (String) person.getAttributes().getAttribute( globalConfig.getAttribSubsector());
 	}
 	
 	public static Link getLinkFromSafeNode( String defaultSafeNode, final Scenario scenario ) {
@@ -255,5 +265,36 @@ public class FEMUtils {
 			}
 		}
 		return endLink;
+	}
+
+	/**
+	 * This will produce a file with link volumes if it is run on the output directory of a MATSim run.
+	 * It takes an integer time bin size (seconds) as its first parameter and maximum time for analysis (hour, inteer) as its second.
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void runLinkVolumeAnalysisOnOutputDirectory(String[] args) throws IOException {
+		Network network = NetworkUtils.createNetwork();
+		new MatsimNetworkReader(network).readFile("output_network.xml.gz");
+		EventsManagerImpl eventsManager = new EventsManagerImpl();
+		int timeBinSize = Integer.parseInt(args[0]);
+		int maxTime = Integer.parseInt(args[1]) * 3600;
+		VolumesAnalyzer volumesAnalyzer = new VolumesAnalyzer(timeBinSize, maxTime, network);
+		eventsManager.addHandler(volumesAnalyzer);
+		new MatsimEventsReader(eventsManager).readFile("output_events.xml.gz");
+		BufferedWriter writer = IOUtils.getBufferedWriter("output_linkVolumes.txt");
+		LINKS:
+		for (Link link : network.getLinks().values()) {
+			for (int i = 0; i < maxTime / timeBinSize; i++) {
+				try {
+
+					writer.write(String.format("%s\t%d\t%d\t%f\n", link.getId(), i * timeBinSize, volumesAnalyzer.getVolumesForLink(link.getId())[i], link.getFlowCapacityPerSec() * timeBinSize));
+				} catch (NullPointerException ne) {
+					//no data for this link, go to next
+					continue LINKS;
+				}
+			}
+		}
+		writer.close();
 	}
 }

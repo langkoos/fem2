@@ -1,10 +1,10 @@
 package femproto.prepare.parsers;
 
+import com.google.inject.Inject;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import femproto.globals.Gis;
-import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
+import femproto.globals.FEMGlobalConfig;
 import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -14,11 +14,6 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.router.DijkstraFactory;
-import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
-import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.utils.gis.matsim2esri.network.FeatureGeneratorBuilderImpl;
@@ -51,6 +46,8 @@ public class EvacuationToSafeNodeMapping {
 		this.scenario = scenario;
 	}
 
+	@Inject
+	FEMGlobalConfig globalConfig;
 
 
 	/**
@@ -112,11 +109,11 @@ public class EvacuationToSafeNodeMapping {
 				network.addLink(link);
 			}
 		}
-		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(network, Gis.EPSG28356);
+		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(network, globalConfig.getCrsEPSG28356());
 		builder.setFeatureGeneratorPrototype(LineStringBasedFeatureGenerator.class);
 		builder.setWidthCoefficient(0.5);
 		builder.setWidthCalculatorPrototype(LanesBasedWidthCalculator.class);
-		CoordinateReferenceSystem crs = MGC.getCRS(Gis.EPSG28356);
+		CoordinateReferenceSystem crs = MGC.getCRS( globalConfig.getCrsEPSG28356());
 		builder.setCoordinateReferenceSystem(crs);
 		new Links2ESRIShape(network, fileName, builder).write();
 	}

@@ -3,7 +3,7 @@ package femproto.run;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
-import femproto.globals.FEMAttributes;
+import femproto.globals.FEMGlobalConfig;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -12,10 +12,8 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.StrategyConfigGroup;
-import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.events.StartupEvent;
-import org.matsim.core.controler.listener.IterationEndsListener;
 import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.gbl.Gbl;
@@ -40,6 +38,7 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 	
 	@Inject Population population ;
 	@Inject Config config ;
+	@Inject FEMGlobalConfig globalConfig;
 	@Override public void notifyReplanning( ReplanningEvent event) {
 //	@Override public void notifyIterationEnds(IterationEndsEvent event) {
 		
@@ -202,8 +201,8 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 		return PopulationUtils.getLastActivity(plan).getLinkId();
 	}
 	
-	static String getSubsector( Person person) {
-		final String attribute = (String) person.getAttributes().getAttribute( FEMAttributes.SUBSECTOR);
+	 String getSubsector( Person person) {
+		final String attribute = (String) person.getAttributes().getAttribute(globalConfig.getAttribSubsector() );
 		Gbl.assertNotNull(attribute);
 		return attribute;
 	}

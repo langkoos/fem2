@@ -1,8 +1,9 @@
 package femproto.prepare.evacuationscheduling;
 
+import com.google.inject.Inject;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import femproto.globals.FEMAttributes;
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.parsers.EvacuationToSafeNodeParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import femproto.run.FEMUtils;
@@ -31,7 +32,8 @@ import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 public final class EvacuationScheduleToPopulationDepartures {
 	private Scenario scenario;
 	private EvacuationSchedule evacuationSchedule;
-
+	@Inject
+	FEMGlobalConfig globalConfig;
 
 	public EvacuationScheduleToPopulationDepartures(Scenario scenario, EvacuationSchedule evacuationSchedule) {
 		this.scenario = scenario;
@@ -132,7 +134,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());
-					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / FEMAttributes.EVAC_FLOWRATE));
+					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / globalConfig.getEvacuationRate()));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);

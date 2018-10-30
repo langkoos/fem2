@@ -1,7 +1,8 @@
 package femproto.prepare.demand;
 
+import com.google.inject.Inject;
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.parsers.EvacuationToSafeNodeMapping;
-import femproto.globals.Gis;
 import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -14,8 +15,6 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.io.PopulationWriter;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.core.utils.geometry.CoordinateTransformation;
-import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
 import org.opengis.feature.simple.SimpleFeature;
@@ -28,7 +27,8 @@ import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
-	
+	@Inject
+	FEMGlobalConfig globalConfig;
 	private final Scenario scenario;
 	private EvacuationToSafeNodeMapping evacuationToSafeNodeMapping;
 
@@ -145,7 +145,7 @@ public class SubSectorsToPopulation {
 			int totalVehicles = (int) (double) feature.getAttribute("Totalvehic");
 			for (int i = 0; i < totalVehicles; i++) {
 				Person person = pf.createPerson(Id.createPersonId(personCnt++));
-				FEMUtils.setSubsectorName( subsector, person );
+				setSubsectorName( subsector, person );
 				List<Link> safeLinks = evacuationToSafeNodeMapping.getSafeLinks(subsector);
 				for (Link safeLink : safeLinks) {
 
@@ -175,8 +175,12 @@ public class SubSectorsToPopulation {
 			throw new RuntimeException("Review list of link Errors for fixing");
 		
 	}
-	
-	
+
+	private void setSubsectorName(String subsector, Person person) {
+			person.getAttributes().putAttribute(globalConfig.getAttribSubsector(), subsector);
+	}
+
+
 	private void writePopulation(String filename) {
 		log.info( "entering writePopulation with fileName=" + filename ) ;
 

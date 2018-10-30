@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import femproto.globals.FEMAttributes;
-import femproto.globals.Gis;
+import com.google.inject.Inject;
+import femproto.globals.FEMGlobalConfig;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -21,7 +21,6 @@ import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -33,6 +32,8 @@ import org.opengis.referencing.FactoryException;
  * @author sergio
  */
 public class NetworkConverter {
+	@Inject
+	FEMGlobalConfig globalConfig;
 	private static final Logger log = Logger.getLogger( NetworkConverter.class ) ;
 	
 	private static final double MIN_DISTANCE = 5.0;
@@ -55,7 +56,7 @@ public class NetworkConverter {
 	
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
 		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$","prj")).readLine().toString() ;
-		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
+		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, globalConfig.getCrsEPSG28356());
 
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
 		for (SimpleFeature feature : features) {
@@ -77,7 +78,8 @@ public class NetworkConverter {
 				link.setLength(1);
 				link.setNumberOfLanes(1);
 				link.setFreespeed(17);
-				link.setCapacity(FEMAttributes.EVAC_FLOWRATE);
+				// yoyoyo this should be set on a per-link basis
+				link.setCapacity(globalConfig.getEvacuationRate());
 				HashSet<String> modes = new HashSet<>();
 				modes.add(TransportMode.car);
 				link.setAllowedModes(modes);
