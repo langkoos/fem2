@@ -1,6 +1,5 @@
 package femproto.prepare.network;
 
-import femproto.globals.Gis;
 import org.geotools.referencing.CRS;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
@@ -25,7 +24,6 @@ public class FEMV1NetworkConverter {
 		CoordinateReferenceSystem projCRS = CRS.parseWKT(EPSG28356);
 		String EPSG4326 = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]";
 		CoordinateReferenceSystem worldCRS = CRS.parseWKT(EPSG4326);
-//		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, Gis.EPSG28356);
 		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(EPSG4326, EPSG28356);
 		new MatsimNetworkReader(networkIn).readFile(args[0]);
 		for (Node node : networkIn.getNodes().values()) {
