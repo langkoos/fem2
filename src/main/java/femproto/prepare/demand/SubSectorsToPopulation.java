@@ -27,15 +27,23 @@ import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
-	@Inject
-	FEMGlobalConfig globalConfig;
+	private final FEMGlobalConfig globalConfig;
 	private final Scenario scenario;
 	private EvacuationToSafeNodeMapping evacuationToSafeNodeMapping;
 
 	private SubSectorsToPopulation() {
 //		log.setLevel(Level.DEBUG);
 		this.scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		this.globalConfig = FEMGlobalConfig.getGlobalConfig();
 	}
+
+	private SubSectorsToPopulation(String config) {
+//		log.setLevel(Level.DEBUG);
+		this.scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		this.globalConfig = FEMGlobalConfig.getGlobalConfig(config);
+	}
+
+
 	
 	public static void main(String[] args) throws IOException {
 		SubSectorsToPopulation subSectorsToPopulation = new SubSectorsToPopulation();
@@ -194,7 +202,7 @@ public class SubSectorsToPopulation {
 		try ( BufferedWriter writer = IOUtils.getBufferedWriter( fileName ) ) {
 			writer.write( "id\tsubsector\n" );
 			for ( Person person : scenario.getPopulation().getPersons().values() ) {
-				writer.write( person.getId() + "\t" + FEMUtils.getSubsectorName( person ) + "\n" );
+				writer.write( person.getId() + "\t" + person.getAttributes().getAttribute( globalConfig.getAttribSubsector()) + "\n" );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();

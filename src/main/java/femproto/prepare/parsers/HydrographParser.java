@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import femproto.globals.FEMGlobalConfig;
+import femproto.globals.Gis;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
 import org.apache.log4j.Logger;
@@ -69,7 +70,7 @@ public class HydrographParser {
 		String wkt = null;
 		try {
 			wkt = IOUtils.getBufferedReader(shapefile.replaceAll("shp$", "prj")).readLine().toString();
-			transformation = TransformationFactory.getCoordinateTransformation(wkt, globalConfig.getCrsEPSG28356());
+			transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 		} catch (IOException e) {
 			log.warn("The shapefile doesn't have a .prj file; continuing, but no guarantees on projection.");
 		}
@@ -93,7 +94,7 @@ public class HydrographParser {
 			HydrographPoint hydrographPoint = new HydrographPoint(pointID, ALT_AHD, coord);
 			hydrographPoint.setSubSector(subsector);
 			hydrographPointMap.put(pointID, hydrographPoint);
-			//yoyo for hydrogrpah points with no link id associated with them, this will use the centroid connector instead
+			//yoyo for hydrograph points with no link id associated with them, this will use the centroid connector instead
 			if (linkIDs.equals("") && !subsector.equals("")) {
 				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
 				if (evacuationNode == null) {

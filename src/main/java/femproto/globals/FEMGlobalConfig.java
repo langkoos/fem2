@@ -1,6 +1,8 @@
 package femproto.globals;
 
 import com.google.inject.Singleton;
+import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ReflectiveConfigGroup;
 
 import java.util.Map;
@@ -9,8 +11,18 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 
 	private static final String NAME = "FEMGlobal";
 
-	FEMGlobalConfig(String name) {
-		super(name);
+	public FEMGlobalConfig() {
+		super(NAME);
+	}
+
+	public static FEMGlobalConfig getGlobalConfig(){
+		Config config = ConfigUtils.createConfig();
+		return ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
+	}
+
+	public static FEMGlobalConfig getGlobalConfig(String  configFileName){
+		Config config = ConfigUtils.loadConfig(configFileName);
+		return ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
 	}
 
 	@Override
@@ -18,9 +30,8 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 		final Map<String, String> map = super.getComments();
 		map.put(BUFFER_TIME_BEFORE_FLOODING, BUFFER_TIME_BEFORE_FLOODING_CMT);
 		map.put(EVACUATION_RATE, EVACUATION_RATE_CMT);
-		map.put(CRS_EPSG3308, CRS_EPSG3308_CMT);
-		map.put(CRS_EPSG28356, CRS_EPSG28356_CMT);
 		map.put(ATTRIB_SUBSECTOR, ATTRIB_SUBSECTOR_CMT);
+		map.put(ATTRIB_BUFFER_TIME, ATTRIB_BUFFER_TIME_CMT);
 		map.put(ATTRIB_HYDROGRAPH_POINT_ID_FIELD, ATTRIB_HYDROGRAPH_POINT_ID_FIELD_CMT);
 		map.put(ATTRIB_HYDROGRAPH_LINK_IDS, ATTRIB_HYDROGRAPH_LINK_IDS_CMT);
 		map.put(ATTRIB_HYDROGRAPH_SELECTED_ALT_AHD, ATTRIB_HYDROGRAPH_SELECTED_ALT_AHD_CMT);
@@ -62,28 +73,6 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 		this.evacuationRate = evacuationRate;
 	}
 
-	// ======================== GIS GLOBALS =============================
-	// ==================================================================
-
-	private String crsEPSG3308 = "EPSG:3308";
-	private static final String CRS_EPSG3308 = "crsEPSG3308";
-	private static final String CRS_EPSG3308_CMT = "NSW Lambert state mapping EPSG:3308, used in some shapefiles.";
-
-	@StringGetter(CRS_EPSG3308)
-	public String getCrsEPSG3308() {
-		return crsEPSG3308;
-	}
-
-	// ==================================================================
-
-	private String crsEPSG28356 = "EPSG:28356";
-	private static final String CRS_EPSG28356 = "crsEPSG28356";
-	private static final String CRS_EPSG28356_CMT = "GDA94_MGA_zone_56 used for large scale infrastructure mapping in NSW (EPSG:28356). Projection of RMS EMME shapefiles.";
-
-	@StringGetter(CRS_EPSG28356)
-	public String getCrsEPSG28356() {
-		return crsEPSG28356;
-	}
 
 
 	// =================== SHAPEFILE COLUMN NAMES =======================
@@ -101,6 +90,22 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	@StringSetter(ATTRIB_SUBSECTOR)
 	public void setAttribSubsector(String attribSubsector) {
 		this.attribSubsector = attribSubsector;
+	}
+
+	// ==================================================================
+
+	private String attribBufferTime = "BUFFER_TIME";
+	private static final String ATTRIB_BUFFER_TIME = "attribBufferTime";
+	private static final String ATTRIB_BUFFER_TIME_CMT = "Column name convention identifying buffer time before flooding (Floating point value, hours).";
+
+	@StringGetter(ATTRIB_BUFFER_TIME)
+	public String getAttribBufferTime() {
+		return attribBufferTime;
+	}
+
+	@StringSetter(ATTRIB_BUFFER_TIME)
+	public void setAttribBufferTime(String attribBufferTime) {
+		this.attribBufferTime= attribBufferTime;
 	}
 
 	// ==================================================================

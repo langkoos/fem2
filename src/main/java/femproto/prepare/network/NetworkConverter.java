@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import femproto.globals.FEMGlobalConfig;
+import femproto.globals.Gis;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -56,7 +57,7 @@ public class NetworkConverter {
 	
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
 		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$","prj")).readLine().toString() ;
-		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, globalConfig.getCrsEPSG28356());
+		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
 		for (SimpleFeature feature : features) {
