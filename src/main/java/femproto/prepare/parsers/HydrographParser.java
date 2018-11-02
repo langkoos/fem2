@@ -111,7 +111,7 @@ public class HydrographParser {
 //					hydrographPoint.addLinkId(evacLinkId.toString());
 //				}
 				for (Link link : evacuationNode.getOutLinks().values()) {
-					if(link.getFromNode().equals(link.getToNode()))
+					if (link.getFromNode().equals(link.getToNode()))
 						hydrographPoint.addLinkId(link.getId().toString());
 
 				}
@@ -177,7 +177,6 @@ public class HydrographParser {
 	}
 
 
-
 	private void removeHydrographPointsWithNoData() {
 		Set<String> badkeys = new HashSet<>();
 		badkeys.addAll(hydrographPointMap.keySet());
@@ -195,7 +194,9 @@ public class HydrographParser {
 	}
 
 	/**
-	 * For now this consolidates hyrograph data for many points associated with a subsector into a single one, taking the minimum of the recprded flood times as its value.
+	 * For now this consolidates hyrograph data for many points associated with a link into a single one, taking the minimum of the recprded flood times as its value, except when its associated with a
+	 * subsector loop link, indicating that its only for raising road access flooding (subsector flooding, not link flooding).
+	 * For raising road access flooding, we have to take the maximum flood time
 	 * David et al will remove excess points so that ultimately only a single point is associated with a subsector, which will make this method redundant.
 	 */
 	private void consolidateHydrographPointsByLink() {
@@ -214,10 +215,16 @@ public class HydrographParser {
 					// yoyo set the flood time to the minimum of the existing and new data point
 					double currentFloodTime = linkHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
-					if (currentFloodTime > 0 && newFloodTime > 0)
-						linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
-					else
+					if (currentFloodTime > 0 && newFloodTime > 0) {
+						// yoyo check if this is only associated with a subsecctor (so loop link, which has no - in its id - maybe brittle)
+						if (linkId.contains("-")) {
+							linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
+						} else {
+							linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
+						}
+					} else {
 						linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
+					}
 
 				}
 			}
@@ -354,6 +361,7 @@ public class HydrographParser {
 						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
 						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
 						changeEvent.setFlowCapacityChange(flowChange);
+						//yoyo i cant set the link speed to absolutely zero because then agents get permanently trapped when they enter the link, and never reach the end.
 						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, link.getLength() / 86400);
 						changeEvent.setFreespeedChange(speedChange);
 						changeEvent.addLink(link);
