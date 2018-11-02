@@ -12,7 +12,7 @@ public class HydrographPoint {
 	private static final Logger log = Logger.getLogger(HydrographPoint.class);
 
 	int pointId;
-	final Double ALT_AHD;
+	Double ALT_AHD;
 	final Coord coord;
 	private Set<String> linkIds = new HashSet<>();
 	List<HydrographPointData> data;

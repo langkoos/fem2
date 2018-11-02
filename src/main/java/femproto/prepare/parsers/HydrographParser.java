@@ -230,11 +230,13 @@ public class HydrographParser {
 						if (newFloodTime < currentFloodTime) {
 							linkHydroPoint.setFloodTime(newFloodTime);
 							linkHydroPoint.pointId = hydrographPoint.pointId;
+							linkHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
 						}
 					} else {
 						if (newFloodTime > currentFloodTime) {
 							linkHydroPoint.setFloodTime(newFloodTime);
 							linkHydroPoint.pointId = hydrographPoint.pointId;
+							linkHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
 						}
 					}
 				}
@@ -254,6 +256,7 @@ public class HydrographParser {
 					if (newFloodTime > currentFloodTime) {
 						subsectorHydroPoint.setFloodTime(newFloodTime);
 						subsectorHydroPoint.pointId = hydrographPoint.pointId;
+						subsectorHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
 					}
 
 				}
