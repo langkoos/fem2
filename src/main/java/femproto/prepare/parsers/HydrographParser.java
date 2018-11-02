@@ -91,7 +91,12 @@ public class HydrographParser {
 			HydrographPoint hydrographPoint = new HydrographPoint(pointID, ALT_AHD, coord);
 			hydrographPoint.setSubSector(subsector);
 			hydrographPointMap.put(pointID, hydrographPoint);
-			//yoyo for hydrogrpah points with no link id associated with them, this will use the centroid connector instead
+			// for hydrogrpah points with no link id associated with them, this will use the centroid connector instead
+			/* yoyo UPDATE: after emailing to David (22 Nov), it appears that powering evacuations by centroid connector links might not be apporpiate,
+			 as other agents might have to pass through the subsector, and now links have been closed.
+			 when they provide updated data, where subsector evacuations will happen from a single link that wont be passed through
+			 by other agents, then this wont be an issue. for now, I will still attempt to poer it by killing the loop link at the evac node..
+			 */
 			if (linkIDs.equals("") && !subsector.equals("")) {
 				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
 				if (evacuationNode == null) {
@@ -99,12 +104,18 @@ public class HydrographParser {
 					log.error(message);
 					throw new RuntimeException(message);
 				}
-				Set<Id<Link>> evacLinkIds = new HashSet<>();
-				evacLinkIds.addAll(evacuationNode.getOutLinks().keySet());
-				evacLinkIds.addAll(evacuationNode.getInLinks().keySet());
-				for (Id<Link> evacLinkId : evacLinkIds) {
-					hydrographPoint.addLinkId(evacLinkId.toString());
+//				Set<Id<Link>> evacLinkIds = new HashSet<>();
+//				evacLinkIds.addAll(evacuationNode.getOutLinks().keySet());
+//				evacLinkIds.addAll(evacuationNode.getInLinks().keySet());
+//				for (Id<Link> evacLinkId : evacLinkIds) {
+//					hydrographPoint.addLinkId(evacLinkId.toString());
+//				}
+				for (Link link : evacuationNode.getOutLinks().values()) {
+					if(link.getFromNode().equals(link.getToNode()))
+						hydrographPoint.addLinkId(link.getId().toString());
+
 				}
+
 
 			} else
 				hydrographPoint.addLinkIds(linkIDs.split(","));
@@ -145,24 +156,27 @@ public class HydrographParser {
 
 		//find minimum time value
 		//normalise all
-		// yoyoyo note that Peter said the 3rd row of the hydrograph is actually time 0
-		double minTime = entries.get(0).get(1) * 3600;
+		//  note that Peter said the 3rd row of the hydrograph is actually time 0
+		double minTime = entries.get(0).get(2) * 3600;
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
-				for (int j = 1; j < entries.get(i).size(); j++) {
-					// yoyoyo it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
+				for (int j = 2; j < entries.get(i).size(); j++) {
+					//  it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
 					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime, entries.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
 			}
 		}
 
+
 		removeHydrographPointsWithNoData();
 
 		consolidateHydrographPointsByLink();
 
 	}
+
+
 
 	private void removeHydrographPointsWithNoData() {
 		Set<String> badkeys = new HashSet<>();
@@ -340,7 +354,7 @@ public class HydrographParser {
 						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
 						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
 						changeEvent.setFlowCapacityChange(flowChange);
-						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, link.getLength() / 43200);
+						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, link.getLength() / 86400);
 						changeEvent.setFreespeedChange(speedChange);
 						changeEvent.addLink(link);
 						networkChangeEvents.add(changeEvent);
@@ -354,7 +368,7 @@ public class HydrographParser {
 		List<NetworkChangeEvent> networkChangeEvents1 = new ArrayList<>();
 		networkChangeEvents1.addAll(networkChangeEvents);
 		for (NetworkChangeEvent capacityReductionEvent : networkChangeEvents1) {
-			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(maxTime + 43200);
+			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(maxTime + 86400);
 			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 6000);
 			capacityResetEvent.setFlowCapacityChange(flowChange);
 			NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 16.7);
