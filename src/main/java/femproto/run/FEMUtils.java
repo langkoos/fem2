@@ -42,10 +42,25 @@ public class FEMUtils {
 
 	private FEMUtils() {
 	} // do not instantiate
-
-	@Inject
-	static FEMGlobalConfig globalConfig;
-
+	
+	private static FEMGlobalConfig globalConfig;
+	private static boolean globalConfigIsLocked = false ;
+	
+	public static FEMGlobalConfig getGlobalConfig() {
+		return globalConfig;
+	}
+	
+	public static void setGlobalConfig( final FEMGlobalConfig globalConfig ) {
+		if ( globalConfigIsLocked ) {
+			throw new RuntimeException("too late") ;
+		}
+		if ( globalConfig==null ) {
+			throw new RuntimeException("too early") ;
+		}
+		FEMUtils.globalConfig = globalConfig;
+		globalConfigIsLocked = true ;
+	}
+	
 	static void preparationsForRmitHawkesburyScenario(Scenario scenario) {
 
 		// That population (e.g. haw_pop_route_defined.xml.gz) has an "Evacuation" activity in between
