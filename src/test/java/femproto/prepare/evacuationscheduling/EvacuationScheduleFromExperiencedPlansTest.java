@@ -36,11 +36,14 @@ public class EvacuationScheduleFromExperiencedPlansTest {
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(networkFile);
 
+		// we first have to read the output plans as these contain the SUBSECTOR attribute which is needed for associating an evacuee with a
+		//subsector. The experienced plans file does not record attributes.
 		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(populationFile);
 
 		EvacuationScheduleFromExperiencedPlans evacuationScheduleFromExperiencedPlans = new EvacuationScheduleFromExperiencedPlans(scenario.getPopulation(), network);
 
+		// now we replace the whole scenario and load in the experienced plans as a population
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(experiencedPlansFile);
 		Map<Id<Person>, Plan> plans = new LinkedHashMap<>() ;

@@ -293,7 +293,17 @@ public class FEMUtils {
 	}
 
 	public static String getSubsectorName(final Person person) {
-		return (String) person.getAttributes().getAttribute(globalConfig.getAttribSubsector());
+		String subsector = (String) person.getAttributes().getAttribute(globalConfig.getAttribSubsector());
+		if (subsector == null) {
+			String msg = String.format(
+					"The population file has no subsector attribute, or the subsector attribute name is not the same as specified in the config.\n" +
+					"The config file specifies the population to have attribute %s for each person",
+					globalConfig.getAttribSubsector()
+			);
+			log.error(msg);
+			throw new RuntimeException(msg);
+		}
+		return subsector;
 	}
 
 	public static Link getLinkFromSafeNode(String defaultSafeNode, final Scenario scenario) {

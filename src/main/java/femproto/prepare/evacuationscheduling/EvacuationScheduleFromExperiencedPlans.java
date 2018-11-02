@@ -68,41 +68,14 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		pax2SubSectors = new HashMap<>(population.getPersons().size());
 		for (Person person : population.getPersons().values()) {
 			pax2SubSectors.put(person.getId(), FEMUtils.getSubsectorName(person));
-//			Node origin = null;
-//			Node destin = null;
-//			double startTime = Double.POSITIVE_INFINITY;
-//			double endTime = Double.NEGATIVE_INFINITY;
-//
-//			for (PlanElement planElement : person.getPlans().get(0).getPlanElements()) {
-//				// yyyy yoyo (probably solved with task below) why get(0)?  If anything, then it should be the selected plan.  kai, sep'18
-//				if (planElement instanceof Activity) {
-//					Activity activity = (Activity) planElement;
-//					if (origin == null && activity.getType().equals(FEMAttributes.EVACUATION_ACTIVITY)) {
-//						origin = network.getLinks().get(activity.getLinkId()).getFromNode();
-//						startTime = activity.getEndTime();
-//					}
-//					if (destin == null && activity.getType().equals(FEMAttributes.SAFE_ACTIVITY)) {
-//						destin = network.getLinks().get(activity.getLinkId()).getToNode();
-//						endTime = activity.getStartTime();
-//					}
-//				}
-//			}
-//			ODFlowCounter odFlowCounter = addOrCreateODFlowCounter(FEMUtils.getSubsectorName( person ), origin, destin);
-			// yyyy yoyo is any of the now commented out material truly needed?  kai, sep'18
-			// yoyo check
+
 		}
 	}
 
-	public void parseExperiencedPlans(Map<Id<Person>, Plan> plans, Network network) {
+	public void parseExperiencedPlans(Map<Id<Person>, Plan> experiencedPlans, Network network) {
 		// I changed the signature from Population to Map since that is the way in which it is returned
 		// by the ExperiencedPlansService.  kai, sep'18
-		//yoyo commenting this out as the experienced plans service does not pass a person with the plan, only as a key in the hashmap.
-		//yoyo so
-//		for (Plan plan : plans.values()) {
-		//
-//			Gbl.assertNotNull( plan.getPerson() );
-//			Gbl.assertNotNull( plan.getPerson().getId() );
-		for (Map.Entry<Id<Person>, Plan> idPlanEntry : plans.entrySet()) {
+		for (Map.Entry<Id<Person>, Plan> idPlanEntry : experiencedPlans.entrySet()) {
 
 			Plan plan = idPlanEntry.getValue();
 			String subSector = pax2SubSectors.get(idPlanEntry.getKey());
@@ -167,6 +140,12 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		double endTime = Double.NEGATIVE_INFINITY;
 
 		ODFlowCounter(String subSector, Node origin, Node destin) {
+			if (origin == null || destin == null) {
+				String msg = "This scenario seems to have bad experienced plans, or agents never arrived at their destinations, " +
+						"which should not happen.\n " +
+						"Check experienced plans for null origin/destination nodes.";
+				throw new RuntimeException(msg);
+			}
 			this.subSector = subSector;
 			this.origin = origin;
 			this.destin = destin;
@@ -186,8 +165,7 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		public int compareTo(ODFlowCounter o) {
 			if (subSector.equals(o.subSector)) {
 				if (origin == o.origin)
-					//yoyoyo bad fix for dealing with stranded guys - need to come up with something better
-					if (destin == null || destin == o.destin)
+					if (destin == o.destin)
 						return 0;
 					else
 						return destin.getId().toString().compareTo(o.destin.getId().toString());
