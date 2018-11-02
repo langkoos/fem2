@@ -3,6 +3,7 @@ package femproto.prepare.parsers;
 import com.google.inject.Inject;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.evacuationscheduling.SubsectorData;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -66,21 +67,25 @@ public class SubsectorShapeFileParser {
 			totalVehicleCount += subsectorVehicleCount;
 			double lookAheadTime;
 			try {
-				lookAheadTime = Double.parseDouble(feature.getAttribute("LOOK_AHEAD").toString()) * 3600;
+				lookAheadTime = Double.parseDouble(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribLookAheadTime()).toString()) * 3600;
+				subsectorData.setLookAheadTime(lookAheadTime);
 			} catch (NullPointerException ne) {
-				log.warn("Need to define LOOK_AHEAD on a subsector basis");
+				String message = "Need to define " + FEMUtils.getGlobalConfig().getAttribLookAheadTime() + " on a subsector basis";
+				log.error(message);
+				throw new RuntimeException(message);
 			}
+
 			String evacNodeFromShp;
 			try {
 				evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
 			} catch (NullPointerException ne) {
-				String message = "Subsector " + subsector + " has no EVAC_NODE attribute.";
+				String message = "Subsector " + subsector + " has no " + "EVAC_NODE" + " attribute.";
 				log.warn(message);
 				throw new RuntimeException(message);
 			}
 			Node node = network.getNodes().get(Id.createNodeId(evacNodeFromShp));
 			if (node == null) {
-				String msg = "did not find evacNode in matsim network file: " + evacNodeFromShp;
+				String msg = String.format("Did not find evacuation node %s for subsector %s in matsim network. ", evacNodeFromShp, subsector);
 				log.warn(msg);
 				throw new RuntimeException(msg);
 			}

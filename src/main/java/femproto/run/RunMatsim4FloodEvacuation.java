@@ -258,6 +258,7 @@ public class RunMatsim4FloodEvacuation {
 			}
 			break;
 			case justRunInputPlansFile:
+			case runFromSource:
 			case runFromEvacuationSchedule:
 				config.controler().setLastIteration( 0 );
 				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
@@ -303,6 +304,7 @@ public class RunMatsim4FloodEvacuation {
 
 		
 		switch ( femConfig.getFemRunType() ) {
+			case runFromSource:
 			case justRunInputPlansFile:
 				break;
 			case runFromEvacuationSchedule:
@@ -508,6 +510,7 @@ public class RunMatsim4FloodEvacuation {
 				// computed in prepareForSim. kai, jul'18
 				break;
 			case justRunInputPlansFile:
+			case runFromSource:
 			case runFromEvacuationSchedule:
 				break;
 			default:

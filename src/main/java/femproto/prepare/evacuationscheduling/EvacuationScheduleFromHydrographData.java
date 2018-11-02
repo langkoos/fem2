@@ -76,7 +76,7 @@ public final class EvacuationScheduleFromHydrographData {
 			}
 
 			if (floodTime < Double.POSITIVE_INFINITY) {
-				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime() * 3600, prioritySafeNode);
+				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime(), prioritySafeNode);
 				lastPriorityEvacuationStartTime = Math.max(lastPriorityEvacuationStartTime, floodTime);
 				prioritySubsectors.add(subsectorData.getSubsector());
 			}

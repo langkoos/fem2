@@ -146,11 +146,12 @@ public class HydrographParser {
 		//find minimum time value
 		//normalise all
 		// yoyoyo note that Peter said the 3rd row of the hydrograph is actually time 0
-		double minTime = entries.get(0).get(0) * 3600;
+		double minTime = entries.get(0).get(1) * 3600;
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
-				for (int j = 0; j < entries.get(i).size(); j++) {
+				for (int j = 1; j < entries.get(i).size(); j++) {
+					// yoyoyo it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
 					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime , entries.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
@@ -194,7 +195,7 @@ public class HydrographParser {
 					linkHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
 					consolidatedHydrographPointMap.put(linkId, linkHydroPoint);
 				} else {
-					// yoyo set the flood time to the minimum of the exisiting and new data point
+					// yoyo set the flood time to the minimum of the existing and new data point
 					double currentFloodTime = linkHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
 					if (currentFloodTime > 0 && newFloodTime > 0)
@@ -321,8 +322,8 @@ public class HydrographParser {
 	}
 
 
-	public void networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network, String outputFileName) {
-		Set<NetworkChangeEvent> networkChangeEvents = new HashSet<>();
+	public List<NetworkChangeEvent> networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network, String outputFileName) {
+		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
 		double maxTime = Double.NEGATIVE_INFINITY;
 		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
 			if (point.getFloodTime() < 0)
@@ -345,7 +346,7 @@ public class HydrographParser {
 		}
 		//reset the capcity of dead links a long time after the last one has died so that agents make it to destinations,
 		// with a bad score.
-		Set<NetworkChangeEvent> networkChangeEvents1 = new HashSet<>();
+		List<NetworkChangeEvent> networkChangeEvents1 = new ArrayList<>();
 		networkChangeEvents1.addAll(networkChangeEvents);
 		for (NetworkChangeEvent capacityReductionEvent : networkChangeEvents1) {
 			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(capacityReductionEvent.getStartTime()+maxTime+86400);
@@ -356,6 +357,7 @@ public class HydrographParser {
 		}
 
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
+		return networkChangeEvents;
 	}
 
 

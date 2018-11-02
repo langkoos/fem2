@@ -70,7 +70,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 
 	// ---
 	enum FEMRunType {
-		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource,optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
+		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
 	}
 
 	private FEMRunType femRunType = FEMRunType.runFromSource;
