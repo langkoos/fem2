@@ -21,7 +21,6 @@ import org.matsim.core.utils.io.IOUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 
 /**
@@ -117,7 +116,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 				Node safeNode = safeNodeAllocation.getNode();
 				Link safeLink = null;
 				for (Link link : safeNode.getInLinks().values()) {
-					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())) {
 						safeLink = link;
 					}
 				}

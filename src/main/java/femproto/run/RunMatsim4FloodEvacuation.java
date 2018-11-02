@@ -87,8 +87,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static femproto.run.FEMPreferEmergencyLinksTravelDisutility.isEvacLink;
-import static org.matsim.core.network.NetworkUtils.getEuclideanDistance;
 
 /**
  * @author nagel
@@ -427,7 +425,7 @@ public class RunMatsim4FloodEvacuation {
 						// empty network, before the iterations start, and then never again.  kai, jul'18
 
 						addTravelDisutilityFactoryBinding(routingMode).toInstance(
-								new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork(), delegateFactory)
+								new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork(), delegateFactory, globalConfig)
 						);
 
 						break;
@@ -587,11 +585,11 @@ public class RunMatsim4FloodEvacuation {
 		log.info("will write link attributes to " + filename);
 
 		try (BufferedWriter writer = IOUtils.getBufferedWriter(filename)) {
-			writer.write("id\t" + NetworkConverter.EVACUATION_LINK);
+			writer.write("id\t" + globalConfig.getattribEvacMarker());
 			writer.newLine();
 			for (Link link : controler.getScenario().getNetwork().getLinks().values()) {
 				writer.write(link.getId().toString() + "\t");
-				writer.write(Boolean.toString((boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK)));
+				writer.write(Boolean.toString((boolean) link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())));
 				writer.newLine();
 			}
 			writer.close();
@@ -619,12 +617,14 @@ class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScorin
 	private final TravelDisutility travelDisutility;
 	private final Person person;
 	private final Network network;
+	private final FEMGlobalConfig globalConfig;
 	private double score = 0.;
 	private Link prevLink = null;
 	private boolean hasBeenOnEvacNetwork = false;
 	private boolean hasLeftEvacNetworkAfterHavingBeenOnIt = false;
 
-	NonevacLinksPenalizerV2(TravelDisutility travelDisutility, Person person, Network network) {
+	NonevacLinksPenalizerV2(TravelDisutility travelDisutility, Person person, Network network, FEMGlobalConfig globalConfig) {
+		this.globalConfig = globalConfig;
 		this.travelDisutility = travelDisutility;
 		this.person = person;
 		this.network = network;
@@ -662,6 +662,13 @@ class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScorin
 
 			prevLink = link;
 		}
+	}
+
+	public boolean isEvacLink(Link link) {
+		if (link == null) {
+			return false;
+		}
+		return (boolean) link.getAttributes().getAttribute(globalConfig.getattribEvacMarker());
 	}
 }
 
@@ -706,6 +713,8 @@ class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFact
 	private Map<String, TravelTime> travelTimes;
 	@Inject
 	private Network network;
+	@Inject
+	private Config config;
 
 	@Override
 	public ScoringFunction createNewScoringFunction(Person person) {
@@ -720,7 +729,7 @@ class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFact
 		sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring(parameters, network));
 		sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(parameters));
 		sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring(parameters));
-		sumScoringFunction.addScoringFunction(new NonevacLinksPenalizerV2(travelDisutility, person, network));
+		sumScoringFunction.addScoringFunction(new NonevacLinksPenalizerV2(travelDisutility, person, network, ConfigUtils.addOrGetModule(config,FEMGlobalConfig.class)));
 		return sumScoringFunction;
 	}
 }

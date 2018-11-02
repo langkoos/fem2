@@ -20,6 +20,7 @@
 
 package femproto.run;
 
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.network.NetworkConverter;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -38,74 +39,78 @@ import java.util.Map;
 
 
 /**
- *  A Travel Cost Calculator that uses the travel times as travel disutility.
+ * A Travel Cost Calculator that uses the travel times as travel disutility.
  *
  * @author cdobler
  */
 public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisutility {
-	private static final Logger log = Logger.getLogger(FEMPreferEmergencyLinksTravelDisutility.class) ;
-	
+	private static final Logger log = Logger.getLogger(FEMPreferEmergencyLinksTravelDisutility.class);
+
 	private final Map<Id<Link>, Double> specialLinks;
 	private final TravelDisutility delegate;
 	private final TravelTime travelTime;
-	
+
 	private FEMPreferEmergencyLinksTravelDisutility(final TravelTime travelTime, Map<Id<Link>, Double> specialLinks, TravelDisutility delegate) {
 //		log.setLevel(Level.DEBUG);
-		this.travelTime = travelTime ;
+		this.travelTime = travelTime;
 		this.specialLinks = specialLinks;
 		this.delegate = delegate;
 		Gbl.assertNotNull(travelTime);
 	}
-	
-	public double getAdditionalLinkTravelDisutility( final Link link, final double time, final Person person, final Vehicle vehicle ) {
-		Double result = specialLinks.get( link.getId() ) ;
-		if ( result != null ) { // found special link, in this case evac link, do not penalize
-			return 0. ;
+
+	public double getAdditionalLinkTravelDisutility(final Link link, final double time, final Person person, final Vehicle vehicle) {
+		Double result = specialLinks.get(link.getId());
+		if (result != null) { // found special link, in this case evac link, do not penalize
+			return 0.;
 		} else { // non-evac link --> penalize
-			return 100. * delegate.getLinkTravelDisutility(link,time,person,vehicle) ;
+			return 100. * delegate.getLinkTravelDisutility(link, time, person, vehicle);
 		}
 	}
-	
+
 	@Override
 	public double getLinkTravelDisutility(final Link link, final double time, final Person person, final Vehicle vehicle) {
-		return delegate.getLinkTravelDisutility(link,time,person,vehicle) + getAdditionalLinkTravelDisutility(link,time,person,vehicle) ;
+		return delegate.getLinkTravelDisutility(link, time, person, vehicle) + getAdditionalLinkTravelDisutility(link, time, person, vehicle);
 	}
-	
+
 	@Override
 	public double getLinkMinimumTravelDisutility(final Link link) {
 		return delegate.getLinkMinimumTravelDisutility(link) +
-					   getAdditionalLinkTravelDisutility(link,Time.getUndefinedTime(), null, null ) ;
+				getAdditionalLinkTravelDisutility(link, Time.getUndefinedTime(), null, null);
 	}
-	
+
 	public static final class Factory implements TravelDisutilityFactory {
-		private final Map<Id<Link>, Double> specialLinks = new LinkedHashMap<>() ;
+		private final Map<Id<Link>, Double> specialLinks = new LinkedHashMap<>();
 		private final TravelDisutilityFactory delegateFactory;
-		public Factory(Network network, TravelDisutilityFactory delegateFactory ) {
-			for( Link link : network.getLinks().values() ) {
-				boolean isEvacLink = isEvacLink(link);
-				if ( isEvacLink ) {
-					specialLinks.put( link.getId(), 0.01 ) ;
+		private final FEMGlobalConfig globalConfig;
+
+		public Factory(Network network, TravelDisutilityFactory delegateFactory, FEMGlobalConfig globalConfig) {
+			this.globalConfig = globalConfig;
+			for (Link link : network.getLinks().values()) {
+				if (isEvacLink(link)) {
+					specialLinks.put(link.getId(), 0.01);
 				}
 			}
-			this.delegateFactory = delegateFactory ;
+			this.delegateFactory = delegateFactory;
 		}
+
 		@Override
 		public TravelDisutility createTravelDisutility(TravelTime timeCalculator) {
-			TravelDisutility delegate = null ;
-			if ( delegateFactory!=null ) {
+			TravelDisutility delegate = null;
+			if (delegateFactory != null) {
 				delegate = delegateFactory.createTravelDisutility(timeCalculator);
 			}
 			final FEMPreferEmergencyLinksTravelDisutility femPreferEmergencyLinksTravelDisutility =
 					new FEMPreferEmergencyLinksTravelDisutility(timeCalculator, specialLinks, delegate);
 			return femPreferEmergencyLinksTravelDisutility;
 		}
-	}
-	
-	public static boolean isEvacLink(Link link) {
-		if ( link==null ) {
-			return false ;
+
+		public boolean isEvacLink(Link link) {
+			if (link == null) {
+				return false;
+			}
+			return (boolean) link.getAttributes().getAttribute(globalConfig.getattribEvacMarker());
 		}
-		return (boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
 	}
-	
+
+
 }

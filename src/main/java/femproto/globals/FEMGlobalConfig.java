@@ -28,10 +28,9 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	@Override
 	public Map<String, String> getComments() {
 		final Map<String, String> map = super.getComments();
-		map.put(BUFFER_TIME_BEFORE_FLOODING, BUFFER_TIME_BEFORE_FLOODING_CMT);
 		map.put(EVACUATION_RATE, EVACUATION_RATE_CMT);
 		map.put(ATTRIB_SUBSECTOR, ATTRIB_SUBSECTOR_CMT);
-		map.put(ATTRIB_BUFFER_TIME, ATTRIB_BUFFER_TIME_CMT);
+		map.put(ATTRIB_LOOK_AHEAD_TIME, ATTRIB_LOOK_AHEAD_TIME_CMT);
 		map.put(ATTRIB_HYDROGRAPH_POINT_ID_FIELD, ATTRIB_HYDROGRAPH_POINT_ID_FIELD_CMT);
 		map.put(ATTRIB_HYDROGRAPH_LINK_IDS, ATTRIB_HYDROGRAPH_LINK_IDS_CMT);
 		map.put(ATTRIB_HYDROGRAPH_SELECTED_ALT_AHD, ATTRIB_HYDROGRAPH_SELECTED_ALT_AHD_CMT);
@@ -43,21 +42,6 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	// ====================== MODEL PARAMETERS ==========================
 	// ==================================================================
 
-	private double bufferTimeBeforeFlooding = 15;
-	private static final String BUFFER_TIME_BEFORE_FLOODING = "bufferTimeBeforeFlooding";
-	private static final String BUFFER_TIME_BEFORE_FLOODING_CMT = "Buffer time for evacuation to start before the subsector or a link in the path to one of its safe nodes gets flooded.";
-
-	@StringGetter(BUFFER_TIME_BEFORE_FLOODING)
-	public double getBufferTimeBeforeFlooding() {
-		return bufferTimeBeforeFlooding;
-	}
-
-	@StringSetter(BUFFER_TIME_BEFORE_FLOODING)
-	public void setBufferTimeBeforeFlooding(double bufferTimeBeforeFlooding) {
-		this.bufferTimeBeforeFlooding = bufferTimeBeforeFlooding;
-	}
-
-	// ==================================================================
 
 	private double evacuationRate = 600;
 	private static final String EVACUATION_RATE = "evacuationRate";
@@ -94,18 +78,18 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 
 	// ==================================================================
 
-	private String attribBufferTime = "BUFFER_TIME";
-	private static final String ATTRIB_BUFFER_TIME = "attribBufferTime";
-	private static final String ATTRIB_BUFFER_TIME_CMT = "Column name convention identifying buffer time before flooding (Floating point value, hours).";
+	private String attribLookAheadTime = "LOOK_AHEAD";
+	private static final String ATTRIB_LOOK_AHEAD_TIME = "attribLookAheadTime";
+	private static final String ATTRIB_LOOK_AHEAD_TIME_CMT = "Column name convention identifying buffer time before flooding (Floating point value, hours).";
 
-	@StringGetter(ATTRIB_BUFFER_TIME)
-	public String getAttribBufferTime() {
-		return attribBufferTime;
+	@StringGetter(ATTRIB_LOOK_AHEAD_TIME)
+	public String getAttribLookAheadTime() {
+		return attribLookAheadTime;
 	}
 
-	@StringSetter(ATTRIB_BUFFER_TIME)
-	public void setAttribBufferTime(String attribBufferTime) {
-		this.attribBufferTime= attribBufferTime;
+	@StringSetter(ATTRIB_LOOK_AHEAD_TIME)
+	public void setAttribLookAheadTime(String attribLookAheadTime) {
+		this.attribLookAheadTime = attribLookAheadTime;
 	}
 
 	// ==================================================================
@@ -122,6 +106,68 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	@StringSetter(ATTRIB_HYDROGRAPH_POINT_ID_FIELD)
 	public void setAttribHydrographPointId(String attribHydrographPointId) {
 		this.attribHydrographPointId = attribHydrographPointId;
+	}
+	// ==================================================================
+
+	private String attribEvacMarker = "EVAC_SES";
+	private static final String ATTRIB_EVAC_MARKER = "attribEvacMarker";
+	private static final String ATTRIB_EVAC_MARKER_CMT = "Column name convention identifying LINKS AND NODES for evacuation (Integer value, 0 or 1).";
+
+	@StringGetter(ATTRIB_EVAC_MARKER)
+	public String getattribEvacMarker() {
+		return attribEvacMarker;
+	}
+
+	@StringSetter(ATTRIB_EVAC_MARKER)
+	public void setattribEvacMarker(String attribEvacMarker) {
+		this.attribEvacMarker = attribEvacMarker;
+	}
+	// ==================================================================
+
+	private String attribDescr = "DESCR";
+	private static final String ATTRIB_DESCR = "attribDescr";
+	private static final String ATTRIB_DESCR_CMT = "Column name convention identifying node or link descriptions (Integer value, 0 or 1).";
+
+	@StringGetter(ATTRIB_DESCR)
+	public String getAttribDescr() {
+		return attribDescr;
+	}
+
+	@StringSetter(ATTRIB_DESCR)
+	public void setAttribDescr(String attribDescr) {
+		this.attribDescr= attribDescr;
+	}
+
+	// ==================================================================
+
+	private String attribINode = "I_NODE";
+	private static final String ATTRIB_I_NODE = "attribINode";
+	private static final String ATTRIB_I_NODE_CMT = "Column name convention identifying 'from' node foreign key in links shapefile(Integer value).";
+
+	@StringGetter(ATTRIB_I_NODE)
+	public String getAttribINode() {
+		return attribINode;
+	}
+
+	@StringSetter(ATTRIB_I_NODE)
+	public void setAttribINode(String attribINode) {
+		this.attribINode= attribINode;
+	}
+
+	// ==================================================================
+
+	private String attribJNode = "J_NODE";
+	private static final String ATTRIB_J_NODE = "attribJNode";
+	private static final String ATTRIB_J_NODE_CMT = "Column name convention identifying 'to' node foreign key in links shapefile(Integer value).";
+
+	@StringGetter(ATTRIB_J_NODE)
+	public String getAttribJNode() {
+		return attribJNode;
+	}
+
+	@StringSetter(ATTRIB_J_NODE)
+	public void setAttribJNode(String attribJNode) {
+		this.attribJNode= attribJNode;
 	}
 
 	// ==================================================================

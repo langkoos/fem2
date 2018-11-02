@@ -22,6 +22,12 @@ public class SubsectorData {
 	private LinkedHashSet<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
 	private int vehicleCount;
 
+	public void setLookAheadTime(double lookAheadTime) {
+		this.lookAheadTime = lookAheadTime;
+	}
+
+	private  double lookAheadTime;
+
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
 		globalConfig = FEMGlobalConfig.getGlobalConfig();
@@ -177,4 +183,7 @@ public class SubsectorData {
 	}
 
 
+	public double getLookAheadTime() {
+		return lookAheadTime;
+	}
 }

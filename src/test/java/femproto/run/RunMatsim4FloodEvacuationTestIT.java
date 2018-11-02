@@ -1,5 +1,6 @@
 package femproto.run;
 
+import femproto.globals.FEMGlobalConfig;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -11,6 +12,7 @@ import org.junit.runners.MethodSorters;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.events.EventsManagerImpl;
 import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.network.NetworkUtils;
@@ -97,7 +99,7 @@ public class RunMatsim4FloodEvacuationTestIT {
 		Network network = NetworkUtils.createNetwork();
 //		new MatsimNetworkReader(network).readFile("scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz");
 		new MatsimNetworkReader(network).readFile(config.controler().getOutputDirectory()+"/output_network.xml.gz");
-		FEMEvacuationLinkRoutingCounter counter = new FEMEvacuationLinkRoutingCounter(network);
+		FEMEvacuationLinkRoutingCounter counter = new FEMEvacuationLinkRoutingCounter(network,ConfigUtils.addOrGetModule(config,FEMGlobalConfig.class));
 		eventsManager.addHandler(counter);
 
 		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);

@@ -44,7 +44,7 @@ public final class EvacuationScheduleFromHydrographData {
 
 	class FEMPathCalculator {
 		TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory();
-		TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory(network, delegateFactory);
+		TravelDisutilityFactory disutilityFactory = new FEMPreferEmergencyLinksTravelDisutility.Factory(network, delegateFactory,globalConfig);
 		FreeSpeedTravelTime freeSpeedTravelTime = new FreeSpeedTravelTime();
 		// define how the travel disutility is computed:
 		LeastCostPathCalculator dijkstra = new DijkstraFactory().createPathCalculator(network,
@@ -86,7 +86,7 @@ public final class EvacuationScheduleFromHydrographData {
 			}
 
 			if (floodTime < Double.POSITIVE_INFINITY) {
-				subsectorData.addSafeNodeAllocation(floodTime - globalConfig.getBufferTimeBeforeFlooding() * 3600, prioritySafeNode);
+				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime() * 3600, prioritySafeNode);
 				lastPriorityEvacuationStartTime = Math.max(lastPriorityEvacuationStartTime, floodTime);
 				prioritySubsectors.add(subsectorData.getSubsector());
 			}

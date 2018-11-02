@@ -9,12 +9,14 @@ import java.util.Map;
 import com.google.inject.Inject;
 import femproto.globals.FEMGlobalConfig;
 import femproto.globals.Gis;
+import femproto.run.FEMConfigGroup;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.*;
+import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -33,35 +35,50 @@ import org.opengis.referencing.FactoryException;
  * @author sergio
  */
 public class NetworkConverter {
-	private final FEMGlobalConfig globalConfig;
-	private static final Logger log = Logger.getLogger( NetworkConverter.class ) ;
-	
-	private static final double MIN_DISTANCE = 5.0;
+	private String nodesFile;
+	private String linksFile;
+	private FEMGlobalConfig globalConfig;
+	private static final Logger log = Logger.getLogger(NetworkConverter.class);
 
-	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Probably a global parameter in FEMAttributes
-	public static final String EVACUATION_LINK = "evacSES";
-	public static final String DESCRIPTION = "T_DES";
+	private static final double MIN_DISTANCE = 5.0;
 
 	private Scenario scenario;
 
 	public NetworkConverter(String nodesFile, String linksFile) {
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-		globalConfig = FEMGlobalConfig.getGlobalConfig();
+		this.nodesFile = nodesFile;
+		this.linksFile = linksFile;
+			globalConfig = FEMGlobalConfig.getGlobalConfig();
 	}
 
-	public NetworkConverter(String nodesFile, String linksFile, String globalConfigFile) {
+	public NetworkConverter(Config config) {
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-		globalConfig = FEMGlobalConfig.getGlobalConfig(globalConfigFile);
+
+	}
+
+	public NetworkConverter(String nodesFile, String linksFile, Scenario scenario) {
+		this.scenario = scenario;
+		globalConfig = ConfigUtils.addOrGetModule(scenario.getConfig(), FEMGlobalConfig.class);
+		FEMConfigGroup femConfigGroup = ConfigUtils.addOrGetModule(scenario.getConfig(), FEMConfigGroup.class);
+		this.nodesFile = femConfigGroup.getInputNetworkNodesShapefile();
+		this.linksFile = femConfigGroup.getInputNetworkLinksShapefile();
 	}
 
 
-	private void parseNodes(String fileName) throws IOException, FactoryException {
-		File dataFile = new File(fileName) ;
-		log.info( "Will attempt to convert nodes from " + dataFile.getAbsolutePath() ) ;
-		Gbl.assertIf( dataFile.exists() );
-	
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName );
-		String wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$","prj")).readLine().toString() ;
+	private void parseNodes(String fileName) {
+		File dataFile = new File(fileName);
+		log.info("Will attempt to convert nodes from " + dataFile.getAbsolutePath());
+		Gbl.assertIf(dataFile.exists());
+
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
+		String wkt = null;
+		try {
+			wkt = IOUtils.getBufferedReader(fileName.replaceAll("shp$", "prj")).readLine().toString();
+		} catch (IOException e) {
+			String message = "Nodes shapefile has no .prj file (no projection information).";
+			log.error(message);
+			throw new RuntimeException(message);
+		}
 		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
@@ -72,14 +89,14 @@ public class NetworkConverter {
 			Node node = networkFactory.createNode(Id.createNodeId((long) Double.parseDouble(feature.getAttribute("ID").toString())), coord);
 			try {
 				scenario.getNetwork().addNode(node);
-			}catch (IllegalArgumentException e){
+			} catch (IllegalArgumentException e) {
 				String message = "Duplicate node id " + feature.getAttribute("ID").toString();
 				log.error(message);
 				throw new RuntimeException(message);
 			}
 			// yoyo after discussion with DP, decided that we will not use randdom incoming link to evac node, but rather loop link
 			// in case random link leg start interferes with traffic
-			if((Integer)feature.getAttribute("EVAC_SES") == 1) {
+			if ((Integer) feature.getAttribute("EVAC_SES") == 1) {
 				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
 				link.setLength(1);
 				link.setNumberOfLanes(1);
@@ -89,8 +106,8 @@ public class NetworkConverter {
 				HashSet<String> modes = new HashSet<>();
 				modes.add(TransportMode.car);
 				link.setAllowedModes(modes);
-				link.getAttributes().putAttribute(EVACUATION_LINK, true);
-				link.getAttributes().putAttribute(DESCRIPTION, "dummy");
+				link.getAttributes().putAttribute(globalConfig.getattribEvacMarker(), true);
+				link.getAttributes().putAttribute(globalConfig.getAttribDescr(), "dummy");
 				scenario.getNetwork().addLink(link);
 			}
 
@@ -112,40 +129,48 @@ public class NetworkConverter {
 				Node toNode = nodes.get(toNodeId);
 				Link link = networkFactory.createLink(Id.createLinkId(feature.getAttribute("ID").toString()), fromNode, toNode);
 				// yo if euclidean distance is substantially different then raise error
-				link.setLength(Double.parseDouble(feature.getAttribute("LENGTH").toString()) * 1000 );
+				link.setLength(Double.parseDouble(feature.getAttribute("LENGTH").toString()) * 1000);
 				link.setNumberOfLanes(Double.parseDouble(feature.getAttribute("LANES").toString()));
-				link.setFreespeed(Double.parseDouble(feature.getAttribute("SPEED").toString())/3.6);
-				link.setCapacity(Double.parseDouble(feature.getAttribute("CAP_SES").toString())*60);
+				link.setFreespeed(Double.parseDouble(feature.getAttribute("SPEED").toString()) / 3.6);
+				link.setCapacity(Double.parseDouble(feature.getAttribute("CAP_SES").toString()) * 60);
 				HashSet<String> modes = new HashSet<>();
 				String emmeModes = feature.getAttribute("MODES").toString().toLowerCase();
-				for (char modeChar : emmeModes.toCharArray()){
-					switch (modeChar){
-						case 'w' : modes.add(TransportMode.walk);break;
-						case 'c' : modes.add(TransportMode.car);break;
-						case 'b' : modes.add("bus");break;
-						case 'r' : modes.add("rail");break;
+				for (char modeChar : emmeModes.toCharArray()) {
+					switch (modeChar) {
+						case 'w':
+							modes.add(TransportMode.walk);
+							break;
+						case 'c':
+							modes.add(TransportMode.car);
+							break;
+						case 'b':
+							modes.add("bus");
+							break;
+						case 'r':
+							modes.add("rail");
+							break;
 //						case 'y' : modes.add("y");break; // what is y mode? //yoyo our 2016 files dont have this so removing it; raise error in future for weird stuff
 						default:
-							String message = String.format("Unknown mode \"%s\" specified for link %s ",modeChar,link.getId().toString());
+							String message = String.format("Unknown mode \"%s\" specified for link %s ", modeChar, link.getId().toString());
 							log.error(message);
 							throw new RuntimeException(message);
 					}
 				}
 				link.setAllowedModes(modes);
 				boolean evacSES = feature.getAttribute("EVAC_SES").toString().trim().equals("1");
-				link.getAttributes().putAttribute(EVACUATION_LINK, evacSES);
-				link.getAttributes().putAttribute(DESCRIPTION, feature.getAttribute(DESCRIPTION).toString());
+				link.getAttributes().putAttribute(globalConfig.getattribEvacMarker(), evacSES);
+				link.getAttributes().putAttribute(globalConfig.getAttribDescr(), feature.getAttribute(globalConfig.getAttribDescr()).toString());
 				scenario.getNetwork().addLink(link);
-			}catch (IllegalArgumentException ie){
-				System.err.println("Duplicate node id "+ feature.getAttribute("ID").toString());
-			}catch (NullPointerException npe){
+			} catch (IllegalArgumentException ie) {
+				System.err.println("Duplicate node id " + feature.getAttribute("ID").toString());
+			} catch (NullPointerException npe) {
 
 			}
 		}
 	}
 
-	private void writeNetwork(String fileName){
-		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml.gz");
+	public void writeNetwork(String fileName) {
+		new NetworkWriter(scenario.getNetwork()).write(fileName);
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
@@ -154,12 +179,15 @@ public class NetworkConverter {
 
 	}
 
+	public Network runConversion() {
+		parseNodes(nodesFile);
+		parseLinks(linksFile);
+		return scenario.getNetwork();
+	}
+
 	public static void main(String[] args) throws IOException, FactoryException {
 		NetworkConverter nwc = new NetworkConverter(args[0], args[1]);
-		nwc.parseNodes(args[0]);
-		System.out.println("Nodes parsed.");
-		nwc.parseLinks(args[1]);
-		System.out.println("Links parsed.");
+		nwc.runConversion();
 		nwc.writeNetwork(args[2]);
 	}
 

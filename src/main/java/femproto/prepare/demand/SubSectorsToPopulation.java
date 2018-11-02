@@ -23,7 +23,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.*;
 
-import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
@@ -117,13 +116,13 @@ public class SubSectorsToPopulation {
 					// the comment above says "incoming", the code does "outgoing".  Spatially, the link entry points is closer to the node for
 					// incoming links.  kai, sep'18
 					// resolved: DP accepted request for using incoming links so agents travel the full centroid connector distance.
-					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
+					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())) {
 						startLink = link;
 					}
 				}
 				boolean badOutlink = true;
 				for (Link link : node.getOutLinks().values()){
-					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(EVACUATION_LINK)) {
+					if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())) {
 						badOutlink = false;
 					}
 				}
@@ -134,13 +133,13 @@ public class SubSectorsToPopulation {
 					msg = "INCOMING links: ";
 					log.error(msg);
 					for (Link link : node.getInLinks().values()) {
-						msg = String.format("%s: modes = %12s , evac link = %s",link.getId(),link.getAllowedModes(),link.getAttributes().getAttribute(EVACUATION_LINK).toString());
+						msg = String.format("%s: modes = %12s , evac link = %s",link.getId(),link.getAllowedModes(),link.getAttributes().getAttribute(globalConfig.getattribEvacMarker()).toString());
 						log.error(msg);
 					}
 					msg = "OUTGOING links: ";
 					log.error(msg);
 					for (Link link : node.getOutLinks().values()) {
-						msg = String.format("%s: modes = %12s , evac link = %s",link.getId(),link.getAllowedModes(),link.getAttributes().getAttribute(EVACUATION_LINK).toString());
+						msg = String.format("%s: modes = %12s , evac link = %s",link.getId(),link.getAllowedModes(),link.getAttributes().getAttribute(globalConfig.getattribEvacMarker()).toString());
 						log.error(msg);
 					}
 					linkErrors = true;
