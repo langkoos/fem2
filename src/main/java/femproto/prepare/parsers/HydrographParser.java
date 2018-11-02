@@ -152,7 +152,7 @@ public class HydrographParser {
 			if (hydrographPoint != null) {
 				for (int j = 1; j < entries.get(i).size(); j++) {
 					// yoyoyo it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime , entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime, entries.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
 			}
@@ -335,8 +335,8 @@ public class HydrographParser {
 						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
 						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
 						changeEvent.setFlowCapacityChange(flowChange);
-//						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0000);
-//						changeEvent.setFreespeedChange(speedChange);
+						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, link.getLength() / 86400.0);
+						changeEvent.setFreespeedChange(speedChange);
 						changeEvent.addLink(link);
 						networkChangeEvents.add(changeEvent);
 						maxTime = Math.max(maxTime, changeEvent.getStartTime());
@@ -349,9 +349,11 @@ public class HydrographParser {
 		List<NetworkChangeEvent> networkChangeEvents1 = new ArrayList<>();
 		networkChangeEvents1.addAll(networkChangeEvents);
 		for (NetworkChangeEvent capacityReductionEvent : networkChangeEvents1) {
-			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(capacityReductionEvent.getStartTime()+maxTime+86400);
+			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(maxTime + 86400);
 			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 6000);
 			capacityResetEvent.setFlowCapacityChange(flowChange);
+			NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 16.7);
+			capacityResetEvent.setFreespeedChange(speedChange);
 			capacityResetEvent.addLinks(capacityReductionEvent.getLinks());
 			networkChangeEvents.add(capacityResetEvent);
 		}

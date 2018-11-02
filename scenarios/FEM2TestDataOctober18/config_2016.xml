@@ -47,6 +47,23 @@
     </module>
     <module name="controler">
         <param name="outputDirectory" value="2016/output"/>
+        <param name="lastIteration" value="20"/>
+    </module>
+    <module name="strategy">
+        <parameterset type="strategysettings" >
+            <!-- iteration after which strategy will be disabled.  most useful for ``innovative'' strategies (new routes, new times, ...). Normally, better use fractionOfIterationsToDisableInnovation -->
+            <param name="disableAfterIteration" value="16" />
+            <!-- strategyName of strategy.  Possible default names: SelectRandomBestScoreKeepLastSelectedChangeExpBetaSelectExpBetaSelectPathSizeLogit (selectors), ReRouteTimeAllocationMutatorTimeAllocationMutator_ReRouteChangeSingleTripModeChangeTripModeSubtourModeChoice (innovative strategies). -->
+            <param name="strategyName" value="ReRoute" />
+            <!-- weight of a strategy: for each agent, a strategy will be selected with a probability proportional to its weight -->
+            <param name="weight" value="0.2" />
+        </parameterset>
+        <parameterset type="strategysettings" >
+            <!-- strategyName of strategy.  Possible default names: SelectRandomBestScoreKeepLastSelectedChangeExpBetaSelectExpBetaSelectPathSizeLogit (selectors), ReRouteTimeAllocationMutatorTimeAllocationMutator_ReRouteChangeSingleTripModeChangeTripModeSubtourModeChoice (innovative strategies). -->
+            <param name="strategyName" value="ChangeExpBeta" />
+            <!-- weight of a strategy: for each agent, a strategy will be selected with a probability proportional to its weight -->
+            <param name="weight" value="0.8" />
+        </parameterset>
     </module>
 
 </config>

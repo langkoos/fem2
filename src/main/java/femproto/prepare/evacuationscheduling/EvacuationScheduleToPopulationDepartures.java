@@ -18,6 +18,7 @@ import org.matsim.core.utils.io.IOUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Set;
 
 import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
 import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
@@ -145,8 +146,89 @@ public final class EvacuationScheduleToPopulationDepartures {
 		}
 	}
 
+	public void createPlansForAllSafeNodes() {
+		// assume that the evacuation schedule has created all relevant subsector data
+
+		PopulationFactory pf = scenario.getPopulation().getFactory();
+		long personCnt = 0L;
+
+		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
+
+			if (subsectorData.getVehicleCount() <= 0){
+				log.warn(String.format("Subsector %s has no vehicles associated with it.",subsectorData.getSubsector()));
+				continue;
+			}
+			if (subsectorData.getSafeNodesByTime().size() == 0 ){
+				String message = String.format("Subsector %s has no safe nodes associated with it.", subsectorData.getSubsector());
+				log.error(message);
+				throw new RuntimeException(message);
+			}
+			double startTime = subsectorData.getSafeNodesByTime().iterator().next().getStartTime();
+
+			Set<Node> safeNodesByDecreasingPriority = subsectorData.getSafeNodesByDecreasingPriority();
+			for (int i = 0; i < subsectorData.getVehicleCount(); i++) {
+				Person person = pf.createPerson(Id.createPersonId(personCnt++));
+				FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
+				for (Node safeNode : safeNodesByDecreasingPriority) {
+
+
+					// find a qualifying outgoing link
+					Node evacuationNode = subsectorData.getEvacuationNode();
+					Link startLink = null;
+					for (Link link : evacuationNode.getOutLinks().values()) {
+//					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+						if (link.getId().toString().equals(evacuationNode.getId().toString())) {
+							startLink = link;
+						}
+					}
+					if (startLink == null) {
+						String msg = String.format("The evacuation node %s for subsector %s has no dummy link associated with it." +
+								"Run the network converter.", evacuationNode.getId().toString(), subsectorData.getSubsector());
+						log.error(msg);
+						throw new RuntimeException(msg);
+					}
+
+					Link safeLink = null;
+					for (Link link : safeNode.getInLinks().values()) {
+						if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+							safeLink = link;
+						}
+					}
+					if (safeLink == null) {
+						String msg = "There seems to be no incoming car mode EVAC link for SAFE node " + evacuationNode + ". Defaulting to the highest capacity car link.";
+						log.warn(msg);
+						double maxCap = Double.NEGATIVE_INFINITY;
+						for (Link link : safeNode.getInLinks().values()) {
+							if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
+								maxCap = link.getCapacity();
+								safeLink = link;
+							}
+						}
+					}
+
+
+					Plan plan = pf.createPlan();
+
+					Activity startAct = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getEvacuationActivity(), startLink.getId());
+					startAct.setEndTime(startTime + i * (3600 / subsectorData.getLookAheadTime()));
+					plan.addActivity(startAct);
+
+					Leg evacLeg = pf.createLeg(TransportMode.car);
+					plan.addLeg(evacLeg);
+
+					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
+					plan.addActivity(safe);
+
+
+					person.addPlan(plan);
+				}
+				scenario.getPopulation().addPerson(person);
+
+			}
+		}
+	}
+
 	public void writePopulation(String fileName) {
-		createPlans();
 		new PopulationWriter(scenario.getPopulation()).write(fileName);
 	}
 

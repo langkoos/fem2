@@ -171,10 +171,11 @@ public class RunMatsim4FloodEvacuation {
 		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 		
 		// --- controler config group:
-		final int lastIteration = 100;
-		// yyyy should come from config file so user can change it.
+		final int lastIteration = config.controler().getLastIteration();
+		//  should come from config file so user can change it.
+		// agree - fouriep nov 18
 		
-		config.controler().setLastIteration( lastIteration );
+//		config.controler().setLastIteration( lastIteration );
 		
 		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
@@ -259,6 +260,8 @@ public class RunMatsim4FloodEvacuation {
 			break;
 			case justRunInputPlansFile:
 			case runFromSource:
+				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
+				break;
 			case runFromEvacuationSchedule:
 				config.controler().setLastIteration( 0 );
 				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18

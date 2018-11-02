@@ -12,6 +12,7 @@ import org.matsim.contrib.otfvis.OTFVis;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkChangeEvent;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -22,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class RunFromSource {
+public class RunFromSourceTest {
 	@Rule
 	public MatsimTestUtils utils = new MatsimTestUtils();
 
@@ -51,7 +52,7 @@ public class RunFromSource {
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(config.controler().getOutputDirectory()+"/hydrograph_linkID_time.txt",scenario.getNetwork());
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), config.controler().getOutputDirectory() + "/input_change_events.xml.gz");
 		config.network().setChangeEventsInputFile(config.controler().getOutputDirectory()+"/input_change_events.xml.gz");
-		NetworkChangeEventsParser eventsParser = new NetworkChangeEventsParser(scenario.getNetwork(),networkChangeEvents);
+		NetworkUtils.setNetworkChangeEvents(scenario.getNetwork(),networkChangeEvents);
 
 		new EvacuationScheduleFromHydrographData(scenario.getNetwork(), evacuationSchedule, hydrographParser).createEvacuationSchedule();
 

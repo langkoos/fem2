@@ -9,10 +9,10 @@ import femproto.prepare.network.NetworkConverter;
 import femproto.prepare.parsers.HydrographParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.contrib.otfvis.OTFVis;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkChangeEvent;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -22,6 +22,7 @@ import java.util.List;
 public class RunFromSource {
 	public static void main(String[] args) {
 		Config config = ConfigUtils.loadConfig(args[0]);
+		config.network().setTimeVariantNetwork(true);
 		String outputDirectory = config.controler().getOutputDirectory();
 		new File(outputDirectory).mkdirs();
 		Scenario scenario = ScenarioUtils.createScenario(config);
@@ -43,15 +44,18 @@ public class RunFromSource {
 		hydrographParser.readHydrographData(femConfigGroup.getHydrographData());
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt", scenario.getNetwork());
+
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");
 		config.network().setChangeEventsInputFile(outputDirectory + "/input_change_events.xml.gz");
-		NetworkChangeEventsParser eventsParser = new NetworkChangeEventsParser(scenario.getNetwork(), networkChangeEvents);
+		NetworkUtils.setNetworkChangeEvents(scenario.getNetwork(), networkChangeEvents);
 
 		new EvacuationScheduleFromHydrographData(scenario.getNetwork(), evacuationSchedule, hydrographParser).createEvacuationSchedule();
 
 		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputDirectory + "/input_evac_plan.csv");
 
-		new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).writePopulation(outputDirectory + "/input_population.xml.gz");
+		EvacuationScheduleToPopulationDepartures populationDepartures = new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule);
+		populationDepartures.createPlansForAllSafeNodes();
+		populationDepartures.writePopulation(outputDirectory + "/input_population.xml.gz");
 		config.plans().setInputFile(outputDirectory + "/input_population.xml.gz");
 
 		config.controler().setOutputDirectory(outputDirectory + "/output");
