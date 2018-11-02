@@ -1,7 +1,5 @@
 package femproto.prepare.evacuationscheduling;
 
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import femproto.globals.FEMGlobalConfig;
 import femproto.run.FEMUtils;
 import org.junit.Rule;
@@ -18,7 +16,6 @@ import org.matsim.core.population.io.PopulationReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.testcases.MatsimTestUtils;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
