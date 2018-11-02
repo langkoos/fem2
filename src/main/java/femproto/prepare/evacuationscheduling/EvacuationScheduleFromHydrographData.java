@@ -20,8 +20,7 @@ import java.util.Set;
 
 //todo write this class as well as its instrumentation
 public final class EvacuationScheduleFromHydrographData {
-	@Inject
-	FEMGlobalConfig globalConfig;
+	private final FEMGlobalConfig globalConfig;
 
 	private final Network network;
 	private final EvacuationSchedule evacuationSchedule;
@@ -33,6 +32,14 @@ public final class EvacuationScheduleFromHydrographData {
 		this.evacuationSchedule = evacuationSchedule;
 		this.hydrographParser = hydrographParser;
 		femPathCalculator = new FEMPathCalculator();
+		globalConfig = FEMGlobalConfig.getGlobalConfig();
+	}
+	public EvacuationScheduleFromHydrographData(Network network, EvacuationSchedule evacuationSchedule, HydrographParser hydrographParser, String globalConfigFile) {
+		this.network = network;
+		this.evacuationSchedule = evacuationSchedule;
+		this.hydrographParser = hydrographParser;
+		femPathCalculator = new FEMPathCalculator();
+		globalConfig = FEMGlobalConfig.getGlobalConfig(globalConfigFile);
 	}
 
 	class FEMPathCalculator {

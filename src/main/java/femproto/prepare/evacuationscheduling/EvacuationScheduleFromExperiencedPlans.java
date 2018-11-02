@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.network.NetworkUtils;
@@ -41,15 +42,18 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		String networkFile = "output_network.xml.gz";
 		String populationFile = "output_plans.xml.gz";
 		String experiencedPlansFile = "output_experienced_plans.xml.gz";
+		String defaultConfig = "output_config.xml";
 		String outputScheduleFile = "scheduleFromExperiencedPlans.csv";
 
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(networkFile);
 
-		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		Config config = ConfigUtils.loadConfig(defaultConfig);
+
+		Scenario scenario = ScenarioUtils.createMutableScenario(config);
 		new PopulationReader(scenario).readFile(populationFile);
 
-		EvacuationScheduleFromExperiencedPlans evacuationScheduleFromExperiencedPlans = new EvacuationScheduleFromExperiencedPlans(scenario.getPopulation(), network);
+		EvacuationScheduleFromExperiencedPlans evacuationScheduleFromExperiencedPlans = new EvacuationScheduleFromExperiencedPlans(scenario);
 
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(experiencedPlansFile);
@@ -63,34 +67,15 @@ public final class EvacuationScheduleFromExperiencedPlans {
 	/**
 	 * This takes standard plans, not experienced plans, to get information on the subsector of each person.
 	 *
-	 * @param population
+	 *
 	 */
-	public EvacuationScheduleFromExperiencedPlans(Population population, Network network) {
+	public EvacuationScheduleFromExperiencedPlans(Scenario scenario) {
+		Population population = scenario.getPopulation();
+		globalConfig = 		 ConfigUtils.addOrGetModule(scenario.getConfig(), FEMGlobalConfig.class);
+
 		pax2SubSectors = new HashMap<>(population.getPersons().size());
 		for (Person person : population.getPersons().values()) {
-			pax2SubSectors.put(person.getId(), FEMUtils.getSubsectorName( person ) ) ;
-//			Node origin = null;
-//			Node destin = null;
-//			double startTime = Double.POSITIVE_INFINITY;
-//			double endTime = Double.NEGATIVE_INFINITY;
-//
-//			for (PlanElement planElement : person.getPlans().get(0).getPlanElements()) {
-//				// yyyy yoyo (probably solved with task below) why get(0)?  If anything, then it should be the selected plan.  kai, sep'18
-//				if (planElement instanceof Activity) {
-//					Activity activity = (Activity) planElement;
-//					if (origin == null && activity.getType().equals(FEMGlobalConfig.EVACUATION_ACTIVITY)) {
-//						origin = network.getLinks().get(activity.getLinkId()).getFromNode();
-//						startTime = activity.getEndTime();
-//					}
-//					if (destin == null && activity.getType().equals(FEMGlobalConfig.SAFE_ACTIVITY)) {
-//						destin = network.getLinks().get(activity.getLinkId()).getToNode();
-//						endTime = activity.getStartTime();
-//					}
-//				}
-//			}
-//			ODFlowCounter odFlowCounter = addOrCreateODFlowCounter(FEMUtils.getSubsectorName( person ), origin, destin);
-			// yyyy yoyo is any of the now commented out material truly needed?  kai, sep'18
-			// yoyo check
+			pax2SubSectors.put(person.getId(), person.getAttributes().getAttribute(globalConfig.getAttribSubsector()).toString() ) ;
 		}
 	}
 
@@ -202,5 +187,12 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		}
 
 
+	}
+	private void setSubsectorName(final String subsector, final Person person) {
+		person.getAttributes().putAttribute(globalConfig.getAttribSubsector(), subsector);
+	}
+
+	private String getSubsectorName(final Person person) {
+		return (String) person.getAttributes().getAttribute(globalConfig.getAttribSubsector());
 	}
 }

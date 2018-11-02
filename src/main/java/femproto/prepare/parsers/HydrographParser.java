@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class HydrographParser {
-	@Inject
 	FEMGlobalConfig globalConfig;
 
 	Logger log = Logger.getLogger(HydrographParser.class);
@@ -35,6 +34,13 @@ public class HydrographParser {
 	public HydrographParser(Network network, EvacuationSchedule evacuationSchedule) {
 		this.network = network;
 		this.evacuationSchedule = evacuationSchedule;
+		globalConfig = FEMGlobalConfig.getGlobalConfig();
+	}
+
+	public HydrographParser(Network network, EvacuationSchedule evacuationSchedule, String globalConfigFile) {
+		this.network = network;
+		this.evacuationSchedule = evacuationSchedule;
+		globalConfig = FEMGlobalConfig.getGlobalConfig(globalConfigFile);
 	}
 
 	public Map<String, HydrographPoint> getHydrographPointMap() {

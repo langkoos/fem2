@@ -32,12 +32,20 @@ import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 public final class EvacuationScheduleToPopulationDepartures {
 	private Scenario scenario;
 	private EvacuationSchedule evacuationSchedule;
-	@Inject
-	FEMGlobalConfig globalConfig;
+	private final FEMGlobalConfig globalConfig;
 
 	public EvacuationScheduleToPopulationDepartures(Scenario scenario, EvacuationSchedule evacuationSchedule) {
 		this.scenario = scenario;
 		this.evacuationSchedule = evacuationSchedule;
+		globalConfig = ConfigUtils.addOrGetModule(scenario.getConfig(), FEMGlobalConfig.class);
+	}
+
+	private void setSubsectorName(final String subsector, final Person person) {
+		person.getAttributes().putAttribute(globalConfig.getAttribSubsector(), subsector);
+	}
+
+	private String getSubsectorName(final Person person) {
+		return (String) person.getAttributes().getAttribute(globalConfig.getAttribSubsector());
 	}
 
 	public static void main(String[] args) throws CsvRequiredFieldEmptyException, IOException, CsvDataTypeMismatchException {
@@ -130,7 +138,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 				int safeNodeAllocationPaxCounter = 0;
 				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
-					FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
+					setSubsectorName(subsectorData.getSubsector(), person);
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());

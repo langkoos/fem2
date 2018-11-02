@@ -15,8 +15,8 @@ public class SubsectorData {
 	 * routed to different safe node.
 	 */
 
-	@Inject
-	FEMGlobalConfig globalConfig;
+
+	private final FEMGlobalConfig globalConfig;
 	private TreeSet<SafeNodeAllocation> safeNodesByTime = new TreeSet<>();
 	private Node evacuationNode;
 	private LinkedHashSet<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
@@ -24,6 +24,11 @@ public class SubsectorData {
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
+		globalConfig = FEMGlobalConfig.getGlobalConfig();
+	}
+	public SubsectorData(String subsector, String globalConfigFile) {
+		this.subsector = subsector;
+		globalConfig = FEMGlobalConfig.getGlobalConfig(globalConfigFile);
 	}
 
 	public void clearSafeNodesByTime() {

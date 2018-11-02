@@ -33,13 +33,12 @@ import org.opengis.referencing.FactoryException;
  * @author sergio
  */
 public class NetworkConverter {
-	@Inject
-	FEMGlobalConfig globalConfig;
+	private final FEMGlobalConfig globalConfig;
 	private static final Logger log = Logger.getLogger( NetworkConverter.class ) ;
 	
 	private static final double MIN_DISTANCE = 5.0;
 
-	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Proabably a global parameter in FEMATtributes
+	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Probably a global parameter in FEMAttributes
 	public static final String EVACUATION_LINK = "evacSES";
 	public static final String DESCRIPTION = "T_DES";
 
@@ -47,6 +46,12 @@ public class NetworkConverter {
 
 	public NetworkConverter(String nodesFile, String linksFile) {
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		globalConfig = FEMGlobalConfig.getGlobalConfig();
+	}
+
+	public NetworkConverter(String nodesFile, String linksFile, String globalConfigFile) {
+		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		globalConfig = FEMGlobalConfig.getGlobalConfig(globalConfigFile);
 	}
 
 

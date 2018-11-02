@@ -233,13 +233,7 @@ public class FEMUtils {
 		}
 	}
 
-	public static void setSubsectorName( final String subsector, final Person person ) {
-		person.getAttributes().putAttribute( globalConfig.getAttribSubsector(), subsector);
-	}
 
-	public static String getSubsectorName( final Person person ) {
-		return (String) person.getAttributes().getAttribute( globalConfig.getAttribSubsector());
-	}
 	
 	public static Link getLinkFromSafeNode( String defaultSafeNode, final Scenario scenario ) {
 		Link endLink = null;

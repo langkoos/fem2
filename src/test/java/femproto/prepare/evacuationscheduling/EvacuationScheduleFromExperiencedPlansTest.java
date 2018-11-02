@@ -28,6 +28,7 @@ public class EvacuationScheduleFromExperiencedPlansTest {
 		String networkFile = "test/input/femproto/prepare/evacuationscheduling/output_network.xml.gz";
 		String populationFile = "test/input/femproto/prepare/evacuationscheduling/output_plans.xml.gz";
 		String experiencedPlansFile = "test/input/femproto/prepare/evacuationscheduling/output_experienced_plans.xml.gz";
+
 		String outputScheduleFile = utils.getOutputDirectory()+"scheduleFromExperiencedPlans.csv";
 
 		Network network = NetworkUtils.createNetwork();
@@ -36,7 +37,7 @@ public class EvacuationScheduleFromExperiencedPlansTest {
 		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(populationFile);
 
-		EvacuationScheduleFromExperiencedPlans evacuationScheduleFromExperiencedPlans = new EvacuationScheduleFromExperiencedPlans(scenario.getPopulation(), network);
+		EvacuationScheduleFromExperiencedPlans evacuationScheduleFromExperiencedPlans = new EvacuationScheduleFromExperiencedPlans(scenario);
 
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(experiencedPlansFile);

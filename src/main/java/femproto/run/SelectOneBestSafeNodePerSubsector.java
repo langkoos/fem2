@@ -11,6 +11,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.events.StartupEvent;
@@ -38,7 +39,7 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 	
 	@Inject Population population ;
 	@Inject Config config ;
-	@Inject FEMGlobalConfig globalConfig;
+	FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config,FEMGlobalConfig.class);
 	@Override public void notifyReplanning( ReplanningEvent event) {
 //	@Override public void notifyIterationEnds(IterationEndsEvent event) {
 		
