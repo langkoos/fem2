@@ -70,10 +70,10 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 
 	// ---
 	enum FEMRunType {
-		justRunInputPlansFile, runFromEvacuationSchedule, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
+		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource,optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
 	}
 
-	private FEMRunType femRunType = FEMRunType.runFromEvacuationSchedule;
+	private FEMRunType femRunType = FEMRunType.runFromSource;
 	private static final String FEM_RUN_TYPE = "FEMRunType";
 	private static final String FEM_RUN_TYPE_CMT = "FEM run type. ";
 
@@ -165,7 +165,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 
 	// ---
-	private String evacuationScheduleFile;
+	private String evacuationScheduleFile = null;
 	private static final String EVACUATION_SCHEDULE_FILE = "evacuationScheduleFile";
 
 	@StringGetter(EVACUATION_SCHEDULE_FILE)
@@ -179,7 +179,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 
 	// ---
-	private String hydrographData;
+	private String hydrographData = null;
 	private static final String HYDROGRAPH_DATA = "hydrographData";
 	private static final String HYDROGRAPH_DATA_CMT = "CSV file containing hydrograph data. First column is time in hours, " +
 			"subsequent columns have the ID of the associated hydrograph point in the first line and floating point " +
