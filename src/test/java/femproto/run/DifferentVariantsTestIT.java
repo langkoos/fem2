@@ -47,8 +47,15 @@ public class DifferentVariantsTestIT {
 //		FEMRunType rt = FEMRunType.runFromSource; //if the test fails then use tis line to pick specific instance
 			for (FEMOptimizationType ot : FEMOptimizationType.values()) {
 				for (FEMEvacuationTimeAdjustment ta : FEMEvacuationTimeAdjustment.values()) {
-					combos.add(new Object[]{rt, ot, ta, true});
-					combos.add(new Object[]{rt, ot, ta, false});
+					if(rt != FEMRunType.justRunInputPlansFile ) {
+						combos.add(new Object[]{rt, ot, ta, true});
+						combos.add(new Object[]{rt, ot, ta, false});
+					}else {
+						if(ot == FEMOptimizationType.none) {
+							combos.add(new Object[]{rt, ot, ta, true});
+							combos.add(new Object[]{rt, ot, ta, false});
+						}
+					}
 				}
 			}
 		}

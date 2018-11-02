@@ -71,6 +71,8 @@
 		<!-- Default=1000;  -->
 		<param name="lastIteration" value="20" />
 		<param name="outputDirectory" value="2016/output" />
+		<param name="writeEventsInterval" value="20"/>
+		<param name="writePlansInterval" value="20"/>
 	</module>
 	<module name="network" >
 		<param name="timeVariantNetwork" value="true" />
