@@ -20,12 +20,14 @@
 
 package femproto.run;
 
+import com.google.inject.Inject;
 import femproto.prepare.network.NetworkConverter;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.contrib.decongestion.routing.TollTimeDistanceTravelDisutilityFactory;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
@@ -81,6 +83,17 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 	public static final class Factory implements TravelDisutilityFactory {
 		private final Map<Id<Link>, Double> specialLinks = new LinkedHashMap<>() ;
 		private final TravelDisutilityFactory delegateFactory;
+		//yoyoyo a quick fix
+		@Inject
+		private Factory(Network network, TollTimeDistanceTravelDisutilityFactory delegateFactory ) {
+			for( Link link : network.getLinks().values() ) {
+				boolean isEvacLink = isEvacLink(link);
+				if ( isEvacLink ) {
+					specialLinks.put( link.getId(), 0.01 ) ;
+				}
+			}
+			this.delegateFactory = delegateFactory ;
+		}
 		public Factory(Network network, TravelDisutilityFactory delegateFactory ) {
 			for( Link link : network.getLinks().values() ) {
 				boolean isEvacLink = isEvacLink(link);

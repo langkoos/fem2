@@ -71,9 +71,19 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 			subsectorData.completeAllocations();
 
+			if (subsectorData.getVehicleCount() <= 0) {
+				log.warn(String.format("Subsector %s has no vehicles associated with it.", subsectorData.getSubsector()));
+				continue;
+			}
+			if (subsectorData.getSafeNodesByTime().size() == 0) {
+				String message = String.format("Subsector %s has no safe nodes associated with it.", subsectorData.getSubsector());
+				log.error(message);
+				throw new RuntimeException(message);
+			}
 			for (SafeNodeAllocation safeNodeAllocation : subsectorData.getSafeNodesByTime()) {
 
 				// find a qualifying outgoing link
+				// this is now the dummy link associated with the subsector - pieter nov'18
 				Node evacuationNode = safeNodeAllocation.getContainer().getEvacuationNode();
 				Link startLink = null;
 				for (Link link : evacuationNode.getOutLinks().values()) {
@@ -126,7 +136,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 				Person subsectorLeader = null;
 				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
-					// for playing follow the leader
+
 					// for playing follow the leader
 					if(i==0){
 						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
@@ -142,7 +152,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getEvacuationActivity(), startLink.getId());
-					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / subsectorData.getLookAheadTime()));
+					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / FEMUtils.getGlobalConfig().getEvacuationRate()));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
@@ -167,6 +177,8 @@ public final class EvacuationScheduleToPopulationDepartures {
 		long personCnt = 0L;
 
 		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
+
+			subsectorData.completeAllocations();
 
 			if (subsectorData.getVehicleCount() <= 0) {
 				log.warn(String.format("Subsector %s has no vehicles associated with it.", subsectorData.getSubsector()));
@@ -199,6 +211,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 
 					// find a qualifying outgoing link
+					// this is now the dummy link associated with the subsector - pieter nov'18
 					Node evacuationNode = subsectorData.getEvacuationNode();
 					Link startLink = null;
 					for (Link link : evacuationNode.getOutLinks().values()) {
@@ -236,7 +249,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getEvacuationActivity(), startLink.getId());
-					startAct.setEndTime(startTime + i * (3600 / subsectorData.getLookAheadTime()));
+					startAct.setEndTime(startTime + i * (3600 / FEMUtils.getGlobalConfig().getEvacuationRate()));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);

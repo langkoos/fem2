@@ -475,13 +475,13 @@ public class RunMatsim4FloodEvacuation {
 						// define how the travel disutility is computed:
 //						TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory();
 
-						TravelDisutilityFactory delegateFactory = new TollTimeDistanceTravelDisutilityFactory() ;
+//						TravelDisutilityFactory delegateFactory = new TollTimeDistanceTravelDisutilityFactory() ;
 						// NOT using the toll based travel disutility, since we are routing without toll, on the
 						// empty network, before the iterations start, and then never again.  kai, jul'18
 						// yoyo this changes because of new requirements pieter nov'18
-
-						addTravelDisutilityFactoryBinding( routingMode ).toInstance(
-								new FEMPreferEmergencyLinksTravelDisutility.Factory( scenario.getNetwork(), delegateFactory )
+						bind(TollTimeDistanceTravelDisutilityFactory.class);
+						addTravelDisutilityFactoryBinding( routingMode ).to(
+								FEMPreferEmergencyLinksTravelDisutility.Factory.class
 						);
 
 						break;
