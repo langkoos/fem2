@@ -1,7 +1,9 @@
 package femproto.prepare.network;
 
+import femproto.globals.FEMGlobalConfig;
 import femproto.globals.Gis;
 import femproto.run.FEMConfigGroup;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -25,6 +27,7 @@ import org.matsim.core.utils.io.IOUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -33,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static femproto.run.FEMUtils.getGlobalConfig;
+import static femproto.run.FEMUtils.setGlobalConfig;
 
 
 /**
@@ -49,15 +53,16 @@ public class NetworkConverter {
 	private final URL linksUrl;
 
 	private Scenario scenario;
-	
+
+
 	/**
 	 * Convert shapefiles from emme to matsim network.
 	 */
-	public NetworkConverter( Scenario scenario ) {
-		this.scenario = scenario ;
-		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( scenario.getConfig(), FEMConfigGroup.class );
-		nodesUrl = IOUtils.newUrl( scenario.getConfig().getContext(), femConfig.getInputNetworkNodesShapefile() ) ;
-		linksUrl = IOUtils.newUrl( scenario.getConfig().getContext(), femConfig.getInputNetworkLinksShapefile() ) ;
+	public NetworkConverter(Scenario scenario) {
+		this.scenario = scenario;
+		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule(scenario.getConfig(), FEMConfigGroup.class);
+		nodesUrl = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getInputNetworkNodesShapefile());
+		linksUrl = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getInputNetworkLinksShapefile());
 	}
 
 //	public NetworkConverter( String nodesFile, String linksFile, Scenario scenario) {
@@ -67,9 +72,9 @@ public class NetworkConverter {
 //	}
 	// no longer used.  kai, dec'18
 
-	public NetworkConverter( String nodesFile, String linksFile) {
-		this.nodesUrl = IOUtils.newUrl( null, nodesFile ) ;
-		this.linksUrl = IOUtils.newUrl( null, linksFile ) ;
+	public NetworkConverter(String nodesFile, String linksFile) {
+		this.nodesUrl = IOUtils.newUrl(null, nodesFile);
+		this.linksUrl = IOUtils.newUrl(null, linksFile);
 		this.scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 	}
 
@@ -80,14 +85,14 @@ public class NetworkConverter {
 	}
 
 	private void parseNodes() {
-		log.info("Will attempt to convert nodes from " + nodesUrl.getPath() ) ;
-		
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures( nodesUrl );
+		log.info("Will attempt to convert nodes from " + nodesUrl.getPath());
+
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(nodesUrl);
 		String wkt = null;
 		try {
-			final URL prjUrl = IOUtils.newUrl( null, nodesUrl.getPath().replaceAll( "shp$", "prj" ) );
+			final URL prjUrl = IOUtils.newUrl(null, nodesUrl.getPath().replaceAll("shp$", "prj"));
 			// yyyy no idea if this also works with http urls. kai, dec'18
-			wkt = IOUtils.getBufferedReader( prjUrl ).readLine().toString();
+			wkt = IOUtils.getBufferedReader(prjUrl).readLine().toString();
 		} catch (IOException e) {
 			String message = "There is an error loading the nodes projection information. Cannot convert to default projection.";
 			log.error(message);
@@ -158,7 +163,7 @@ public class NetworkConverter {
 
 
 	private void parseLinks() {
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures( linksUrl );
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(linksUrl);
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
 		Map<Id<Node>, ? extends Node> nodes = scenario.getNetwork().getNodes();
 
@@ -180,8 +185,8 @@ public class NetworkConverter {
 				Link link = networkFactory.createLink(Id.createLinkId(linkId), fromNode, toNode);
 				// yo if euclidean distance is substantially different then raise error
 				double length = Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLength()).toString());
-				if(length <= 0.001){
-					String message = String.format("Link %s has length of only %f km, will likely cause Dijkstra to lock up",linkId,length);
+				if (length <= 0.001) {
+					String message = String.format("Link %s has length of only %f km, will likely cause Dijkstra to lock up", linkId, length);
 					log.error(message);
 					throw new RuntimeException(message);
 				}
@@ -223,7 +228,9 @@ public class NetworkConverter {
 				}
 				link.setAllowedModes(modes);
 				link.getAttributes().putAttribute(EVACUATION_LINK, evacSES);
-				link.getAttributes().putAttribute(DESCRIPTION, feature.getAttribute(DESCRIPTION).toString());
+				// yoyo not critical to network definition, but breaks code when not included in network file
+				if (feature.getAttribute(DESCRIPTION) != null)
+					link.getAttributes().putAttribute(DESCRIPTION, feature.getAttribute(DESCRIPTION).toString());
 				scenario.getNetwork().addLink(link);
 			} catch (IllegalArgumentException ie) {
 				System.err.println("Duplicate node id " + linkId);
@@ -266,22 +273,50 @@ public class NetworkConverter {
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(fileName);
 		NetworkUtils.runNetworkCleaner(network);
+		BufferedWriter linkdiff = IOUtils.getBufferedWriter(fileNameNoXML + "_linkdiffs.txt");
+		BufferedWriter nodediff = IOUtils.getBufferedWriter(fileNameNoXML + "_nodediffs.txt");
+		for (Id<Link> linkId : scenario.getNetwork().getLinks().keySet()) {
+			if (network.getLinks().get(linkId) == null
+					) {
+				try {
+					linkdiff.write(linkId.toString() + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		for (Id<Node> nodeId : scenario.getNetwork().getNodes().keySet()) {
+			if (network.getNodes().get(nodeId) == null) {
+				try {
+					nodediff.write(nodeId.toString() + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
 		Set<Id<Link>> linkIds = new HashSet<>();
 		linkIds.addAll(network.getLinks().keySet());
 		for (Id<Link> linkId : linkIds) {
-			if (!(boolean)network.getLinks().get(linkId).getAttributes().getAttribute(getGlobalConfig().getAttribEvacMarker()))
+			if (!(boolean) network.getLinks().get(linkId).getAttributes().getAttribute(getGlobalConfig().getAttribEvacMarker()))
 				network.removeLink(linkId);
 		}
 		NetworkUtils.runNetworkCleaner(network);
 		new NetworkWriter(network).write(fileNameNoXML + "_evaconly_clean.xml");
+		try {
+			nodediff.close();
+			linkdiff.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
-		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
+		//  original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
 		// But that output shapefile produces different columns.  So better not write it.
-		// yoyo D61 has matsim network parsing capability so rendering output shapefile is redundant. pieter oct '18
+		//  D61 has matsim network parsing capability so rendering output shapefile is redundant. pieter oct '18
 
 	}
 
