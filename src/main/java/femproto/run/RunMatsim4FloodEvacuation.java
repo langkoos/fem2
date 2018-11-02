@@ -58,14 +58,20 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.controler.PrepareForSim;
 import org.matsim.core.controler.PrepareForSimImpl;
+import org.matsim.core.controler.events.BeforeMobsimEvent;
 import org.matsim.core.controler.events.ShutdownEvent;
+import org.matsim.core.controler.listener.BeforeMobsimListener;
+import org.matsim.core.controler.listener.ControlerListener;
 import org.matsim.core.controler.listener.ShutdownListener;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.mobsim.framework.events.MobsimInitializedEvent;
+import org.matsim.core.mobsim.framework.listeners.MobsimInitializedListener;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
+import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
 import org.matsim.core.router.NetworkRoutingProvider;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
@@ -261,7 +267,7 @@ public class RunMatsim4FloodEvacuation {
 						strategySettings.setSubpopulation(leaderOrFollower.name());
 						strategySettings.setStrategyName(KEEP_LAST_REROUTE);
 						strategySettings.setWeight(3);
-						strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
+						strategySettings.setDisableAfter((int) (0.8 * config.controler().getLastIteration()));
 						config.strategy().addStrategySettings(strategySettings);
 					}
 
@@ -381,6 +387,7 @@ public class RunMatsim4FloodEvacuation {
 				networkConverter.run();
 
 				EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
+				FEMUtils.setEvacuationSchedule(evacuationSchedule);
 				URL subsectorURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getInputSubsectorsShapefile());
 				new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(subsectorURL);
 
@@ -424,6 +431,7 @@ public class RunMatsim4FloodEvacuation {
 				 Purpose-built classes like RunFromSource can perform such tricks.
 				 */
 				EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
+				FEMUtils.setEvacuationSchedule(evacuationSchedule);
 				scenario = ScenarioUtils.createMutableScenario(config);
 
 				new MatsimNetworkReader(scenario.getNetwork()).readFile(IOUtils.newUrl(scenario.getConfig().getContext(), config.network().getInputFile()).getFile());
@@ -452,6 +460,7 @@ public class RunMatsim4FloodEvacuation {
 
 		//  reduce to sample for debugging:
 		FEMUtils.sampleDown(scenario, femConfig.getSampleSize());
+
 		//  decide how to do this for UI. kai, jul'18
 		//  try running validation run always on 100%.  Does not work because 1% has subsectors with no departures, thus no safe node.
 		// would need to have sub-sector-based stratified sampling. done - pieter, jan 19
@@ -510,7 +519,9 @@ public class RunMatsim4FloodEvacuation {
 						// empty network, before the iterations start, and then never again.  kai, jul'18
 						//  this changes because of new requirements pieter nov'18
 						// if we need to run the other optmisation approaches, we need to re-route and so Kai proposed this approach of being able to switch between the two
-
+						if (femConfig.getSampleSize() < 1) {
+							addControlerListenerBinding().toInstance(new PCUEquivalentSetter(femConfig.getSampleSize(), scenario));
+						}
 						switch (femConfig.getFemOptimizationType()) {
 							case followTheLeader:
 							case optimizeLikeNICTA:
@@ -569,7 +580,25 @@ public class RunMatsim4FloodEvacuation {
 							case none:
 								break;
 							default:
-								writer.writeEvacuationScheduleRecordNoVehiclesNoDurations(config.controler().getOutputDirectory() + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION);
+								//update with the network routes used, and reset duration and vehicle counts to original values
+								EvacuationSchedule origSchedule = FEMUtils.getEvacuationSchedule();
+								Map<String, NetworkRoute> subectorRoutes = new HashMap<>();
+								for (Person person : population.getPersons().values()) {
+									if (person.getAttributes().getAttribute("subpopulation").toString().equals(LeaderOrFollower.LEADER.name())) {
+										Leg leg = (Leg) person.getSelectedPlan().getPlanElements().get(1);
+										subectorRoutes.put(FEMUtils.getSubsectorName(person), (NetworkRoute) leg.getRoute());
+									}
+								}
+
+								for (SafeNodeAllocation safeNodeAllocation : schedule.getSubsectorsByEvacuationTime()) {
+									String subsector = safeNodeAllocation.getContainer().getSubsector();
+									int vehicleCount = origSchedule.getSubsectorDataMap().get(subsector).getVehicleCount();
+									safeNodeAllocation.setVehicles(vehicleCount);
+									safeNodeAllocation.setEndTime(safeNodeAllocation.getStartTime() + 3600 * vehicleCount / FEMUtils.getGlobalConfig().getEvacuationRate());
+									safeNodeAllocation.setNetworkRoute(subectorRoutes.get(subsector));
+								}
+
+								writer.writeEvacuationScheduleRecordCompleteWithRoutes(config.controler().getOutputDirectory() + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION);
 								break;
 						}
 					}
@@ -737,5 +766,21 @@ public class RunMatsim4FloodEvacuation {
 
 	}
 
+	private class PCUEquivalentSetter implements BeforeMobsimListener {
+		private final double pcuEquivalent;
+		private final Scenario scenario;
+
+		public PCUEquivalentSetter(double v, Scenario scenario) {
+			this.pcuEquivalent = v;
+			this.scenario = scenario;
+		}
+
+
+		@Override
+		public void notifyBeforeMobsim(BeforeMobsimEvent event) {
+			scenario.getVehicles().getVehicleTypes().values().iterator().next().setPcuEquivalents(pcuEquivalent);
+			log.warn("Setting PCU equiv to " + pcuEquivalent);
+		}
+	}
 }
 

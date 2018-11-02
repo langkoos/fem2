@@ -123,4 +123,32 @@ public class EvacuationScheduleWriter {
 			throw new RuntimeException(e) ;
 		}
 	}
+
+	public void writeEvacuationScheduleRecordCompleteWithRoutes(String fileName)  {
+
+		try ( Writer writer = Files.newBufferedWriter( Paths.get( fileName ) ) ) {
+
+			StatefulBeanToCsv<EvacuationScheduleRecordCompleteWithRoutes> beanToCsv = new StatefulBeanToCsvBuilder<EvacuationScheduleRecordCompleteWithRoutes>( writer ).withQuotechar( '"' ).build();
+
+			List<EvacuationScheduleRecordCompleteWithRoutes> records = new ArrayList<>();
+
+			for ( SafeNodeAllocation safeNodeAllocation : evacuationSchedule.getSubsectorsByEvacuationTime() ) {
+				int time = (int) (double) safeNodeAllocation.getStartTime();
+				SubsectorData subsectorData = safeNodeAllocation.getContainer();
+				records.add( new EvacuationScheduleRecordCompleteWithRoutes(
+						time,
+						subsectorData.getSubsector(),
+						subsectorData.getEvacuationNode().getId().toString(),
+						subsectorData.getSafeNodeForTime( time ).getId().toString(),
+						safeNodeAllocation.getVehicles(),
+						(int) safeNodeAllocation.getDuration(),
+						safeNodeAllocation.getNetworkRoute()
+				) );
+
+			}
+			beanToCsv.write( records );
+		} catch ( IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e ) {
+			throw new RuntimeException(e) ;
+		}
+	}
 }

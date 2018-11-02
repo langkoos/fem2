@@ -37,28 +37,36 @@ public class SubsectorData {
 		safeNodesByDecreasingPriority.add(node);
 	}
 
-	public void addSafeNodeAllocation(double startTime, double endTime, Node node, int vehicles) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, endTime, node, vehicles, this));
+	public SafeNodeAllocation addSafeNodeAllocation(double startTime, double endTime, Node node, int vehicles) {
+		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, endTime, node, vehicles, this);
+		safeNodesByTime.add(safeNodeAllocation);
 		if(!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
+		return safeNodeAllocation;
 	}
 
-	public void addSafeNodeAllocation(double startTime, Node node) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, node,  this));
+	public SafeNodeAllocation addSafeNodeAllocation(double startTime, Node node) {
+		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, node, this);
+		safeNodesByTime.add(safeNodeAllocation);
 		if(!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
+		return safeNodeAllocation;
 	}
 
-	public void addSafeNodeAllocation(double startTime, Node node, int vehicles) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, node, vehicles, this));
+	public SafeNodeAllocation addSafeNodeAllocation(double startTime, Node node, int vehicles) {
+		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, node, vehicles, this);
+		safeNodesByTime.add(safeNodeAllocation);
 		if(!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
+		return safeNodeAllocation;
 	}
 
-	public void addSafeNodeAllocation(double startTime, double endTime, Node node) {
-		safeNodesByTime.add(new SafeNodeAllocation(startTime, endTime, node, this));
+	public SafeNodeAllocation addSafeNodeAllocation(double startTime, double endTime, Node node) {
+		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, endTime, node, this);
+		safeNodesByTime.add(safeNodeAllocation);
 		if(!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
+		return safeNodeAllocation;
 	}
 
 	public String getSubsector() {

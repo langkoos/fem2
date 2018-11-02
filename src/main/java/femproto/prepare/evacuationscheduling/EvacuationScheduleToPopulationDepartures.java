@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.io.IOUtils;
 
@@ -155,6 +156,11 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
 					plan.addLeg(evacLeg);
+					if(safeNodeAllocation.getNetworkRoute()!=null){
+						NetworkRoute route = safeNodeAllocation.getNetworkRoute().clone();
+						route.setVehicleId(Id.createVehicleId(person.getId()));
+						evacLeg.setRoute(route);
+					}
 
 					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
 					plan.addActivity(safe);

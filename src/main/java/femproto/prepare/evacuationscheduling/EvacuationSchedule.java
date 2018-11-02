@@ -43,10 +43,10 @@ public final class EvacuationSchedule {
 
 	}
 	
-	Map<String, SubsectorData> getSubsectorDataMap() {
+	public Map<String, SubsectorData> getSubsectorDataMap() {
 		return subsectorDataMap;
 	}
-	Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
+	public Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
 		return subsectorsByEvacuationTime;
 	}
 	
