@@ -34,7 +34,7 @@ public class RunFromSource {
 
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
-//		new SubsectorShapeFileParser()
+		new SubsectorShapeFileParser(evacuationSchedule,scenario.getNetwork()).readSubSectorsShapeFile(femConfigGroup.getInputSubsectorsShapefile());
 	}
 
 }
