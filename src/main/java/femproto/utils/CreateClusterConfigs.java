@@ -74,11 +74,11 @@ public class CreateClusterConfigs {
 			for (File inputFile : inputFiles) {
 				if (inputFile.getName().toLowerCase().contains("link"))
 					femConfigGroup.setInputNetworkLinksShapefile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("nodes")&&!inputFile.getName().toLowerCase().contains("wma"))
+				if (inputFile.getName().toLowerCase().contains("node")&&!inputFile.getName().toLowerCase().contains("wma"))
 					femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
 				if (inputFile.getName().toLowerCase().contains("wma"))
 					femConfigGroup.setHydrographShapeFile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("subsector"))
+				if (inputFile.getName().toLowerCase().contains("vehicle"))
 					femConfigGroup.setInputSubsectorsShapefile(inputFile.getPath().toString());
 			}
 
