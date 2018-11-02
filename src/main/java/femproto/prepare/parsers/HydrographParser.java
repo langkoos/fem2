@@ -1,18 +1,31 @@
 package femproto.prepare.parsers;
 
+import femproto.globals.FEMGlobalConfig;
 import femproto.globals.Gis;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleFromHydrographData;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleToPopulationDepartures;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
+import femproto.prepare.network.NetworkConverter;
 import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
+import femproto.run.FEMConfigGroup;
 import femproto.run.FEMUtils;
+import femproto.run.RunMatsim4FloodEvacuation;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkChangeEvent;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
+import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -21,6 +34,7 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -52,7 +66,7 @@ public class HydrographParser {
 
 
 	public void parseHydrographShapefile(String shapefile) {
-		parseHydrographShapefile(IOUtils.newUrl(null,shapefile));
+		parseHydrographShapefile(IOUtils.newUrl(null, shapefile));
 	}
 
 	/**
@@ -128,8 +142,9 @@ public class HydrographParser {
 
 
 	public void readHydrographData(String fileName, int offsetTime) {
-		readHydrographData(IOUtils.newUrl(null,fileName),offsetTime);
+		readHydrographData(IOUtils.newUrl(null, fileName), offsetTime);
 	}
+
 	/**
 	 * This reads the  time series from the hydrograph file, and populates the relevant point data structures.
 	 *
@@ -140,9 +155,9 @@ public class HydrographParser {
 	public void readHydrographData(URL fileName, int offsetTime) {
 		List<List<Double>> columns = new ArrayList<>();
 		String[] header;
-		try ( BufferedReader reader = IOUtils.getBufferedReader(fileName.getPath()) ) {
+		try (BufferedReader reader = IOUtils.getBufferedReader(fileName.getPath())) {
 			header = reader.readLine().split(",");
-			for ( int ii = 0 ; ii < header.length ; ii++ ) {
+			for (int ii = 0; ii < header.length; ii++) {
 				columns.add(new ArrayList<>()); // for each header we now have a list
 			}
 
@@ -408,5 +423,69 @@ public class HydrographParser {
 		return networkChangeEvents;
 	}
 
+	/**
+	 * This method is a helper to produce a lookup table and eliminate this entire class in the end
+	 */
+	public void writeLink2GaugeLookupTable(String outputFileName) {
+		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
+			BufferedWriter writer = IOUtils.getBufferedWriter(outputFileName);
+			try {
+				writer.write("ID\tGAUGE_ID\tALT_AHD\n");
+				if (point.mappedToNetworkLink()) {
+					for (String linkId : point.getLinkIds()) {
+						writer.write(String.format("%s\t%d\t%f\n", linkId.toString(), point.pointId, point.ALT_AHD));
+					}
+				}
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * This method is a helper to produce a lookup table of subsectors and eliminate this entire class in the end
+	 */
+	public void writeSubsector2GaugeLookupTable(String outputFileName) {
+		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
+			BufferedWriter writer = IOUtils.getBufferedWriter(outputFileName);
+			try {
+				writer.write("SUBSECTOR\tGAUGE_ID\tALT_AHD\n");
+				if (!(point.getSubSector() == null)) {
+
+					writer.write(String.format("%s\t%d\t%f\n", point.getSubSector(), point.pointId, point.ALT_AHD));
+				}
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		Config config = ConfigUtils.loadConfig(args[0]);
+		config.network().setTimeVariantNetwork(true);
+		Scenario scenario = ScenarioUtils.createScenario(config);
+		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
+		FEMConfigGroup femConfigGroup = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
+		FEMUtils.setGlobalConfig(globalConfig);
+		NetworkConverter networkConverter = new NetworkConverter(scenario);
+		networkConverter.run();
+
+		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
+		URL subsectorURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getInputSubsectorsShapefile());
+		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(subsectorURL);
+
+		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
+		URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
+		hydrographParser.parseHydrographShapefile(hydrographURL);
+		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
+		hydrographParser.readHydrographData(hydrographDataURL, 54961);
+
+		hydrographParser.writeLink2GaugeLookupTable(args[1]);
+		hydrographParser.writeSubsector2GaugeLookupTable(args[2]);
+
+
+	}
 
 }
