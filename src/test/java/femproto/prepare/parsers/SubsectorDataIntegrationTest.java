@@ -35,11 +35,11 @@ public class SubsectorDataIntegrationTest {
 		new MatsimNetworkReader(network).readFile(networkFile);
 
 		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, network);
-		try {
+//		try {
 			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
-		} catch (IOException e) {
-			throw new RuntimeException("Input shapefile not found, or some other IO error");
-		}
+//		} catch (IOException e) {
+//			throw new RuntimeException("Input shapefile not found, or some other IO error");
+//		}
 
 		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(network,evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
@@ -68,11 +68,11 @@ public class SubsectorDataIntegrationTest {
 		new MatsimNetworkReader(network).readFile(networkFile);
 
 		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, network);
-		try {
+//		try {
 			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
-		} catch (IOException e) {
-			throw new RuntimeException("Input shapefile not found, or some other IO error");
-		}
+//		} catch (IOException e) {
+//			throw new RuntimeException("Input shapefile not found, or some other IO error");
+//		}
 
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
@@ -96,11 +96,11 @@ public class SubsectorDataIntegrationTest {
 		new MatsimNetworkReader(network).readFile(networkFile);
 
 		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, network);
-		try {
+//		try {
 			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
-		} catch (IOException e) {
-			throw new RuntimeException("Input shapefile not found, or some other IO error");
-		}
+//		} catch (IOException e) {
+//			throw new RuntimeException("Input shapefile not found, or some other IO error");
+//		}
 
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
@@ -124,11 +124,11 @@ public class SubsectorDataIntegrationTest {
 		new MatsimNetworkReader(network).readFile(networkFile);
 
 		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, network);
-		try {
+//		try {
 			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
-		} catch (IOException e) {
-			throw new RuntimeException("Input shapefile not found, or some other IO error");
-		}
+//		} catch (IOException e) {
+//			throw new RuntimeException("Input shapefile not found, or some other IO error");
+//		}
 
 		new EvacuationScheduleReader(evacuationSchedule,network).readFile(inputEvacScheduleFile);
 
@@ -152,11 +152,11 @@ public class SubsectorDataIntegrationTest {
 		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
 
 		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork());
-		try {
+//		try {
 			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
-		} catch (IOException e) {
-			throw new RuntimeException("Input shapefile not found, or some other IO error");
-		}
+//		} catch (IOException e) {
+//			throw new RuntimeException("Input shapefile not found, or some other IO error");
+//		}
 
 		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(scenario.getNetwork(),evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);

@@ -11,7 +11,6 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -35,7 +34,7 @@ public class SubsectorShapeFileParser {
 		this.network = network;
 	}
 
-	public void readSubSectorsShapeFile(String fileName) throws IOException {
+	public void readSubSectorsShapeFile(String fileName)  {
 		log.info("entering readSubSectorsShapeFile with fileName=" + fileName);
 
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);

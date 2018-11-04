@@ -22,6 +22,7 @@ package org.matsim.run.gui;
 import femproto.prepare.demand.SubSectorsToPopulation;
 import femproto.run.EvacScheduleVerificationRun;
 import femproto.run.FEMConfigGroup;
+import femproto.run.RunFromSource;
 import femproto.run.RunMatsim4FloodEvacuation;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
@@ -52,37 +53,37 @@ public class MATSimGUI {
 	}
 	
 	private void run() {
-		gui = Gui.create("FEM GUI", RunMatsim4FloodEvacuation.class);
+		gui = Gui.create("FEM GUI", RunFromSource.class);
 		
-		{
-			// button is grayed out until config is loaded
-			btnShpToPlans = new JButton( "Start " + CREATE_DEMAND_FROM_SUBSECTOR_DATA );
-			gui.addPreprocessButton( "abc", btnShpToPlans );
-			
-			btnShpToPlans.addActionListener( actionEvent -> {
-				if ( exeRunner == null ) {
-					startCreateDemand();
-				} else {
-					stopProcess( btnShpToPlans, CREATE_DEMAND_FROM_SUBSECTOR_DATA );
-				}
-			} );
-		}
-		{
-			// button is grayed out until config is loaded yyyyyy which is wrong, should wait until end of optim run. kai, sep'18
-			// decision to have only 3 buttons: prepare, optimize, verify.  Still an issue, but not so large any more. kai/pieter, sep'18
-
-			btnVerificationRun = new JButton( "Start " + VERIFICATION_RUN );
-			gui.addPostprocessButton( "def", btnVerificationRun );
-			
-			btnVerificationRun.addActionListener( actionEvent -> {
-				if ( exeRunner == null ) {
-					startVerificationRun();
-				} else {
-					stopProcess( btnVerificationRun, VERIFICATION_RUN );
-				}
-				
-			} );
-		}
+//		{
+//			// button is grayed out until config is loaded
+//			btnShpToPlans = new JButton( "Start " + CREATE_DEMAND_FROM_SUBSECTOR_DATA );
+//			gui.addPreprocessButton( "abc", btnShpToPlans );
+//
+//			btnShpToPlans.addActionListener( actionEvent -> {
+//				if ( exeRunner == null ) {
+//					startCreateDemand();
+//				} else {
+//					stopProcess( btnShpToPlans, CREATE_DEMAND_FROM_SUBSECTOR_DATA );
+//				}
+//			} );
+//		}
+//		{
+//			// button is grayed out until config is loaded yyyyyy which is wrong, should wait until end of optim run. kai, sep'18
+//			// decision to have only 3 buttons: prepare, optimize, verify.  Still an issue, but not so large any more. kai/pieter, sep'18
+//
+//			btnVerificationRun = new JButton( "Start " + VERIFICATION_RUN );
+//			gui.addPostprocessButton( "def", btnVerificationRun );
+//
+//			btnVerificationRun.addActionListener( actionEvent -> {
+//				if ( exeRunner == null ) {
+//					startVerificationRun();
+//				} else {
+//					stopProcess( btnVerificationRun, VERIFICATION_RUN );
+//				}
+//
+//			} );
+//		}
 		gui.run() ;
 		
 		//		// the following material is here to demonstrate that we can, in principle, add menu items.
@@ -188,7 +189,7 @@ public class MATSimGUI {
 					"-cp",
 					absoluteClasspaths.toString(),
 					"-Xmx" + gui.getTxtRam().getText() + "m",
-					EvacScheduleVerificationRun.class.getName(), //  <== the class to run!
+					RunFromSource.class.getName(), //  <== the class to run!
 					MATSimGUI.this.gui.getTxtConfigfilename().getText()
 			};
 			

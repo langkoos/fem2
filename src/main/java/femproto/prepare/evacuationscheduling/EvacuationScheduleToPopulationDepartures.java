@@ -47,11 +47,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
 
 		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork());
-		try {
-			subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
-		} catch (IOException e) {
-			throw new RuntimeException("Input shapefile not found, or some other IO error");
-		}
+		subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
 
 		EvacuationToSafeNodeParser parser = new EvacuationToSafeNodeParser(scenario.getNetwork(), evacuationSchedule);
 		parser.readEvacAndSafeNodes(inputEvactoSafeNode);
