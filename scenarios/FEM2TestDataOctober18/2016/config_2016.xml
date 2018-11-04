@@ -5,25 +5,24 @@
 		<!-- FEM run type.  Options: justRunInputPlansFile runFromEvacuationSchedule runFromSource optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
 		<param name="FEMRunType" value="runFromSource" />
 		<!-- CSV file containing hydrograph data. First column is time in hours, subsequent columns have the ID of the associated hydrograph point in the first line and floating point values in subsequent lines denoting water level in AHD. -->
-		<param name="hydrographData" value="null" />
+		<param name="hydrographData" value="scenarios/FEM2TestDataOctober18/2016/wma-flood-events/Exg/d00045_H_TS.csv" />
 		<!-- Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields: 
             ID 		 Integer unique id of point            links_ids 	 [sic, this typo now sticks] String referring to EMME link ids.
             SUBSECTOR 	 String of the subsector name, needs to match exactly in other files.
             ALT_AHD 	 Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded. -->
-		<param name="hydrographShapeFile" value="null" />
+		<param name="hydrographShapeFile" value="scenarios/FEM2TestDataOctober18/2016/wma_ref_points_1_to_2056_link_V12_nodes_2016/wma_ref_points_1_to_2056_link_nodesV12_2016.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkLinksShapefile" value="null" />
+		<param name="inputNetworkLinksShapefile" value="scenarios/FEM2TestDataOctober18/2016/FEM2__TEST_Links_Scenrio1A_2016/FEM2__TEST_Links_Scenrio1A_2016.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkNodesShapefile" value="null" />
+		<param name="inputNetworkNodesShapefile" value="scenarios/FEM2TestDataOctober18/2016/FEM2_TEST_Nodes_2016/FEM2_TEST_Nodes_2016.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="null" />
-		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
+		<param name="inputSubsectorsShapefile" value="scenarios/FEM2TestDataOctober18/2016/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
 		<param name="sampleSize" value="1.0" />
 	</module>
 	<module name="FEMGlobal" >
 		<!-- Column name convention identifying buffer time before flooding (Floating point value, hours). -->
-		<param name="attribBufferTime" value="BUFFER_TIME" />
+		<param name="attribLookAheadTime" value="LOOK_AHEAD" />
 		<!-- Column name convention identifying links associated with hydrograph point (String value, comma-separated,no spaces) -->
 		<param name="attribHydrographLinkIds" value="links_ids" />
 		<!-- Column name convention identifying hydrograph points in the shapefile (Integer value). -->
@@ -32,8 +31,6 @@
 		<param name="attribHydrographSelectedAltAHD" value="ALT_AHD" />
 		<!-- Column name convention identifying subsectors (String value, spaces allowed but no leading or trailing spaces). -->
 		<param name="attribSubsector" value="SUBSECTOR" />
-		<!-- Buffer time for evacuation to start before the subsector or a link in the path to one of its safe nodes gets flooded. -->
-		<param name="bufferTimeBeforeFlooding" value="15.0" />
 		<!-- Model convention for the naming of the activity for agents departing from an evacuation node. -->
 		<param name="evacuationActivity" value="evac" />
 		<!-- The default rate at which agents are allowed to depart from the evacuation node (Floating point value, positive). -->
@@ -41,75 +38,6 @@
 		<!-- Model convention for the naming of the activity for agents arriving at a safe node. -->
 		<param name="safeActivity" value="safe" />
 	</module>
-	<module name="planCalcScore" >
-		<parameterset type="scoringParameters" >
-			<parameterset type="activityParams" >
-				<param name="activityType" value="dummy" />
-				<!-- typical duration of activity.  needs to be defined and non-zero.  in sec. -->
-				<param name="typicalDuration" value="02:00:00" />
-			</parameterset>
-			<parameterset type="activityParams" >
-				<param name="activityType" value="car interaction" />
-				<param name="typicalDuration" value="undefined" />
-			</parameterset>
-			<parameterset type="activityParams" >
-				<param name="activityType" value="pt interaction" />
-				<param name="typicalDuration" value="undefined" />
-			</parameterset>
-			<parameterset type="activityParams" >
-				<param name="activityType" value="bike interaction" />
-				<param name="typicalDuration" value="undefined" />
-			</parameterset>
-			<parameterset type="activityParams" >
-				<param name="activityType" value="other interaction" />
-				<param name="typicalDuration" value="undefined" />
-			</parameterset>
-			<parameterset type="activityParams" >
-				<param name="activityType" value="walk interaction" />
-				<param name="typicalDuration" value="undefined" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="car" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="pt" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="walk" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="bike" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="ride" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="other" />
-			</parameterset>
-		</parameterset>
-	</module>
-	<module name="planscalcroute" >
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="bike" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="walk" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="access_walk" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="egress_walk" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="undefined" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="ride" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="pt" />
-		</parameterset>
-	</module>
+
 
 </config>

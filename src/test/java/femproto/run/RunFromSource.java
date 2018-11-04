@@ -27,14 +27,15 @@ public class RunFromSource {
 		Scenario scenario = ScenarioUtils.createScenario(config);
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
 		FEMConfigGroup femConfigGroup = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
+		//yoyo this needs to be marked as an essential step for the moment until injection works
 		FEMUtils.setGlobalConfig(globalConfig);
 //		ConfigUtils.writeMinimalConfig(config,"scenarios/FEM2TestDataOctober18/2016/config_2016.xml");
-		NetworkConverter networkConverter = new NetworkConverter(femConfigGroup.getInputNetworkNodesShapefile(), femConfigGroup.getInputNetworkLinksShapefile());
+		NetworkConverter networkConverter = new NetworkConverter(femConfigGroup.getInputNetworkNodesShapefile(), femConfigGroup.getInputNetworkLinksShapefile(), scenario);
 		networkConverter.writeNetwork("network.xml.gz");
 
-
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
-		new SubsectorShapeFileParser(evacuationSchedule,scenario.getNetwork()).readSubSectorsShapeFile(femConfigGroup.getInputSubsectorsShapefile());
+		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(femConfigGroup.getInputSubsectorsShapefile());
+
 	}
 
 }
