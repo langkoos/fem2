@@ -2,10 +2,10 @@ package femproto.prepare.parsers;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import femproto.globals.FEMAttributes;
 import femproto.globals.Gis;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -80,10 +80,10 @@ public class HydrographParser {
 		while (iterator.hasNext()) {
 			SimpleFeature feature = iterator.next();
 
-			String pointID = feature.getAttribute(FEMAttributes.HYDROGRAPH_POINT_ID_FIELD).toString();
-			String linkIDs = feature.getAttribute(FEMAttributes.HYDROGRAPH_LINK_IDS).toString();
-			String subsector = feature.getAttribute(FEMAttributes.HYDROGRAPH_SUBSECTOR).toString();
-			final Double ALT_AHD = Double.valueOf(feature.getAttribute(FEMAttributes.HYDROGRAPH_SELECTED_ALT_AHD).toString());
+			String pointID = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographPointId()).toString();
+			String linkIDs = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographLinkIds()).toString();
+			String subsector = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribSubsector()).toString();
+			final Double ALT_AHD = Double.valueOf(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString());
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
 			Coord coord = new Coord(lonlat.x, lonlat.y);
 			if (transformation != null)
@@ -151,8 +151,7 @@ public class HydrographParser {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
 				for (int j = 0; j < entries.get(i).size(); j++) {
-					// yoyoyo it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime + FEMAttributes.BUFFER_TIME * 3600, entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime , entries.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
 			}

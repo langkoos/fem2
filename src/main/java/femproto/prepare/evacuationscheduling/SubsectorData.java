@@ -1,6 +1,6 @@
 package femproto.prepare.evacuationscheduling;
 
-import femproto.globals.FEMAttributes;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Node;
 
@@ -18,6 +18,12 @@ public class SubsectorData {
 	private Node evacuationNode;
 	private LinkedHashSet<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
 	private int vehicleCount;
+
+	public void setLookAheadTime(double lookAheadTime) {
+		this.lookAheadTime = lookAheadTime;
+	}
+
+	private  double lookAheadTime;
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
@@ -109,7 +115,7 @@ public class SubsectorData {
 	 *
 	 * This will go through the list and complete with expected values where information is missing, and make the schedule explicit.
 	 *
-	 * IMPORTANT: assume departure rate specified in {@link femproto.globals.FEMAttributes}, unless <tt>vehicles</tt> and <tt>endTime</tt> have both been set explicitly.
+	 * IMPORTANT: assume departure rate specified in {@link femproto.globals.FEMGlobalConfig}, unless <tt>vehicles</tt> and <tt>endTime</tt> have both been set explicitly.
 	 * If only one {@link SafeNodeAllocation} exists and it has fewer vehicles assigned than the subsector total, tough cookies, but raise a warning.
 	 */
 	public void completeAllocations(){
@@ -144,7 +150,7 @@ public class SubsectorData {
 			if(noDurations.size()>0){
 				for (SafeNodeAllocation noDuration : noDurations) {
 					//just allocate acording to evac rate
-					noDuration.setEndTime( noDuration.getStartTime() + noDuration.getVehicles() * 3600 / FEMAttributes.EVAC_FLOWRATE);
+					noDuration.setEndTime( noDuration.getStartTime() + noDuration.getVehicles() * 3600 / FEMUtils.getGlobalConfig().getEvacuationRate());
 				}
 			}
 			return;
@@ -169,4 +175,7 @@ public class SubsectorData {
 	}
 
 
+	public double getLookAheadTime() {
+		return lookAheadTime;
+	}
 }

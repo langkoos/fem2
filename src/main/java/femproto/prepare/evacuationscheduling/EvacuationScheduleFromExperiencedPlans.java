@@ -2,7 +2,6 @@ package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import femproto.globals.FEMAttributes;
 import femproto.run.FEMUtils;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -109,11 +108,11 @@ public final class EvacuationScheduleFromExperiencedPlans {
 			for (PlanElement planElement : plan.getPlanElements()) {
 				if (planElement instanceof Activity) {
 					Activity activity = (Activity) planElement;
-					if (origin == null && activity.getType().equals(FEMAttributes.EVACUATION_ACTIVITY)) {
+					if (origin == null && activity.getType().equals(FEMUtils.getGlobalConfig().getEvacuationActivity())) {
 						origin = network.getLinks().get(activity.getLinkId()).getFromNode();
 						startTime = activity.getEndTime();
 					}
-					if (destin == null && activity.getType().equals(FEMAttributes.SAFE_ACTIVITY)) {
+					if (destin == null && activity.getType().equals(FEMUtils.getGlobalConfig().getSafeActivity())) {
 						destin = network.getLinks().get(activity.getLinkId()).getToNode();
 						endTime = activity.getStartTime();
 					}

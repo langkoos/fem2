@@ -254,6 +254,13 @@ public class FEMUtils {
 		}
 	}
 
+	public static void setSubsectorName( final String subsector, final Person person ) {
+		person.getAttributes().putAttribute( globalConfig.getAttribSubsector(), subsector);
+	}
+
+	public static String getSubsectorName( final Person person ) {
+		return (String) person.getAttributes().getAttribute( globalConfig.getAttribSubsector() );
+	}
 
 	public static Link getLinkFromSafeNode(String defaultSafeNode, final Scenario scenario) {
 		Link endLink = null;
@@ -264,7 +271,7 @@ public class FEMUtils {
 		// yoyo find an incoming link, preferably an EVAC_SES one.
 		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
 		for (Link link : node.getInLinks().values()) {
-			if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())) {
+			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())) {
 				endLink = link;
 			}
 		}

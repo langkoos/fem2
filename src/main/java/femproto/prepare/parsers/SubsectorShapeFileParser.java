@@ -64,12 +64,11 @@ public class SubsectorShapeFileParser {
 			}
 			subsectorData.setVehicleCount(subsectorVehicleCount);
 			totalVehicleCount += subsectorVehicleCount;
-			// yoyoyo parse the BUFFER_TIME for the subsector
-			double bufferTime;
+			double lookAheadTime;
 			try {
-				bufferTime = Double.parseDouble(feature.getAttribute("BUFFER_TIME").toString());
-			}catch (NullPointerException ne){
-				log.warn("Need to define BUFFER_TIME on a subsector basis");
+				lookAheadTime = Double.parseDouble(feature.getAttribute("LOOK_AHEAD").toString()) * 3600;
+			} catch (NullPointerException ne) {
+				log.warn("Need to define LOOK_AHEAD on a subsector basis");
 			}
 			String evacNodeFromShp;
 			try {
@@ -87,6 +86,15 @@ public class SubsectorShapeFileParser {
 			}
 			subsectorData.setEvacuationNode(node);
 
+			for (String safeNodeId : feature.getAttribute("Safe_Nodes").toString().split(",")) {
+				Node safeNode = network.getNodes().get(Id.createNodeId(safeNodeId.trim()));
+				if (safeNode == null) {
+					String msg = "did not find evacNode for subsector " + subsector + " in matsim network file: " + safeNodeId;
+					log.warn(msg);
+					throw new RuntimeException(msg);
+				}
+				subsectorData.addSafeNode(safeNode);
+			}
 
 		}
 

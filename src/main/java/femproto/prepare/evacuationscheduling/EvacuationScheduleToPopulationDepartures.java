@@ -2,7 +2,6 @@ package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import femproto.globals.FEMAttributes;
 import femproto.prepare.parsers.EvacuationToSafeNodeParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import femproto.run.FEMUtils;
@@ -132,7 +131,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());
-					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / FEMAttributes.EVAC_FLOWRATE));
+					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / subsectorData.getLookAheadTime()));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);

@@ -3,7 +3,6 @@ package femproto.run;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
-import femproto.globals.FEMAttributes;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -51,7 +50,7 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 		for ( Person person : population.getPersons().values() ) {
 			
 			// origin comes from the attributes (could, in theory, be persons on different links):
-			String subsector = getSubsector(person);
+			String subsector = FEMUtils.getSubsectorName(person);
 
 			// destination must come from plan, since in the attributes there are multiple safe nodes and
 			// we don't know which one was used:
@@ -145,7 +144,7 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 				person.setSelectedPlan(unscoredPlan);
 			} else {
 				// else, set safe node as computed above:
-				String subsector = getSubsector(person);
+				String subsector = FEMUtils.getSubsectorName(person);
 				Id<Link> newDestinationLinkId = safeLinkIds.get(subsector);
 				;
 				Gbl.assertNotNull(subsector);
@@ -170,13 +169,13 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 			if ( memorizedLinkId==null ) {
 				// memorizing destLinkId and subsector that are connected to this originLinkId:
 				memDestLink.put( originLinkId, destLinkId );
-				memSubsector.put( originLinkId, getSubsector(person) ) ;
+				memSubsector.put( originLinkId, FEMUtils.getSubsectorName(person) ) ;
 			} else if ( !memorizedLinkId.equals( destLinkId ) && cnt > 0 ) {
 				// (that is we have seen another destLinkId assigned to the same origLinkId)
 				
 				// writing this to the console:
 				log.info( "originLinkId=" + originLinkId + "; subsector=" + memSubsector.get( originLinkId ) + "; dest1=" + memorizedLinkId )  ;
-				log.info( "originLinkId=" + originLinkId + "; subsector=" + getSubsector(person)  + "; dest2=" + destLinkId ) ;
+				log.info( "originLinkId=" + originLinkId + "; subsector=" + FEMUtils.getSubsectorName(person)  + "; dest2=" + destLinkId ) ;
 				// note that this can happen during the first 10 or so iterations when agents are still just selecting
 				// unscored plans. kai, jul'18
 				
@@ -202,9 +201,5 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 		return PopulationUtils.getLastActivity(plan).getLinkId();
 	}
 	
-	static String getSubsector( Person person) {
-		final String attribute = (String) person.getAttributes().getAttribute( FEMAttributes.SUBSECTOR);
-		Gbl.assertNotNull(attribute);
-		return attribute;
-	}
+
 }

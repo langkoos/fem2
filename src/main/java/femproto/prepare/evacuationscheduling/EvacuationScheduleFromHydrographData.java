@@ -1,6 +1,5 @@
 package femproto.prepare.evacuationscheduling;
 
-import femproto.globals.FEMAttributes;
 import femproto.prepare.parsers.HydrographParser;
 import femproto.prepare.parsers.HydrographPoint;
 import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
@@ -54,7 +53,7 @@ public final class EvacuationScheduleFromHydrographData {
 	/**
 	 * This goes through each subsector in the input schedule, then checks the path to its first safe node.
 	 * If the path contains a link in the hydrograph map, then the flood time for that link is checked.
-	 * If the link gets flooded, departures are scheduled to start BUFFER_TIME (see {@link femproto.globals.FEMAttributes})
+	 * If the link gets flooded, departures are scheduled to start at look ahead time specced inthe config (see {@link femproto.globals.FEMGlobalConfig})
 	 * before flooding starts.
 	 */
 	public void createEvacuationSchedule() {
@@ -77,7 +76,7 @@ public final class EvacuationScheduleFromHydrographData {
 			}
 
 			if (floodTime < Double.POSITIVE_INFINITY) {
-				subsectorData.addSafeNodeAllocation(floodTime - FEMAttributes.BUFFER_TIME * 3600, prioritySafeNode);
+				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime() * 3600, prioritySafeNode);
 				lastPriorityEvacuationStartTime = Math.max(lastPriorityEvacuationStartTime, floodTime);
 				prioritySubsectors.add(subsectorData.getSubsector());
 			}
