@@ -34,8 +34,11 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 		map.put(INPUT_NETWORK_NODES_SHAPEFILE, INPUT_NETWORK_NODES_SHAPEFILE_CMT);
 		map.put(INPUT_NETWORK_LINKS_SHAPEFILE, INPUT_NETWORK_LINKS_SHAPEFILE_CMT);
 		map.put(HYDROGRAPH_SHAPE_FILE, HYDROGRAPH_SHAPE_FILE_CMT);
+		map.put(HYDROGRAPH_DATA, HYDROGRAPH_DATA_CMT);
+		map.put(SAMPLE_SIZE, SAMPLE_SIZE_CMT);
 		return map;
 	}
+
 
 	// ===
 	enum FEMRoutingMode {
@@ -67,10 +70,10 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 
 	// ---
 	enum FEMRunType {
-		justRunInputPlansFile, runFromEvacuationSchedule, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
+		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource,optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
 	}
 
-	private FEMRunType femRunType = FEMRunType.runFromEvacuationSchedule;
+	private FEMRunType femRunType = FEMRunType.runFromSource;
 	private static final String FEM_RUN_TYPE = "FEMRunType";
 	private static final String FEM_RUN_TYPE_CMT = "FEM run type. ";
 
@@ -147,8 +150,9 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 
 	// ---
-	private double sampleSize = 0.01;
+	private double sampleSize = 1.0;
 	private static final String SAMPLE_SIZE = "sampleSize";
+	private static final String SAMPLE_SIZE_CMT = "Re-routing can probably be done at 0.01 sample size.";
 
 	@StringGetter(SAMPLE_SIZE)
 	public double getSampleSize() {
@@ -161,7 +165,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 
 	// ---
-	private String evacuationScheduleFile;
+	private String evacuationScheduleFile = null;
 	private static final String EVACUATION_SCHEDULE_FILE = "evacuationScheduleFile";
 
 	@StringGetter(EVACUATION_SCHEDULE_FILE)
@@ -173,6 +177,24 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	public void setEvacuationScheduleFile(String filename) {
 		this.evacuationScheduleFile = filename;
 	}
+
+	// ---
+	private String hydrographData = null;
+	private static final String HYDROGRAPH_DATA = "hydrographData";
+	private static final String HYDROGRAPH_DATA_CMT = "CSV file containing hydrograph data. First column is time in hours, " +
+			"subsequent columns have the ID of the associated hydrograph point in the first line and floating point " +
+			"values in subsequent lines denoting water level in AHD.";
+
+	@StringGetter(HYDROGRAPH_DATA)
+	public String getHydrographData() {
+		return hydrographData;
+	}
+
+	@StringSetter(HYDROGRAPH_DATA)
+	public void setHydrographData(String hydrographData) {
+		this.hydrographData = hydrographData;
+	}
+
 
 	// ---
 	private String hydrographShapeFile;

@@ -23,3 +23,4 @@
 *.html filter=fat -crlf
 data filter=fat -crlf
 *.twb filter=fat -crlf
+d*.csv filter=fat -crlf
