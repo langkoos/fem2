@@ -8,6 +8,7 @@ import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.contrib.otfvis.OTFVis;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkChangeEvent;
@@ -62,6 +63,8 @@ public class RunFromSource {
 		config.controler().setOutputDirectory(config.controler().getOutputDirectory()+"/output");
 
 		new RunMatsim4FloodEvacuation(scenario).run();
+
+
 
 	}
 

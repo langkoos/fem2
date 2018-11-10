@@ -86,7 +86,7 @@ public class SubsectorData {
 
 	/**
 	 * @param time
-	 * @return the first safe node, or the last safe node with time <= time.
+	 * @return the first safe node, or the last safe node with time &le time.
 	 */
 	public Node getSafeNodeForTime(double time) {
 		Node node = null;

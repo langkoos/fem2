@@ -25,6 +25,7 @@ import femproto.run.FEMConfigGroup;
 import femproto.run.RunFromSource;
 import femproto.run.RunMatsim4FloodEvacuation;
 import org.apache.log4j.Logger;
+import org.matsim.contrib.otfvis.OTFVis;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
