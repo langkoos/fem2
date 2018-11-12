@@ -2,6 +2,7 @@ package femproto.run;
 
 import com.google.inject.Inject;
 import femproto.globals.FEMGlobalConfig;
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import org.apache.log4j.Logger;
 import org.matsim.analysis.VolumesAnalyzer;
 import org.matsim.api.core.v01.Id;
@@ -46,6 +47,13 @@ public class FEMUtils {
 	private static FEMGlobalConfig globalConfig;
 	private static boolean globalConfigIsLocked = false ;
 
+	public static EvacuationSchedule getEvacuationSchedule() {
+		return evacuationSchedule;
+	}
+
+	private static EvacuationSchedule evacuationSchedule;
+	private static boolean evacuationScheduleIsLocked = false ;
+
 	public static FEMGlobalConfig getGlobalConfig() {
 		return globalConfig;
 	}
@@ -59,6 +67,17 @@ public class FEMUtils {
 		}
 		FEMUtils.globalConfig = globalConfig;
 		globalConfigIsLocked = true ;
+	}
+
+	public static void setEvacuationSchedule( final EvacuationSchedule evacuationSchedule ) {
+		if ( evacuationScheduleIsLocked ) {
+			throw new RuntimeException("too late") ;
+		}
+		if ( evacuationSchedule==null ) {
+			throw new RuntimeException("too early") ;
+		}
+		FEMUtils.evacuationSchedule = evacuationSchedule;
+		evacuationScheduleIsLocked = true ;
 	}
 
 	static void preparationsForRmitHawkesburyScenario(Scenario scenario) {

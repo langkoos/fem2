@@ -8,6 +8,7 @@ import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
 import femproto.prepare.network.NetworkConverter;
 import femproto.prepare.parsers.HydrographParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
+import org.apache.commons.io.FileUtils;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -54,6 +55,7 @@ public class RunFromSource {
 		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputDirectory + "/input_evac_plan.csv");
 
 		EvacuationScheduleToPopulationDepartures populationDepartures = new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule);
+//		populationDepartures.createPlans();
 		populationDepartures.createPlansForAllSafeNodes();
 		populationDepartures.writePopulation(outputDirectory + "/input_population.xml.gz");
 		config.plans().setInputFile(outputDirectory + "/input_population.xml.gz");
@@ -61,5 +63,6 @@ public class RunFromSource {
 		config.controler().setOutputDirectory(outputDirectory + "/output");
 
 		new RunMatsim4FloodEvacuation(scenario).run();
+
 	}
 }

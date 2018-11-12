@@ -335,7 +335,7 @@ public class HydrographParser {
 						NetworkChangeEvent changeEvent = new NetworkChangeEvent(point.getFloodTime());
 						NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
 						changeEvent.setFlowCapacityChange(flowChange);
-						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, link.getLength() / 86400.0);
+						NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, link.getLength() / 43200);
 						changeEvent.setFreespeedChange(speedChange);
 						changeEvent.addLink(link);
 						networkChangeEvents.add(changeEvent);
@@ -349,7 +349,7 @@ public class HydrographParser {
 		List<NetworkChangeEvent> networkChangeEvents1 = new ArrayList<>();
 		networkChangeEvents1.addAll(networkChangeEvents);
 		for (NetworkChangeEvent capacityReductionEvent : networkChangeEvents1) {
-			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(maxTime + 86400);
+			NetworkChangeEvent capacityResetEvent = new NetworkChangeEvent(maxTime + 43200);
 			NetworkChangeEvent.ChangeValue flowChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 6000);
 			capacityResetEvent.setFlowCapacityChange(flowChange);
 			NetworkChangeEvent.ChangeValue speedChange = new NetworkChangeEvent.ChangeValue(NetworkChangeEvent.ChangeType.ABSOLUTE_IN_SI_UNITS, 16.7);

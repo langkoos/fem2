@@ -19,6 +19,7 @@
 package femproto.run;
 
 import com.google.inject.Inject;
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.evacuationscheduling.EvacuationScheduleFromExperiencedPlans;
 import femproto.prepare.evacuationscheduling.EvacuationScheduleReader;
@@ -129,6 +130,7 @@ public class RunMatsim4FloodEvacuation {
 		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 		hasLoadedConfig = true;
 		prepareConfig();
+		FEMUtils.sampleDown(scenario,femConfig.getSampleSize());
 		hasPreparedScenario = true;
 
 	}
@@ -156,6 +158,13 @@ public class RunMatsim4FloodEvacuation {
 		// ---
 		
 		hasLoadedConfig = true ;
+		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
+		//yoyo this needs to be marked as an essential step for the moment until injection works
+		try {
+			FEMUtils.setGlobalConfig(globalConfig);
+		}catch (Exception e){
+
+		}
 		return config ;
 	}
 	
@@ -224,6 +233,7 @@ public class RunMatsim4FloodEvacuation {
 		log.warn( "runType=" + femConfig.getFemRunType() ) ;
 		
 		switch( femConfig.getFemRunType() ) {
+			case runFromSource:
 			case optimizeSafeNodesBySubsector: {
 				config.strategy().clearStrategySettings();
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
@@ -259,9 +269,7 @@ public class RunMatsim4FloodEvacuation {
 			}
 			break;
 			case justRunInputPlansFile:
-			case runFromSource:
-				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
-				break;
+
 			case runFromEvacuationSchedule:
 				config.controler().setLastIteration( 0 );
 				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
@@ -514,6 +522,13 @@ public class RunMatsim4FloodEvacuation {
 				break;
 			case justRunInputPlansFile:
 			case runFromSource:
+				controler.addOverridingModule( new DecongestionModule( scenario ) );
+//				controler.addOverridingModule( new AbstractModule() {
+//					@Override public void install() {
+//						this.addControlerListenerBinding().to( SelectOneBestRoutePerSubsector.class );
+//					}
+//				} );
+				break;
 			case runFromEvacuationSchedule:
 				break;
 			default:
