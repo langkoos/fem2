@@ -16,6 +16,7 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.*;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.gbl.Gbl;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -28,6 +29,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 
+import static femproto.run.FEMUtils.*;
+
 
 /**
  * @author sergio
@@ -38,8 +41,8 @@ public class NetworkConverter {
 	private static final double MIN_DISTANCE = 5.0;
 
 	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Proabably a global parameter in FEMATtributes
-	public static final String EVACUATION_LINK = FEMUtils.getGlobalConfig().getAttribEvacMarker();
-	public static final String DESCRIPTION = FEMUtils.getGlobalConfig().getAttribDescr();
+	public static final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
+	public static final String DESCRIPTION = getGlobalConfig().getAttribDescr();
 	private final String nodesFile;
 	private final String linksFile;
 
@@ -80,6 +83,7 @@ public class NetworkConverter {
 		CoordinateTransformation transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
+		boolean warned = false;
 		for (SimpleFeature feature : features) {
 			Coordinate lonlat = ((Geometry) feature.getDefaultGeometry()).getCoordinates()[0];
 			Coord coord = new Coord(lonlat.x, lonlat.y);
@@ -95,21 +99,28 @@ public class NetworkConverter {
 			// yoyo after discussion with DP, decided that we will not use randdom incoming link to evac node, but rather loop link
 			// in case random link leg start interferes with traffic
 			int evacValue;
-			String attribEvacMarker = FEMUtils.getGlobalConfig().getAttribEvacMarker();
+			String attribEvacMarker = getGlobalConfig().getAttribEvacMarker();
+
 			try {
 				evacValue = (int) feature.getAttribute(attribEvacMarker);
 			} catch (ClassCastException e) {
 				try {
 					evacValue = (int) (long) feature.getAttribute(attribEvacMarker);
-					String message = String.format("Column %s in links shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribEvacMarker);
-					log.warn(message);
+					if (!warned) {
+						String message = String.format("Column %s in nodes shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribEvacMarker);
+						log.warn(message);
+						warned = true;
+					}
 				} catch (ClassCastException e2) {
 					try {
 						evacValue = (int) (double) feature.getAttribute(attribEvacMarker);
-						String message = String.format("Column %s in links shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribEvacMarker);
-						log.warn(message);
+						if (!warned) {
+							String message = String.format("Column %s in nodes shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribEvacMarker);
+							log.warn(message);
+							warned = true;
+						}
 					} catch (ClassCastException e3) {
-						String message = String.format("Cannot convert %s in links shapefile to the appropriate data type (0-1 integer). Aborting.", attribEvacMarker);
+						String message = String.format("Cannot convert %s in nodes shapefile to the appropriate data type (0-1 integer). Aborting.", attribEvacMarker);
 						log.error(message);
 						throw new RuntimeException(message);
 					}
@@ -120,7 +131,7 @@ public class NetworkConverter {
 				link.setLength(1);
 				link.setNumberOfLanes(1);
 				link.setFreespeed(17);
-				link.setCapacity(FEMUtils.getGlobalConfig().getEvacuationRate());
+				link.setCapacity(getGlobalConfig().getEvacuationRate());
 				HashSet<String> modes = new HashSet<>();
 				modes.add(TransportMode.car);
 				link.setAllowedModes(modes);
@@ -140,20 +151,25 @@ public class NetworkConverter {
 
 		for (SimpleFeature feature : features) {
 			// yoyo client will refactor node ids to be integer not floating point
-			Id<Node> fromNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute("INODE").toString()));
-			Id<Node> toNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute("JNODE").toString()));
+			Id<Node> fromNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksINode()).toString()));
+			Id<Node> toNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksJNode()).toString()));
 			// yoyo needs more explicit and case specific exception handling
+			String linkId = feature.getAttribute("ID").toString();
+			Node fromNode = nodes.get(fromNodeId);
+			Node toNode = nodes.get(toNodeId);
+			if (fromNode == null || toNode == null) {
+				log.warn(String.format("Link ID %s has missing from/to node, no link generated, can lead to disconnected network issues down the line...", linkId));
+				continue;
+			}
 			try {
-				Node fromNode = nodes.get(fromNodeId);
-				Node toNode = nodes.get(toNodeId);
-				Link link = networkFactory.createLink(Id.createLinkId(feature.getAttribute("ID").toString()), fromNode, toNode);
+				Link link = networkFactory.createLink(Id.createLinkId(linkId), fromNode, toNode);
 				// yo if euclidean distance is substantially different then raise error
-				link.setLength(Double.parseDouble(feature.getAttribute("LENGTH").toString()) * 1000);
-				link.setNumberOfLanes(Double.parseDouble(feature.getAttribute("LANES").toString()));
-				link.setFreespeed(Double.parseDouble(feature.getAttribute("SPEED").toString()) / 3.6);
-				link.setCapacity(Double.parseDouble(feature.getAttribute("CAP_SES").toString()) * 60);
+				link.setLength(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLength()).toString()) * 1000);
+				link.setNumberOfLanes(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLanes()).toString()));
+				link.setFreespeed(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksSpeed()).toString()) / 3.6);
+				link.setCapacity(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksCapSES()).toString()) * 60);
 				HashSet<String> modes = new HashSet<>();
-				String emmeModes = feature.getAttribute("MODES").toString().toLowerCase();
+				String emmeModes = feature.getAttribute(getGlobalConfig().getAttribNetworkLinksModes()).toString().toLowerCase();
 				for (char modeChar : emmeModes.toCharArray()) {
 					switch (modeChar) {
 						case 'w':
@@ -175,21 +191,58 @@ public class NetworkConverter {
 							throw new RuntimeException(message);
 					}
 				}
+				// yoyo a cheat to identify evac links in via without having to load object attributes
+				boolean evacSES = feature.getAttribute(getGlobalConfig().getAttribEvacMarker()).toString().trim().equals("1");
+				if (evacSES) {
+					modes.add("evac");
+					if (!modes.contains(TransportMode.car)) {
+						log.warn(String.format("Link %s has no car mode assigned to it in the shapefile, but is marked as an evacuation link. May cause routing issues down the line...", linkId));
+					}
+				}
 				link.setAllowedModes(modes);
-				boolean evacSES = feature.getAttribute("EVAC_SES").toString().trim().equals("1");
 				link.getAttributes().putAttribute(EVACUATION_LINK, evacSES);
 				link.getAttributes().putAttribute(DESCRIPTION, feature.getAttribute(DESCRIPTION).toString());
 				scenario.getNetwork().addLink(link);
 			} catch (IllegalArgumentException ie) {
-				System.err.println("Duplicate node id " + feature.getAttribute("ID").toString());
-			} catch (NullPointerException npe) {
-
+				System.err.println("Duplicate node id " + linkId);
+			} catch (NullPointerException e) {
+				log.warn(String.format("Link ID %s has missing attributes , generating an impassible link (marked \"BADLINK\" in network file), can lead to disconnected network issues down the line...", linkId));
+				Link link = networkFactory.createLink(Id.createLinkId(linkId), fromNode, toNode);
+				NetworkUtils.getEuclideanDistance(fromNode.getCoord(), toNode.getCoord());
+				link.setNumberOfLanes(1);
+				link.setFreespeed(0.0001);
+				link.setCapacity(0);
+				HashSet<String> modes = new HashSet<>();
+				modes.add(TransportMode.car);
+				link.setAllowedModes(modes);
+				link.getAttributes().putAttribute(EVACUATION_LINK, false);
+				link.getAttributes().putAttribute(DESCRIPTION, "BADLINK");
+				scenario.getNetwork().addLink(link);
 			}
 		}
+
+		// check that the evacuation links have an evac link in opposite direction (if link exists)
+		for (Link link : scenario.getNetwork().getLinks().values()) {
+			if ((boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+				Link linkInOppositeDirection = NetworkUtils.findLinkInOppositeDirection(link);
+				if (linkInOppositeDirection != null) {
+					if (!(boolean) linkInOppositeDirection.getAttributes().getAttribute(EVACUATION_LINK)) {
+						log.warn(String.format("Link %s is not marked for evacuation but the link in opposite direction is. this can cause routing issues (infinite loop)...", linkInOppositeDirection.getId().toString()));
+
+					}
+				}
+			}
+		}
+
 	}
 
+
 	public void writeNetwork(String fileName) {
-		new NetworkWriter(scenario.getNetwork()).write(fileName);
+		fileName = fileName.split(".xml")[0];
+		log.info("Writing before and after NetworkCleaner versions of the network. Check for missing nodes and links if there are issues down the line... ");
+		new NetworkWriter(scenario.getNetwork()).write(fileName + "_before.xml");
+		NetworkUtils.runNetworkCleaner(scenario.getNetwork());
+		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml");
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
@@ -197,6 +250,7 @@ public class NetworkConverter {
 		// yoyo D61 has matsim network parsing capability so rendering output shapefile is redundant. pieter oct '18
 
 	}
+
 
 	public static void main(String[] args) throws IOException, FactoryException {
 		NetworkConverter nwc = new NetworkConverter(args[0], args[1]);

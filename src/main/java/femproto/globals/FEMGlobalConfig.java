@@ -42,6 +42,11 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 		map.put(ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR, ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR_CMT);
 		map.put(ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR, ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR_CMT);
 		map.put(ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR, ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR_CMT);
+		map.put(ATTRIB_NETWORKLINKS_LENGTH, ATTRIB_NETWORKLINKS_LENGTH_CMT);
+		map.put(ATTRIB_NETWORKLINKS_LANES, ATTRIB_NETWORKLINKS_LANES_CMT);
+		map.put(ATTRIB_NETWORKLINKS_SPEED, ATTRIB_NETWORKLINKS_SPEED_CMT);
+		map.put(ATTRIB_NETWORKLINKS_CAPSES, ATTRIB_NETWORKLINKS_CAPSES_CMT);
+		map.put(ATTRIB_NETWORKLINKS_MODES, ATTRIB_NETWORKLINKS_MODES_CMT);
 		return map;
 	}
 
@@ -180,7 +185,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	
 	// ==================================================================
 
-	private String attribDescr = "DESCR";
+	private String attribDescr = "T_DES";
 	private static final String ATTRIB_DESCR = "attribDescr";
 	private static final String ATTRIB_DESCR_CMT = "Column name convention identifying node or link descriptions (String).";
 
@@ -196,7 +201,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 
 	// ==================================================================
 
-	private String attribNetworkLinksINode = "I_NODE";
+	private String attribNetworkLinksINode = "INODE";
 	private static final String ATTRIB_NETWORKLINKS_I_NODE = "attribNetworkLinksINode";
 	private static final String ATTRIB_NETWORKLINKS_I_NODE_CMT = "Column name convention identifying 'from' node foreign key in links shapefile (Integer value).";
 
@@ -212,7 +217,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 
 	// ==================================================================
 
-	private String attribNetworkLinksJNode = "J_NODE";
+	private String attribNetworkLinksJNode = "JNODE";
 	private static final String ATTRIB_NETWORKLINKS_J_NODE = "attribNetworkLinksJNode";
 	private static final String ATTRIB_NETWORKLINKS_J_NODE_CMT = "Column name convention identifying 'to' node foreign key in links shapefile (Integer value).";
 
@@ -224,6 +229,86 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	@StringSetter(ATTRIB_NETWORKLINKS_J_NODE)
 	public void setAttribNetworkLinksJNode(String attribNetworkLinksJNode) {
 		this.attribNetworkLinksJNode = attribNetworkLinksJNode;
+	}
+	
+	// ==================================================================
+
+	private String attribNetworkLinksLength= "LENGTH";
+	private static final String ATTRIB_NETWORKLINKS_LENGTH = "attribNetworkLinksLength";
+	private static final String ATTRIB_NETWORKLINKS_LENGTH_CMT = "Column name convention identifying link length in links shapefile (Floating point, positive value in kilometres).";
+
+	@StringGetter(ATTRIB_NETWORKLINKS_LENGTH)
+	public String getAttribNetworkLinksLength() {
+		return attribNetworkLinksLength;
+	}
+
+	@StringSetter(ATTRIB_NETWORKLINKS_LENGTH)
+	public void setAttribNetworkLinksLength(String attribNetworkLinksLength) {
+		this.attribNetworkLinksLength= attribNetworkLinksLength;
+	}
+	
+	// ==================================================================
+
+	private String attribNetworkLinksLanes= "LANES";
+	private static final String ATTRIB_NETWORKLINKS_LANES = "attribNetworkLinksLanes";
+	private static final String ATTRIB_NETWORKLINKS_LANES_CMT = "Column name convention identifying number of lanes in links shapefile (Floating point, positive value).";
+
+	@StringGetter(ATTRIB_NETWORKLINKS_LANES)
+	public String getAttribNetworkLinksLanes() {
+		return attribNetworkLinksLanes;
+	}
+
+	@StringSetter(ATTRIB_NETWORKLINKS_LANES)
+	public void setAttribNetworkLinksLanes(String attribNetworkLinksLanes) {
+		this.attribNetworkLinksLanes= attribNetworkLinksLanes;
+	}
+	
+	// ==================================================================
+
+	private String attribNetworkLinksSpeed= "SPEED";
+	private static final String ATTRIB_NETWORKLINKS_SPEED = "attribNetworkLinksSpeed";
+	private static final String ATTRIB_NETWORKLINKS_SPEED_CMT = "Column name convention identifying link speed (km/h) in links shapefile (Floating point, positive value in km/h).";
+
+	@StringGetter(ATTRIB_NETWORKLINKS_SPEED)
+	public String getAttribNetworkLinksSpeed() {
+		return attribNetworkLinksSpeed;
+	}
+
+	@StringSetter(ATTRIB_NETWORKLINKS_SPEED)
+	public void setAttribNetworkLinksSpeed(String attribNetworkLinksSpeed) {
+		this.attribNetworkLinksSpeed= attribNetworkLinksSpeed;
+	}
+	
+	// ==================================================================
+
+	private String attribNetworkLinksCapSES= "CAP_SES";
+	private static final String ATTRIB_NETWORKLINKS_CAPSES = "attribNetworkLinksCapSES";
+	private static final String ATTRIB_NETWORKLINKS_CAPSES_CMT = "Column name convention identifying TOTAL link evacuation capacity PER MINUTE  in links shapefile (Floating point, positive value).";
+
+	@StringGetter(ATTRIB_NETWORKLINKS_CAPSES)
+	public String getAttribNetworkLinksCapSES() {
+		return attribNetworkLinksCapSES;
+	}
+
+	@StringSetter(ATTRIB_NETWORKLINKS_CAPSES)
+	public void setAttribNetworkLinksCapSES(String attribNetworkLinksCapSES) {
+		this.attribNetworkLinksCapSES= attribNetworkLinksCapSES;
+	}
+	
+	// ==================================================================
+
+	private String attribNetworkLinksModes= "MODES";
+	private static final String ATTRIB_NETWORKLINKS_MODES = "attribNetworkLinksModes";
+	private static final String ATTRIB_NETWORKLINKS_MODES_CMT = "Column name convention identifying allowed modes in links shapefile (lowercase String values, no separating characters: w(alk) c(ar) b(us) r(ail).";
+
+	@StringGetter(ATTRIB_NETWORKLINKS_MODES)
+	public String getAttribNetworkLinksModes() {
+		return attribNetworkLinksModes;
+	}
+
+	@StringSetter(ATTRIB_NETWORKLINKS_MODES)
+	public void setAttribNetworkLinksModes(String attribNetworkLinksModes) {
+		this.attribNetworkLinksModes= attribNetworkLinksModes;
 	}
 
 	// ==================================================================

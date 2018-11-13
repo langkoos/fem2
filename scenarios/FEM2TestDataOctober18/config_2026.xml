@@ -11,16 +11,16 @@
             SUBSECTOR 	 String of the subsector name, needs to match exactly in other files.
             ALT_AHD 	 Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded. -->
         <param name="hydrographShapeFile"
-               value="2016/wma_ref_points_1_to_2056_link_V12_nodes_2016/wma_ref_points_1_to_2056_link_nodesV12_2016.shp"/>
+               value="2026/wma_ref_points_1_to_2056_link_nodesV12_2026_1/wma_ref_points_1_to_2056_link_nodesV12_2026_1.shp"/>
         <!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
         <param name="inputNetworkLinksShapefile"
-               value="2016/FEM2__TEST_Links_Scenrio1A_2016/FEM2__TEST_Links_Scenrio1A_2016.shp"/>
+               value="2026/FEM2__TEST_Links_Scenrio2C_2026/FEM2__TEST_Links_Scenrio2C_2026.shp"/>
         <!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
         <param name="inputNetworkNodesShapefile"
-               value="2016/FEM2_TEST_Nodes_2016/FEM2_TEST_Nodes_2016.shp"/>
+               value="2026/FEM2_TEST_Nodes_2026/FEM2_TEST_Nodes_2026.shp"/>
         <!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
         <param name="inputSubsectorsShapefile"
-               value="2016/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp"/>
+               value="2026/FEM2_Test_Subsectorvehicles_2026/FEM2_Test_Subsectorvehicles_2026.shp"/>
         <!-- Re-routing can probably be done at 0.01 sample size. -->
         <param name="sampleSize" value="1"/>
     </module>
@@ -69,7 +69,7 @@
         <param name="timeVariantNetwork" value="true"/>
     </module>
     <module name="controler">
-        <param name="outputDirectory" value="2016/output"/>
+        <param name="outputDirectory" value="2026/output"/>
         <param name="lastIteration" value="10"/>
 
     </module>

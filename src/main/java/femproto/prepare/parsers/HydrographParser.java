@@ -177,6 +177,7 @@ public class HydrographParser {
 			hydrographPointMap.remove(badkey);
 			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
 		}
+		log.info("Done removing bad hydrograph points...");
 	}
 
 	/**
@@ -184,6 +185,7 @@ public class HydrographParser {
 	 * David et al will remove excess points so that ultimately only a single point is associated with a subsector, which will make this method redundant.
 	 */
 	private void consolidateHydrographPointsByLink() {
+		log.info("Consolidating hydrograph data by link (some points are associated with a link, others with subsector's centroid connector, which can have multiple points ending up with the same link)");
 		consolidatedHydrographPointMap = new HashMap<>();
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
 			for (String linkId : hydrographPoint.getLinkIds()) {
@@ -206,9 +208,11 @@ public class HydrographParser {
 				}
 			}
 		}
+		log.info("Done consolidating hydrograph data by link");
 	}
 
 	public void hydrographToViaXY(String fileName) {
+		log.info("Writing hydrograph data to a human-readable file that shows the transitions at each point.");
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		try {
 			writer.write("ID\tX\tY\ttime\tflooded\n");
@@ -226,7 +230,7 @@ public class HydrographParser {
 			System.err.println("Something went wrong writing the XY plotfile.");
 			throw new RuntimeException();
 		}
-
+		log.info("Done writing hydrograph data to XY file.");
 	}
 
 	public void hydrographToViaLinkAttributesFromPointData(String fileName, Network network) {
@@ -323,6 +327,7 @@ public class HydrographParser {
 
 
 	public List<NetworkChangeEvent> networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network, String outputFileName) {
+		log.info("Generating network change events from hydrograph data...");
 		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
 		double maxTime = Double.NEGATIVE_INFINITY;
 		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
@@ -359,6 +364,7 @@ public class HydrographParser {
 		}
 
 		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
+		log.info("DONE Generating network change events from hydrograph data.");
 		return networkChangeEvents;
 	}
 

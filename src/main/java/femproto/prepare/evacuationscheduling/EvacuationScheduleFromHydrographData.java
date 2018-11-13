@@ -3,6 +3,7 @@ package femproto.prepare.evacuationscheduling;
 import femproto.prepare.parsers.HydrographParser;
 import femproto.prepare.parsers.HydrographPoint;
 import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -24,6 +25,7 @@ public final class EvacuationScheduleFromHydrographData {
 	private final EvacuationSchedule evacuationSchedule;
 	private final HydrographParser hydrographParser;
 	private final FEMPathCalculator femPathCalculator;
+	Logger log = Logger.getLogger(EvacuationScheduleFromHydrographData.class);
 
 	public EvacuationScheduleFromHydrographData(Network network, EvacuationSchedule evacuationSchedule, HydrographParser hydrographParser) {
 		this.network = network;
@@ -57,13 +59,18 @@ public final class EvacuationScheduleFromHydrographData {
 	 * before flooding starts.
 	 */
 	public void createEvacuationSchedule() {
+		log.info("Generating evacuation plan from hydrograph data...");
 		double lastPriorityEvacuationStartTime = 0;
 		Set<String> prioritySubsectors = new HashSet<>();
+		log.warn("About to check the shortest paths between evacuation nodes and priority safe nodes for flooding times.");
+		log.warn("This process will hang if the network is disconnected between these nodes.");
 		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
 
 			subsectorData.clearSafeNodesByTime();
 
 			Node prioritySafeNode = subsectorData.getSafeNodesByDecreasingPriority().iterator().next();
+			String message = "Checking the path for subsector %s which is supposed to evacuate from node %s to safe node %s";
+			log.info(String.format(message, subsectorData.getSubsector(),subsectorData.getEvacuationNode().getId().toString(),prioritySafeNode.getId().toString()));
 			LeastCostPathCalculator.Path path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
 					prioritySafeNode.getId(), 0);
 
@@ -90,7 +97,7 @@ public final class EvacuationScheduleFromHydrographData {
 		}
 		evacuationSchedule.createSchedule();
 		evacuationSchedule.completeAllocations();
-
+		log.info("DONE Generating evacuation plan from hydrograph data.");
 	}
 
 }
