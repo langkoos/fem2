@@ -290,7 +290,7 @@ public class FEMUtils {
 		// yoyo find an incoming link, preferably an EVAC_SES one.
 		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
 		for (Link link : node.getInLinks().values()) {
-			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(globalConfig.getattribEvacMarker())) {
+			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(globalConfig.getAttribEvacMarker())) {
 				endLink = link;
 			}
 		}

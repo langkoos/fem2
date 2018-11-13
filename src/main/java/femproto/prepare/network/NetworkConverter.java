@@ -38,8 +38,8 @@ public class NetworkConverter {
 	private static final double MIN_DISTANCE = 5.0;
 
 	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Proabably a global parameter in FEMATtributes
-	public static final String EVACUATION_LINK = "evacSES";
-	public static final String DESCRIPTION = "T_DES";
+	public static final String EVACUATION_LINK = FEMUtils.getGlobalConfig().getAttribEvacMarker();
+	public static final String DESCRIPTION = FEMUtils.getGlobalConfig().getAttribDescr();
 	private final String nodesFile;
 	private final String linksFile;
 
@@ -94,7 +94,28 @@ public class NetworkConverter {
 			}
 			// yoyo after discussion with DP, decided that we will not use randdom incoming link to evac node, but rather loop link
 			// in case random link leg start interferes with traffic
-			if ((Integer) feature.getAttribute(FEMUtils.getGlobalConfig().getattribEvacMarker()) == 1) {
+			int evacValue;
+			String attribEvacMarker = FEMUtils.getGlobalConfig().getAttribEvacMarker();
+			try {
+				evacValue = (int) feature.getAttribute(attribEvacMarker);
+			} catch (ClassCastException e) {
+				try {
+					evacValue = (int) (long) feature.getAttribute(attribEvacMarker);
+					String message = String.format("Column %s in links shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribEvacMarker);
+					log.warn(message);
+				} catch (ClassCastException e2) {
+					try {
+						evacValue = (int) (double) feature.getAttribute(attribEvacMarker);
+						String message = String.format("Column %s in links shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribEvacMarker);
+						log.warn(message);
+					} catch (ClassCastException e3) {
+						String message = String.format("Cannot convert %s in links shapefile to the appropriate data type (0-1 integer). Aborting.", attribEvacMarker);
+						log.error(message);
+						throw new RuntimeException(message);
+					}
+				}
+			}
+			if (evacValue == 1) {
 				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
 				link.setLength(1);
 				link.setNumberOfLanes(1);
@@ -168,7 +189,7 @@ public class NetworkConverter {
 	}
 
 	public void writeNetwork(String fileName) {
-		new NetworkWriter(scenario.getNetwork()).write(fileName );
+		new NetworkWriter(scenario.getNetwork()).write(fileName);
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.

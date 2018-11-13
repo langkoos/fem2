@@ -24,24 +24,7 @@
         <!-- Re-routing can probably be done at 0.01 sample size. -->
         <param name="sampleSize" value="1"/>
     </module>
-    <module name="FEMGlobal">
-        <!-- Column name convention identifying buffer time before flooding (Floating point value, hours). -->
-        <param name="attribLookAheadTime" value="LOOK_AHEAD"/>
-        <!-- Column name convention identifying links associated with hydrograph point (String value, comma-separated,no spaces) -->
-        <param name="attribHydrographLinkIds" value="links_ids"/>
-        <!-- Column name convention identifying hydrograph points in the shapefile (Integer value). -->
-        <param name="attribHydrographPointId" value="ID"/>
-        <!-- Column name convention identifying the chosen field identifying the ground level for flooding (Floating point value, assumed to be positive). -->
-        <param name="attribHydrographSelectedAltAHD" value="ALT_AHD"/>
-        <!-- Column name convention identifying subsectors (String value, spaces allowed but no leading or trailing spaces). -->
-        <param name="attribSubsector" value="SUBSECTOR"/>
-        <!-- Model convention for the naming of the activity for agents departing from an evacuation node. -->
-        <param name="evacuationActivity" value="evac"/>
-        <!-- The default rate at which agents are allowed to depart from the evacuation node (Floating point value, positive). -->
-        <param name="evacuationRate" value="600.0"/>
-        <!-- Model convention for the naming of the activity for agents arriving at a safe node. -->
-        <param name="safeActivity" value="safe"/>
-    </module>
+
     <module name="network">
         <param name="timeVariantNetwork" value="true"/>
     </module>

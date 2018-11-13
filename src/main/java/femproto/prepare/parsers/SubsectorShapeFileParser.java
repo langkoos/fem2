@@ -47,13 +47,13 @@ public class SubsectorShapeFileParser {
 			SimpleFeature feature = iterator.next();
 
 			// get subsector name from shp file
-			String subsector = feature.getAttribute("Subsector").toString();
+			String subsector = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribSubsector()).toString();
 
 			SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(subsector);
 
 			int subsectorVehicleCount;
 			try {
-				String totalvehic = "Totalvehic";
+				String totalvehic = FEMUtils.getGlobalConfig().getAttribTotalVehiclesForSubsector();
 				subsectorVehicleCount = (int) (double) feature.getAttribute(totalvehic);
 				log.info("Subsector " + subsector + " contains " + subsectorVehicleCount + " vehicles.");
 			} catch (NullPointerException ne) {
