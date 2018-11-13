@@ -36,6 +36,12 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 		map.put(ATTRIB_HYDROGRAPH_SELECTED_ALT_AHD, ATTRIB_HYDROGRAPH_SELECTED_ALT_AHD_CMT);
 		map.put(SAFE_ACTIVITY, SAFE_ACTIVITY_CMT);
 		map.put(EVACUATION_ACTIVITY, EVACUATION_ACTIVITY_CMT);
+		map.put(ATTRIB_NETWORKLINKS_I_NODE, ATTRIB_NETWORKLINKS_J_NODE_CMT);
+		map.put(ATTRIB_NETWORKLINKS_J_NODE, ATTRIB_NETWORKLINKS_J_NODE_CMT);
+		map.put(ATTRIB_EVAC_MARKER, ATTRIB_EVAC_MARKER_CMT);
+		map.put(ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR, ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR_CMT);
+		map.put(ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR, ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR_CMT);
+		map.put(ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR, ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR_CMT);
 		return map;
 	}
 
@@ -107,6 +113,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	public void setAttribHydrographPointId(String attribHydrographPointId) {
 		this.attribHydrographPointId = attribHydrographPointId;
 	}
+	
 	// ==================================================================
 
 	private String attribEvacMarker = "EVAC_SES";
@@ -114,19 +121,68 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	private static final String ATTRIB_EVAC_MARKER_CMT = "Column name convention identifying LINKS AND NODES for evacuation (Integer value, 0 or 1).";
 
 	@StringGetter(ATTRIB_EVAC_MARKER)
-	public String getattribEvacMarker() {
+	public String getAttribEvacMarker() {
 		return attribEvacMarker;
 	}
 
 	@StringSetter(ATTRIB_EVAC_MARKER)
-	public void setattribEvacMarker(String attribEvacMarker) {
+	public void setAttribEvacMarker(String attribEvacMarker) {
 		this.attribEvacMarker = attribEvacMarker;
 	}
+	
+	// ==================================================================
+	
+	private String attribEvacNodeIdForSubsector = "EVAC_NODE";
+	private static final String ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR = "attribEvacNodeIdForSubsector";
+	private static final String ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR_CMT = "Column name convention identifying evacuation node ID for a subsector in the suibsector shapefile (Integer value).";
+
+	@StringGetter(ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR)
+	public String getAttribEvacNodeIdForSubsector() {
+		return attribEvacNodeIdForSubsector;
+	}
+
+	@StringSetter(ATTRIB_EVAC_NODE_ID_FOR_SUBSECTOR)
+	public void setAttribEvacNodeIdForSubsector(String attribEvacNodeIdForSubsector) {
+		this.attribEvacNodeIdForSubsector = attribEvacNodeIdForSubsector;
+	}	
+	
+	// ==================================================================
+	
+	private String attribSafeNodeIdsForSubsector = "SAFE_NODES";
+	private static final String ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR = "attribSafeNodeIdsForSubsector";
+	private static final String ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR_CMT = "Column name convention identifying safe node IDs for a subsector in the subsector shapefile (Comma-separated integer values).";
+
+	@StringGetter(ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR)
+	public String getAttribSafeNodeIdsForSubsector() {
+		return attribSafeNodeIdsForSubsector;
+	}
+
+	@StringSetter(ATTRIB_SAFE_NODE_IDS_FOR_SUBSECTOR)
+	public void setAttribSafeNodeIdsForSubsector(String attribSafeNodeIdsForSubsector) {
+		this.attribSafeNodeIdsForSubsector = attribSafeNodeIdsForSubsector;
+	}
+	
+	// ==================================================================
+	
+	private String attribTotalVehiclesForSubsector = "TOTAL_VEH";
+	private static final String ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR = "attribTotalVehiclesForSubsector";
+	private static final String ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR_CMT = "Column name convention identifying number of vehicles per subsector in the subsector shapefile (Integer).";
+
+	@StringGetter(ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR)
+	public String getAttribTotalVehiclesForSubsector() {
+		return attribTotalVehiclesForSubsector;
+	}
+
+	@StringSetter(ATTRIB_TOTAL_VEHICLES_FOR_SUBSECTOR)
+	public void setAttribTotalVehiclesForSubsector(String attribTotalVehiclesForSubsector) {
+		this.attribTotalVehiclesForSubsector = attribTotalVehiclesForSubsector;
+	}
+	
 	// ==================================================================
 
 	private String attribDescr = "DESCR";
 	private static final String ATTRIB_DESCR = "attribDescr";
-	private static final String ATTRIB_DESCR_CMT = "Column name convention identifying node or link descriptions (Integer value, 0 or 1).";
+	private static final String ATTRIB_DESCR_CMT = "Column name convention identifying node or link descriptions (String).";
 
 	@StringGetter(ATTRIB_DESCR)
 	public String getAttribDescr() {
@@ -140,41 +196,41 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 
 	// ==================================================================
 
-	private String attribINode = "I_NODE";
-	private static final String ATTRIB_I_NODE = "attribINode";
-	private static final String ATTRIB_I_NODE_CMT = "Column name convention identifying 'from' node foreign key in links shapefile(Integer value).";
+	private String attribNetworkLinksINode = "I_NODE";
+	private static final String ATTRIB_NETWORKLINKS_I_NODE = "attribNetworkLinksINode";
+	private static final String ATTRIB_NETWORKLINKS_I_NODE_CMT = "Column name convention identifying 'from' node foreign key in links shapefile (Integer value).";
 
-	@StringGetter(ATTRIB_I_NODE)
-	public String getAttribINode() {
-		return attribINode;
+	@StringGetter(ATTRIB_NETWORKLINKS_I_NODE)
+	public String getAttribNetworkLinksINode() {
+		return attribNetworkLinksINode;
 	}
 
-	@StringSetter(ATTRIB_I_NODE)
-	public void setAttribINode(String attribINode) {
-		this.attribINode= attribINode;
-	}
-
-	// ==================================================================
-
-	private String attribJNode = "J_NODE";
-	private static final String ATTRIB_J_NODE = "attribJNode";
-	private static final String ATTRIB_J_NODE_CMT = "Column name convention identifying 'to' node foreign key in links shapefile(Integer value).";
-
-	@StringGetter(ATTRIB_J_NODE)
-	public String getAttribJNode() {
-		return attribJNode;
-	}
-
-	@StringSetter(ATTRIB_J_NODE)
-	public void setAttribJNode(String attribJNode) {
-		this.attribJNode= attribJNode;
+	@StringSetter(ATTRIB_NETWORKLINKS_I_NODE)
+	public void setAttribNetworkLinksINode(String attribNetworkLinksINode) {
+		this.attribNetworkLinksINode = attribNetworkLinksINode;
 	}
 
 	// ==================================================================
 
-	private String attribHydrographLinkIds = "links_ids";
+	private String attribNetworkLinksJNode = "J_NODE";
+	private static final String ATTRIB_NETWORKLINKS_J_NODE = "attribNetworkLinksJNode";
+	private static final String ATTRIB_NETWORKLINKS_J_NODE_CMT = "Column name convention identifying 'to' node foreign key in links shapefile (Integer value).";
+
+	@StringGetter(ATTRIB_NETWORKLINKS_J_NODE)
+	public String getAttribNetworkLinksJNode() {
+		return attribNetworkLinksJNode;
+	}
+
+	@StringSetter(ATTRIB_NETWORKLINKS_J_NODE)
+	public void setAttribNetworkLinksJNode(String attribNetworkLinksJNode) {
+		this.attribNetworkLinksJNode = attribNetworkLinksJNode;
+	}
+
+	// ==================================================================
+
+	private String attribHydrographLinkIds = "LINK_IDS";
 	private static final String ATTRIB_HYDROGRAPH_LINK_IDS = "attribHydrographLinkIds";
-	private static final String ATTRIB_HYDROGRAPH_LINK_IDS_CMT = "Column name convention identifying links associated with hydrograph point (String value, comma-separated,no spaces)";
+	private static final String ATTRIB_HYDROGRAPH_LINK_IDS_CMT = "Column name convention identifying links associated with hydrograph point (String value, comma-separated, no spaces)";
 
 	@StringGetter(ATTRIB_HYDROGRAPH_LINK_IDS)
 	public String getAttribHydrographLinkIds() {

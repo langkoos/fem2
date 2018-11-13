@@ -1,6 +1,7 @@
 package femproto.prepare.parsers;
 
 import com.google.inject.Inject;
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.evacuationscheduling.SubsectorData;
 import femproto.run.FEMUtils;
@@ -34,7 +35,7 @@ public class SubsectorShapeFileParser {
 		this.network = network;
 	}
 
-	public void readSubSectorsShapeFile(String fileName)  {
+	public void readSubSectorsShapeFile(String fileName) {
 		log.info("entering readSubSectorsShapeFile with fileName=" + fileName);
 
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
@@ -52,7 +53,8 @@ public class SubsectorShapeFileParser {
 
 			int subsectorVehicleCount;
 			try {
-				subsectorVehicleCount = (int) (double) feature.getAttribute("Totalvehic");
+				String totalvehic = "Totalvehic";
+				subsectorVehicleCount = (int) (double) feature.getAttribute(totalvehic);
 				log.info("Subsector " + subsector + " contains " + subsectorVehicleCount + " vehicles.");
 			} catch (NullPointerException ne) {
 				subsectorVehicleCount = 0;
@@ -75,10 +77,11 @@ public class SubsectorShapeFileParser {
 			}
 
 			String evacNodeFromShp;
+			String evacNodeIdForSubsector = FEMUtils.getGlobalConfig().getAttribEvacNodeIdForSubsector();
 			try {
-				evacNodeFromShp = feature.getAttribute("EVAC_NODE").toString();
+				evacNodeFromShp = feature.getAttribute(evacNodeIdForSubsector).toString();
 			} catch (NullPointerException ne) {
-				String message = "Subsector " + subsector + " has no " + "EVAC_NODE" + " attribute.";
+				String message = "Subsector " + subsector + " has no " + evacNodeIdForSubsector + " attribute.";
 				log.warn(message);
 				throw new RuntimeException(message);
 			}
@@ -90,10 +93,11 @@ public class SubsectorShapeFileParser {
 			}
 			subsectorData.setEvacuationNode(node);
 
-			for (String safeNodeId : feature.getAttribute("Safe_Nodes").toString().split(",")) {
+			String safe_nodes = FEMUtils.getGlobalConfig().getAttribSafeNodeIdsForSubsector();
+			for (String safeNodeId : feature.getAttribute(safe_nodes).toString().split(",")) {
 				Node safeNode = network.getNodes().get(Id.createNodeId(safeNodeId.trim()));
 				if (safeNode == null) {
-					String msg = "did not find evacNode for subsector " + subsector + " in matsim network file: " + safeNodeId;
+					String msg = String.format("Did not find safe node %s for subsector %s in matsim network. ", safeNodeId, subsector);
 					log.warn(msg);
 					throw new RuntimeException(msg);
 				}
