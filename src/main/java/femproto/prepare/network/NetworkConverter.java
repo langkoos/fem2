@@ -17,6 +17,7 @@ import org.matsim.api.core.v01.network.*;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -243,17 +244,11 @@ public class NetworkConverter {
 		String fileNameNoXML = fileName.split(".xml")[0];
 		log.info("Writing before and after NetworkCleaner versions of the network. Check for missing nodes and links if there are issues down the line... ");
 		new NetworkWriter(scenario.getNetwork()).write(fileName);
-//		Network network = NetworkUtils.createNetwork();
-//		for (Node node : scenario.getNetwork().getNodes().values()) {
-//			Node node1 = network.getFactory().createNode(node.getId(), node.getCoord());
-//			network.addNode(node1);
-//		}
-//		for (Link link : scenario.getNetwork().getLinks().values()) {
-//			network.addLink(link);
-//		}
-//
-//		NetworkUtils.runNetworkCleaner(network);
-//		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
+		Network network = NetworkUtils.createNetwork();
+		new MatsimNetworkReader(network).readFile(fileName);
+
+		NetworkUtils.runNetworkCleaner(network);
+		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
