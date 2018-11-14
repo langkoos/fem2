@@ -254,16 +254,18 @@ public class NetworkConverter {
 		new NetworkWriter(scenario.getNetwork()).write(fileName);
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(fileName);
-//		Set<Id<Link>> linkIds = new HashSet<>();
-//		linkIds.addAll(network.getLinks().keySet());
-//		for (Id<Link> linkId : linkIds) {
-//			if (!(boolean)network.getLinks().get(linkId).getAttributes().getAttribute(getGlobalConfig().getAttribEvacMarker()))
-//				network.removeLink(linkId);
-//		}
-
-
 		NetworkUtils.runNetworkCleaner(network);
 		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
+		Set<Id<Link>> linkIds = new HashSet<>();
+		linkIds.addAll(network.getLinks().keySet());
+		for (Id<Link> linkId : linkIds) {
+			if (!(boolean)network.getLinks().get(linkId).getAttributes().getAttribute(getGlobalConfig().getAttribEvacMarker()))
+				network.removeLink(linkId);
+		}
+		NetworkUtils.runNetworkCleaner(network);
+		new NetworkWriter(network).write(fileNameNoXML + "_evaconly_clean.xml");
+
+
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
