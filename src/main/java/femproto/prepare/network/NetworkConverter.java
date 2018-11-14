@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import femproto.globals.Gis;
 import femproto.run.FEMUtils;
@@ -167,7 +168,14 @@ public class NetworkConverter {
 			try {
 				Link link = networkFactory.createLink(Id.createLinkId(linkId), fromNode, toNode);
 				// yo if euclidean distance is substantially different then raise error
-				link.setLength(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLength()).toString()) * 1000);
+				double length = Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLength()).toString());
+				if(length <= 0.001){
+					String message = String.format("Link %s has length of only %f km, will likely cause Dijkstra to lock up",linkId,length);
+					log.error(message);
+					throw new RuntimeException(message);
+				}
+
+				link.setLength(length * 1000);
 				link.setNumberOfLanes(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLanes()).toString()));
 				link.setFreespeed(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksSpeed()).toString()) / 3.6);
 				link.setCapacity(Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksCapSES()).toString()) * 60);
@@ -246,6 +254,13 @@ public class NetworkConverter {
 		new NetworkWriter(scenario.getNetwork()).write(fileName);
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(fileName);
+//		Set<Id<Link>> linkIds = new HashSet<>();
+//		linkIds.addAll(network.getLinks().keySet());
+//		for (Id<Link> linkId : linkIds) {
+//			if (!(boolean)network.getLinks().get(linkId).getAttributes().getAttribute(getGlobalConfig().getAttribEvacMarker()))
+//				network.removeLink(linkId);
+//		}
+
 
 		NetworkUtils.runNetworkCleaner(network);
 		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
