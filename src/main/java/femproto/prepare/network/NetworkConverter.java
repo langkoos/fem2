@@ -151,8 +151,10 @@ public class NetworkConverter {
 
 		for (SimpleFeature feature : features) {
 			// yoyo client will refactor node ids to be integer not floating point
-			Id<Node> fromNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksINode()).toString()));
-			Id<Node> toNodeId = Id.createNodeId((long) Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksJNode()).toString()));
+			long fromNodeString = (long) Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksINode()).toString());
+			Id<Node> fromNodeId = Id.createNodeId(fromNodeString);
+			long toNodeString = (long) Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksJNode()).toString());
+			Id<Node> toNodeId = Id.createNodeId(toNodeString);
 			// yoyo needs more explicit and case specific exception handling
 			String linkId = feature.getAttribute("ID").toString();
 			Node fromNode = nodes.get(fromNodeId);
@@ -238,11 +240,20 @@ public class NetworkConverter {
 
 
 	public void writeNetwork(String fileName) {
-		fileName = fileName.split(".xml")[0];
+		String fileNameNoXML = fileName.split(".xml")[0];
 		log.info("Writing before and after NetworkCleaner versions of the network. Check for missing nodes and links if there are issues down the line... ");
-		new NetworkWriter(scenario.getNetwork()).write(fileName + "_before.xml");
-		NetworkUtils.runNetworkCleaner(scenario.getNetwork());
-		new NetworkWriter(scenario.getNetwork()).write(fileName + ".xml");
+		new NetworkWriter(scenario.getNetwork()).write(fileName);
+//		Network network = NetworkUtils.createNetwork();
+//		for (Node node : scenario.getNetwork().getNodes().values()) {
+//			Node node1 = network.getFactory().createNode(node.getId(), node.getCoord());
+//			network.addNode(node1);
+//		}
+//		for (Link link : scenario.getNetwork().getLinks().values()) {
+//			network.addLink(link);
+//		}
+//
+//		NetworkUtils.runNetworkCleaner(network);
+//		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
 //		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		// yyyy yoyo original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.

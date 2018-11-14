@@ -34,8 +34,8 @@ public class RunFromSource {
 //		ConfigUtils.writeMinimalConfig(config,"scenarios/FEM2TestDataOctober18/2016/config_2016.xml");
 		NetworkConverter networkConverter = new NetworkConverter(femConfigGroup.getInputNetworkNodesShapefile(), femConfigGroup.getInputNetworkLinksShapefile(), scenario);
 		networkConverter.run();
-		networkConverter.writeNetwork(outputDirectory + "/input_network.xml.gz");
-		config.network().setInputFile(outputDirectory + "/input_network.xml.gz");
+		networkConverter.writeNetwork(outputDirectory + "/input_network.xml");
+		config.network().setInputFile(outputDirectory + "/input_network.xml");
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
 		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(femConfigGroup.getInputSubsectorsShapefile());
