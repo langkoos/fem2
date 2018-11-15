@@ -44,7 +44,6 @@ public class RunFromSource {
 		hydrographParser.parseHydrographShapefile(femConfigGroup.getHydrographShapeFile());
 		hydrographParser.readHydrographData(femConfigGroup.getHydrographData());
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
-//		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt", scenario.getNetwork());
 
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");
 		config.network().setChangeEventsInputFile(outputDirectory + "/input_change_events.xml.gz");

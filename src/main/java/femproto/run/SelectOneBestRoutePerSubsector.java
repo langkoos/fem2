@@ -41,8 +41,9 @@ public class SelectOneBestRoutePerSubsector implements StartupListener,
 	public void notifyReplanning(ReplanningEvent event) {
 //	@Override public void notifyIterationEnds(IterationEndsEvent event) {
 
-		if(event.getIteration() < 0.8 * config.controler().getLastIteration())
-			return;
+		//route consensus should only happen after some iterations I think; at least all safe nodes need to have been run
+//		if(event.getIteration() < 0.5 * config.controler().getLastIteration())
+//			return;
 
 		Table<String, Id<Link>, Double> sums = HashBasedTable.create();
 		Table<String, Id<Link>, Double> cnts = HashBasedTable.create();
@@ -54,8 +55,9 @@ public class SelectOneBestRoutePerSubsector implements StartupListener,
 			// origin comes from the attributes (could, in theory, be persons on different links):
 			String subsector = FEMUtils.getSubsectorName(person);
 
-			// need to find consensus route, assuming single destination
-			for (Plan plan : person.getPlans()) {
+			// need to find consensus route, assuming single destination assigned by SelectOneBestSafeNodePerSubsector
+//			for (Plan plan : person.getPlans()) {
+			Plan plan = person.getSelectedPlan();
 				if (plan.getScore() != null) {
 					Leg leg = (Leg) plan.getPlanElements().get(1);
 					NetworkRoute route = (NetworkRoute) leg.getRoute();
@@ -75,7 +77,7 @@ public class SelectOneBestRoutePerSubsector implements StartupListener,
 						}
 					}
 				}
-			}
+//			}
 		}
 
 
@@ -125,13 +127,13 @@ public class SelectOneBestRoutePerSubsector implements StartupListener,
 				person.setSelectedPlan(unscoredPlan);
 			} else {
 				// else, set route as computed above, with the proportion of compliance increasing with increasing iterations:
-//				if (rnd.nextDouble() <= qualifyingProbability) {
+				if (rnd.nextDouble() <= qualifyingProbability) {
 					NetworkRoute bestRoute = bestRoutes.get(FEMUtils.getSubsectorName(person)).clone();
 					bestRoute.setVehicleId(Id.createVehicleId(person.getId().toString()));
 					Plan selectedPlan = person.getSelectedPlan();
 					Leg leg = (Leg) selectedPlan.getPlanElements().get(1);
 					leg.setRoute(bestRoute);
-//				}
+				}
 
 			}
 		}

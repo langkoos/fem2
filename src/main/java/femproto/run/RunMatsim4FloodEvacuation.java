@@ -19,6 +19,7 @@
 package femproto.run;
 
 import com.google.inject.Inject;
+import femproto.RerouteLastSelected;
 import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.evacuationscheduling.EvacuationScheduleFromExperiencedPlans;
@@ -44,6 +45,7 @@ import org.matsim.contrib.decongestion.DecongestionConfigGroup;
 import org.matsim.contrib.decongestion.DecongestionConfigGroup.DecongestionApproach;
 import org.matsim.contrib.decongestion.DecongestionConfigGroup.IntegralApproach;
 import org.matsim.contrib.decongestion.DecongestionModule;
+import org.matsim.contrib.decongestion.routing.TollTimeDistanceTravelDisutilityFactory;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
@@ -98,11 +100,12 @@ public class RunMatsim4FloodEvacuation {
 	// this is now deliberately programmed in a way that it does not give out the controler.  So
 	// at this point nobody can grab the controler and do her/his own "controler.run()".  This may
 	// be too restrictive, but for the time being this is what it is.  kai, jul'18
-	
+
 	private static final Logger log = Logger.getLogger( RunMatsim4FloodEvacuation.class );
-	
+
 	private static final String EVACUATION_SCHEDULE_FOR_VERIFICATION = "optimized_evacuationSchedule.csv";
-	
+	private static final String KEEP_LAST_REROUTE = "KeepLastReRoute";
+
 	private boolean hasLoadedConfig = false ;
 	private boolean hasPreparedConfig = false ;
 	private boolean hasPreparedScenario = false ;
@@ -112,7 +115,7 @@ public class RunMatsim4FloodEvacuation {
 	private FEMConfigGroup femConfig ;
 	private Scenario scenario ;
 	private Controler controler ;
-	
+
 	RunMatsim4FloodEvacuation() {
 		// catch log entries early (before the output directory is there):
 		OutputDirectoryLogging.catchLogEntries();
@@ -134,29 +137,29 @@ public class RunMatsim4FloodEvacuation {
 		hasPreparedScenario = true;
 
 	}
-	
+
 	Config loadConfig( final String[] args ) {
 		if ( args == null || args.length == 0 || args[0] == "" ) {
-			
+
 //			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-just-run-plans-file.xml" );
 //			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config.xml" );
 			config = ConfigUtils.loadConfig( "scenarios/00sandbox/00config.xml" );
-			
+
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
 //			config.plans().setInputFile("plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz");
 
 //			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
 //			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/00config-just-run-plans-file.xml" ) ;
-		
-		
+
+
 		} else {
 			log.info( "found an argument, thus loading config from file ..." );
 			config = ConfigUtils.loadConfig( args[0] );
 		}
-		
+
 		// ---
-		
+
 		hasLoadedConfig = true ;
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
 		//yoyo this needs to be marked as an essential step for the moment until injection works
@@ -167,33 +170,33 @@ public class RunMatsim4FloodEvacuation {
 		}
 		return config ;
 	}
-	
+
 	void prepareConfig() {
 		// division into loadConfig and prepareConfig is necessary since some configuration depends
 		// on (FEM)config switches, and thus external configuration-in-code needs to be done before
 		// prepareConfig.   kai, jul'18
-		
+
 		if ( !hasLoadedConfig ) {
 			loadConfig( null ) ;
 		}
 
 		femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
-		
+
 		// --- controler config group:
 		final int lastIteration = config.controler().getLastIteration();
 		//  should come from config file so user can change it.
 		// agree - fouriep nov 18
-		
+
 //		config.controler().setLastIteration( lastIteration );
-		
+
 		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
 		config.controler().setRoutingAlgorithmType( ControlerConfigGroup.RoutingAlgorithmType.FastDijkstra );
 		// yy landmarks algorithm does not work when network is disconnected.  kai, aug'18
-		
+
 		// --- strategies:
 		config.strategy().setMaxAgentPlanMemorySize( 0 );
-		
+
 		// --- routing:
 		{
 			Set<String> set = new HashSet<>();
@@ -206,14 +209,14 @@ public class RunMatsim4FloodEvacuation {
 		// --- qsim:
 		config.qsim().setRemoveStuckVehicles( false );
 		config.qsim().setStuckTime( 10 );
-		
+
 //		config.qsim().setEndTime(600 * 3600);
 		// not setting anything just means that the simulation means until everybody is safe or aborted. kai, apr'18
-		
+
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles( true );
 		// means that vehicles in driveways will squeeze into the congested traffic.  Otherwise they are
 		// not picked up by the decongestion approach.  kai, aug'18
-		
+
 		// --- scoring:
 		config.planCalcScore().setFractionOfIterationsToStartScoreMSA( 0.7 );
 		{
@@ -227,13 +230,32 @@ public class RunMatsim4FloodEvacuation {
 			config.planCalcScore().addActivityParams( params );
 		}
 		config.planCalcScore().setWriteExperiencedPlans( true );
-		
+
 		// --- fem:
-		
+
 		log.warn( "runType=" + femConfig.getFemRunType() ) ;
-		
+
 		switch( femConfig.getFemRunType() ) {
 			case runFromSource:
+				config.strategy().clearStrategySettings();
+				//yoyoyo  turning thhis off for now as not yet getting stable results
+//				{
+//					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
+//
+//					strategySettingsReroute.setStrategyName(KEEP_LAST_REROUTE);
+//					strategySettingsReroute.setWeight(0.2);
+//					strategySettingsReroute.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
+//					config.strategy().addStrategySettings(strategySettingsReroute);
+//				}
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
+					strategySettings.setWeight(0.7);
+					config.strategy().addStrategySettings(strategySettings);
+				}
+				// (here, all strategy selection is done in a separate controler listener.  kai, jul'18)
+				configureDecongestion( config );
+				break;
 			case optimizeSafeNodesBySubsector: {
 				config.strategy().clearStrategySettings();
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
@@ -277,43 +299,43 @@ public class RunMatsim4FloodEvacuation {
 			default:
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;
 		}
-		
+
 		MatsimRandom.reset();
 		// need this stable so that the sampling is stable.  not sure why it is unstable without this.  kai, sep'18
-		
+
 		// ---
 
 		hasPreparedConfig = true ;
 	}
-	
+
 	Scenario prepareScenario() {
 		if ( !hasPreparedConfig ) {
 			prepareConfig(  ) ;
 		}
-		
+
 		// === add overriding config material if there is something in that file:
 		ConfigUtils.loadConfig( config, ConfigGroup.getInputFileURL( config.getContext(), "overridingConfig.xml" ) );
-		
+
 		// === prepare scenario === :
-		
+
 		log.info("here10") ;
-		
+
 		scenario = ScenarioUtils.loadScenario( config );
-		
+
 		log.info("here20") ;
 
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
 
 //		new NetworkCleaner().run(scenario.getNetwork());
 		// yyyyyy fem2016 network seems to have unconnected pieces.
-		
+
 		// yyyyyy reduce to sample for debugging:
 		FEMUtils.sampleDown( scenario, femConfig.getSampleSize());
 		// yyyy decide how to do this for UI. kai, jul'18
 		// yyyy try running validation run always on 100%.  Does not work because 1% has subsectors with no departures, thus no safe node.
 		// woud need to have sub-sector-based stratified sampling.
 
-		
+
 		switch ( femConfig.getFemRunType() ) {
 			case runFromSource:
 			case justRunInputPlansFile:
@@ -324,7 +346,7 @@ public class RunMatsim4FloodEvacuation {
 				final String fileName = config.controler().getOutputDirectory() + "/" + FEMConfigGroup.FEMRunType.optimizeSafeNodesBySubsector + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION ;
 				final EvacuationSchedule evacSched = new EvacuationSchedule() ;
 				new EvacuationScheduleReader( evacSched, scenario.getNetwork() ).readFile( fileName );
-				
+
 				log.info("here40") ;
 
 				log.info("here50") ;
@@ -344,7 +366,7 @@ public class RunMatsim4FloodEvacuation {
 						throw new RuntimeException("somehow, there is no safe node for the subsector.  cannot deal with this in verification run.  Aborting ...");
 					}
 					final SafeNodeAllocation alloc = set.iterator().next(); // there should now be only one!
-					
+
 					final List<PlanElement> planElements = person.getSelectedPlan().getPlanElements();
 
 					// set evacuation time:
@@ -355,12 +377,12 @@ public class RunMatsim4FloodEvacuation {
 					// remove route so that it will be re-computed:
 					final Leg evacLeg = (Leg) planElements.get( 1 );
 					evacLeg.setRoute( null );
-					
+
 					// set safe node:
 					final Activity safeAct = (Activity) planElements.get(2) ;
 					safeAct.setLinkId( FEMUtils.getLinkFromSafeNode( alloc.getNode().getId().toString(), scenario ).getId()  );
 					// yy arrrggghhh ... kai, sep'18
-					
+
 				}
 				break;
 
@@ -370,7 +392,7 @@ public class RunMatsim4FloodEvacuation {
 				// yyyy will we get valid initial mappings?  kai, jul'18
 				break;
 		}
-		
+
 		switch( femConfig.getFemEvacuationTimeAdjustment() ) {
 			case takeTimesFromInput:
 				FEMUtils.haveOneAgentStartOneSecondEarlierThanEverybodyElse( scenario );
@@ -381,25 +403,25 @@ public class RunMatsim4FloodEvacuation {
 			default:
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;
 		}
-		
+
 		//		preparationsForRmitHawkesburyScenario();
-		
+
 		config.controler().setOutputDirectory( config.controler().getOutputDirectory() + "/" + femConfig.getFemRunType().name() );
 		// yyyy this needs to be _after_ the evac schedule was read in the verification run since otherwise I can't
 		// find the directory.  Probably do in some other way. kai, sep'18
-		
+
 		// ---
 		hasPreparedScenario = true ;
 		return scenario;
 	}
-	
+
 	void prepareControler( AbstractModule... overridingModules ) {
 		if ( !hasPreparedScenario ) {
 			prepareScenario() ;
 		}
-		
+
 		controler = new Controler( scenario );
-		
+
 		controler.addOverridingModule( new AbstractModule() {
 			@Override
 			public void install() {
@@ -428,11 +450,12 @@ public class RunMatsim4FloodEvacuation {
 //						addTravelTimeBinding(routingMode).to(WithinDayTravelTime.class) ;
 
 						// define how the travel disutility is computed:
-						TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory();
+//						TravelDisutilityFactory delegateFactory = new OnlyTimeDependentTravelDisutilityFactory();
 
-//						TravelDisutilityFactory delegateFactory = new TollTimeDistanceTravelDisutilityFactory() ;
+						TravelDisutilityFactory delegateFactory = new TollTimeDistanceTravelDisutilityFactory() ;
 						// NOT using the toll based travel disutility, since we are routing without toll, on the
 						// empty network, before the iterations start, and then never again.  kai, jul'18
+						// yoyo this changes because of new requirements pieter nov'18
 
 						addTravelDisutilityFactoryBinding( routingMode ).toInstance(
 								new FEMPreferEmergencyLinksTravelDisutility.Factory( scenario.getNetwork(), delegateFactory )
@@ -472,6 +495,7 @@ public class RunMatsim4FloodEvacuation {
 							case runFromEvacuationSchedule:
 								break;
 
+							case runFromSource:
 							case optimizeSafeNodesByPerson:
 							case optimizeSafeNodesBySubsector:
 								writer.writeEvacuationScheduleRecordNoVehiclesNoDurations( config.controler().getOutputDirectory() + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION ) ;
@@ -501,9 +525,9 @@ public class RunMatsim4FloodEvacuation {
 				// Could alternatively also optimize departure times.
 			}
 		} );
-		
+
 		// yyyy should have the infrastructure that is not needed for justRun only enabled for the other runs.  kai, jul'18
-		
+
 		switch( femConfig.getFemRunType() ) {
 			case optimizeSafeNodesBySubsector:
 				controler.addOverridingModule( new DecongestionModule( scenario ) );
@@ -523,27 +547,30 @@ public class RunMatsim4FloodEvacuation {
 			case justRunInputPlansFile:
 			case runFromSource:
 				controler.addOverridingModule( new DecongestionModule( scenario ) );
-//				controler.addOverridingModule( new AbstractModule() {
-//					@Override public void install() {
+				controler.addOverridingModule( new AbstractModule() {
+					@Override public void install() {
+						this.addControlerListenerBinding().to( SelectOneBestSafeNodePerSubsector.class );
+						//yoyoyo working towards decongestion rerouting - getting jumpy results when used in conjunction with the one best safe node per subsector strategy and enforcing the rule of everybody on the same route per subsector
 //						this.addControlerListenerBinding().to( SelectOneBestRoutePerSubsector.class );
-//					}
-//				} );
+//						addPlanStrategyBinding(KEEP_LAST_REROUTE).toProvider(RerouteLastSelected.class);
+					}
+				} );
 				break;
 			case runFromEvacuationSchedule:
 				break;
 			default:
 				throw new RuntimeException( Gbl.NOT_IMPLEMENTED ) ;
 		}
-		
+
 		// adding the overriding modules from external callers:
 		for ( AbstractModule overridingModule : overridingModules ) {
 			controler.addOverridingModule( overridingModule );
 		}
-		
+
 		// ---
 		hasPreparedControler = true ;
 	}
-	
+
 	private static void configureDecongestion( final Config config ) {
 		DecongestionConfigGroup decongestionSettings = ConfigUtils.addOrGetModule( config, DecongestionConfigGroup.class );
 		decongestionSettings.setEnableDecongestionPricing( true );
@@ -553,7 +580,7 @@ public class RunMatsim4FloodEvacuation {
 		decongestionSettings.setUpdatePriceInterval( 1 );
 		decongestionSettings.setMsa( false );
 		decongestionSettings.setTollBlendFactor( 1.0 );
-		
+
 		decongestionSettings.setDecongestionApproach( DecongestionApproach.PID );
 		decongestionSettings.setKd( 0.0 );
 		decongestionSettings.setKi( 0.0 );
@@ -562,39 +589,39 @@ public class RunMatsim4FloodEvacuation {
 //		decongestionSettings.setDecongestionApproach( DecongestionConfigGroup.DecongestionApproach.BangBang );
 //		decongestionSettings.setInitialToll(20.);
 //		decongestionSettings.setTollAdjustment(20.);
-		
+
 		// The BangBang approach does NOT work well for evacuation.  The PID approach does. kai, jul'18
-		
+
 		decongestionSettings.setIntegralApproach( IntegralApproach.UnusedHeadway );
 		decongestionSettings.setIntegralApproachUnusedHeadwayFactor( 10.0 );
 		decongestionSettings.setIntegralApproachAverageAlpha( 0.0 );
-		
+
 		decongestionSettings.setWriteOutputIteration( 100 );
 	}
-	
+
 	public static void main( String[] args ) {
 		// The GUI executes the "main" method, with the config file name as the only argument.
-		
+
 		final RunMatsim4FloodEvacuation evac = new RunMatsim4FloodEvacuation();
-		
+
 		evac.loadConfig( args ) ;
 		// (yy this type of short script would point towards having the args in the constructor. kai, jul'18)
-		
+
 		evac.run() ;
-		
+
 	}
-	
+
 	void run() {
 		if ( !hasPreparedControler ) {
 			prepareControler(  );
 		}
-		
+
 		controler.run();
-		
+
 		// need to do this fairly late since otherwise the directory is wiped out again when the controler gets going. kai, apr'18
 		final String filename = controler.getConfig().controler().getOutputDirectory() + "/output_linkAttribs.txt.gz";
 		log.info( "will write link attributes to " + filename );
-		
+
 		try ( BufferedWriter writer = IOUtils.getBufferedWriter( filename ) ) {
 			writer.write( "id\t" + NetworkConverter.EVACUATION_LINK );
 			writer.newLine();
@@ -607,17 +634,17 @@ public class RunMatsim4FloodEvacuation {
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
 
 }
-	
+
 class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScoring {
 		// the difference of this one to V1 is that it is heavily penalized to leave the evac network and
 		// then re-enter it again.  penalizing things like shortcutting through ferry links, or through
 		// centroid connectors.  kai, jul'18
-		
+
 		private final TravelDisutility travelDisutility;
 		private final Person person;
 		private final Network network;
@@ -625,30 +652,30 @@ class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScorin
 		private Link prevLink = null;
 		private boolean hasBeenOnEvacNetwork = false;
 		private boolean hasLeftEvacNetworkAfterHavingBeenOnIt = false;
-		
+
 		NonevacLinksPenalizerV2( TravelDisutility travelDisutility, Person person, Network network ) {
 			this.travelDisutility = travelDisutility;
 			this.person = person;
 			this.network = network;
 		}
-		
+
 		@Override
 		public void finish() {
 		}
-		
+
 		@Override
 		public double getScore() {
 			return score;
 		}
-		
+
 		@Override
 		public void handleEvent( Event event ) {
 			if ( event instanceof LinkEnterEvent ) {
 				// (by the framework, only link events where the person is involved (as driver or passenger) end up here!)
-				
+
 				Link link = network.getLinks().get( ( (LinkEnterEvent) event ).getLinkId() );
 				score -= ( (FEMPreferEmergencyLinksTravelDisutility) travelDisutility ).getAdditionalLinkTravelDisutility( link, event.getTime(), person, null );
-				
+
 				if ( isEvacLink( link ) ) {
 					hasBeenOnEvacNetwork = true;
 				}
@@ -661,38 +688,38 @@ class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScorin
 						score -= 100000.;
 					}
 				}
-				
+
 				prevLink = link;
 			}
 		}
 }
-	
+
 class NonevacLinksPenalizerV1 implements SumScoringFunction.ArbitraryEventScoring {
 		private final TravelDisutility travelDisutility;
 		private final Person person;
 		private final Network network;
 		private double score = 0.;
-		
+
 		NonevacLinksPenalizerV1( TravelDisutility travelDisutility, Person person, Network network ) {
 			this.travelDisutility = travelDisutility;
 			this.person = person;
 			this.network = network;
 		}
-		
+
 		@Override
 		public void finish() {
 		}
-		
+
 		@Override
 		public double getScore() {
 			return score;
 		}
-		
+
 		@Override
 		public void handleEvent( Event event ) {
 			if ( event instanceof LinkEnterEvent ) {
 				// (by the framework, only link events where the person is involved (as driver or passenger) end up here!)
-				
+
 				Link link = network.getLinks().get( ( (LinkEnterEvent) event ).getLinkId() );
 				score -= ( (FEMPreferEmergencyLinksTravelDisutility) travelDisutility ).getAdditionalLinkTravelDisutility( link, event.getTime(), person, null );
 			}
@@ -705,7 +732,7 @@ class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFact
 		@Inject private Map<String,TravelDisutilityFactory> travelDisutilityFactories ;
 		@Inject private Map<String, TravelTime> travelTimes ;
 		@Inject private Network network ;
-		
+
 		@Override public ScoringFunction createNewScoringFunction( Person person) {
 
 			final ScoringParameters parameters = params.getScoringParameters( person );

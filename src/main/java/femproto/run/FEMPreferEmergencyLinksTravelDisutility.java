@@ -27,6 +27,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.gbl.Gbl;
+import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
@@ -93,7 +94,11 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		public TravelDisutility createTravelDisutility(TravelTime timeCalculator) {
 			TravelDisutility delegate = null ;
 			if ( delegateFactory!=null ) {
-				delegate = delegateFactory.createTravelDisutility(timeCalculator);
+				try {
+					delegate = delegateFactory.createTravelDisutility(timeCalculator);
+				}catch (NullPointerException ne){
+					delegate = new OnlyTimeDependentTravelDisutilityFactory().createTravelDisutility(timeCalculator);
+				}
 			}
 			final FEMPreferEmergencyLinksTravelDisutility femPreferEmergencyLinksTravelDisutility =
 					new FEMPreferEmergencyLinksTravelDisutility(timeCalculator, specialLinks, delegate);
