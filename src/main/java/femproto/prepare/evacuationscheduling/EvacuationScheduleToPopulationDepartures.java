@@ -130,23 +130,25 @@ public final class EvacuationScheduleToPopulationDepartures {
 					// for playing follow the leader
 					if(i==0){
 						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
+						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
 						subsectorLeader = person;
 					}else {
 						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
+						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
 						person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
 					}
 
 					FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
 					Plan plan = pf.createPlan();
 
-					Activity startAct = pf.createActivityFromLinkId("evac", startLink.getId());
+					Activity startAct = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getEvacuationActivity(), startLink.getId());
 					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / subsectorData.getLookAheadTime()));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
 					plan.addLeg(evacLeg);
 
-					Activity safe = pf.createActivityFromLinkId("safe", safeLink.getId());
+					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
 					plan.addActivity(safe);
 
 
@@ -185,9 +187,11 @@ public final class EvacuationScheduleToPopulationDepartures {
 				// for playing follow the leader
 				if(i==0){
 					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
+					scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
 					subsectorLeader = person;
 				}else {
 					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
+					scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
 					person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
 				}
 				FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);

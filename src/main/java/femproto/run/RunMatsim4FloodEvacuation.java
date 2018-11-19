@@ -250,7 +250,7 @@ public class RunMatsim4FloodEvacuation {
 
 					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
 					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettingsReroute.setWeight(0.3);
+					strategySettingsReroute.setWeight(0.2);
 					strategySettingsReroute.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
 					config.strategy().addStrategySettings(strategySettingsReroute);
 				}
@@ -258,18 +258,12 @@ public class RunMatsim4FloodEvacuation {
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
 					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
-					strategySettings.setWeight(0.7);
+					strategySettings.setWeight(0.8);
 					config.strategy().addStrategySettings(strategySettings);
 				}
 				{
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
-					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-					strategySettings.setWeight(1);
-					config.strategy().addStrategySettings(strategySettings);
-				}
-				{
-					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
 					strategySettings.setWeight(1);
 					config.strategy().addStrategySettings(strategySettings);
