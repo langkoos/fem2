@@ -195,7 +195,14 @@ public class RunMatsim4FloodEvacuation {
 		// yy landmarks algorithm does not work when network is disconnected.  kai, aug'18
 
 		// --- strategies:
-		config.strategy().setMaxAgentPlanMemorySize( 0 );
+		switch( femConfig.getFemRunType() ) {
+			//yoyo will need some planremovalselector that will maintain diversity of destinations; setting memory to a relatively large value for now, and using BestScore plan selection
+			case runFromSource:
+				config.strategy().setMaxAgentPlanMemorySize(10);
+			default:
+				config.strategy().setMaxAgentPlanMemorySize(0);
+				break;
+		}
 
 		// --- routing:
 		{
@@ -238,19 +245,33 @@ public class RunMatsim4FloodEvacuation {
 		switch( femConfig.getFemRunType() ) {
 			case runFromSource:
 				config.strategy().clearStrategySettings();
-				//yoyoyo  turning thhis off for now as not yet getting stable results
-//				{
-//					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
-//
-//					strategySettingsReroute.setStrategyName(KEEP_LAST_REROUTE);
-//					strategySettingsReroute.setWeight(0.2);
-//					strategySettingsReroute.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
-//					config.strategy().addStrategySettings(strategySettingsReroute);
-//				}
+				{
+					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
+
+					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
+					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettingsReroute.setWeight(0.3);
+					strategySettingsReroute.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
+					config.strategy().addStrategySettings(strategySettingsReroute);
+				}
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
+					strategySettings.setWeight(0.7);
+					config.strategy().addStrategySettings(strategySettings);
+				}
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
+					strategySettings.setWeight(1);
+					config.strategy().addStrategySettings(strategySettings);
+				}
 				{
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-					strategySettings.setWeight(0.7);
+					strategySettings.setWeight(1);
 					config.strategy().addStrategySettings(strategySettings);
 				}
 				// (here, all strategy selection is done in a separate controler listener.  kai, jul'18)
@@ -549,8 +570,10 @@ public class RunMatsim4FloodEvacuation {
 				controler.addOverridingModule( new DecongestionModule( scenario ) );
 				controler.addOverridingModule( new AbstractModule() {
 					@Override public void install() {
-						this.addControlerListenerBinding().to( SelectOneBestSafeNodePerSubsector.class );
-						//yoyoyo working towards decongestion rerouting - getting jumpy results when used in conjunction with the one best safe node per subsector strategy and enforcing the rule of everybody on the same route per subsector
+						this.addControlerListenerBinding().to( SelectedPlanFromSubsectorLeadAgents.class );
+
+						//these methods didn't seem to work,
+						// working towards decongestion rerouting - getting jumpy results when used in conjunction with the one best safe node per subsector strategy and enforcing the rule of everybody on the same route per subsector
 //						this.addControlerListenerBinding().to( SelectOneBestRoutePerSubsector.class );
 //						addPlanStrategyBinding(KEEP_LAST_REROUTE).toProvider(RerouteLastSelected.class);
 					}

@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import femproto.prepare.parsers.EvacuationToSafeNodeParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import femproto.run.FEMUtils;
+import femproto.run.LeaderOrFollower;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -122,8 +123,19 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 				int totalVehicles = safeNodeAllocation.getVehicles();
 				int safeNodeAllocationPaxCounter = 0;
+				Person subsectorLeader = null;
 				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
+					// for playing follow the leader
+					// for playing follow the leader
+					if(i==0){
+						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
+						subsectorLeader = person;
+					}else {
+						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
+						person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
+					}
+
 					FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
 					Plan plan = pf.createPlan();
 
@@ -166,12 +178,17 @@ public final class EvacuationScheduleToPopulationDepartures {
 			double startTime = subsectorData.getSafeNodesByTime().iterator().next().getStartTime();
 
 			Set<Node> safeNodesByDecreasingPriority = subsectorData.getSafeNodesByDecreasingPriority();
+			Person subsectorLeader = null;
 			for (int i = 0; i < subsectorData.getVehicleCount(); i++) {
 				Person person = pf.createPerson(Id.createPersonId(personCnt++));
 
 				// for playing follow the leader
 				if(i==0){
-					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),"leader");
+					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
+					subsectorLeader = person;
+				}else {
+					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
+					person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
 				}
 				FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
 				for (Node safeNode : safeNodesByDecreasingPriority) {
