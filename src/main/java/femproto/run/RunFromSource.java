@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
@@ -35,7 +36,7 @@ public class RunFromSource {
 		NetworkConverter networkConverter = new NetworkConverter(femConfigGroup.getInputNetworkNodesShapefile(), femConfigGroup.getInputNetworkLinksShapefile(), scenario);
 		networkConverter.run();
 		networkConverter.writeNetwork(outputDirectory + "/input_network.xml");
-		config.network().setInputFile(outputDirectory + "/input_network.xml");
+		config.network().setInputFile("input_network.xml");
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
 		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(femConfigGroup.getInputSubsectorsShapefile());
@@ -46,7 +47,7 @@ public class RunFromSource {
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");
-		config.network().setChangeEventsInputFile(outputDirectory + "/input_change_events.xml.gz");
+		config.network().setChangeEventsInputFile("input_change_events.xml.gz");
 		NetworkUtils.setNetworkChangeEvents(scenario.getNetwork(), networkChangeEvents);
 
 		new EvacuationScheduleFromHydrographData(scenario.getNetwork(), evacuationSchedule, hydrographParser).createEvacuationSchedule();
@@ -57,9 +58,10 @@ public class RunFromSource {
 //		populationDepartures.createPlans();
 		populationDepartures.createPlansForAllSafeNodes();
 		populationDepartures.writePopulation(outputDirectory + "/input_population.xml.gz");
-		config.plans().setInputFile(outputDirectory + "/input_population.xml.gz");
+		config.plans().setInputFile("input_population.xml.gz");
 
-		config.controler().setOutputDirectory(outputDirectory + "/output");
+		config.controler().setOutputDirectory(outputDirectory+"/output");
+		new ConfigWriter(config, ConfigWriter.Verbosity.minimal).write(outputDirectory + "/config.xml");
 
 		new RunMatsim4FloodEvacuation(scenario).run();
 

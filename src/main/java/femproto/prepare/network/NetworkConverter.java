@@ -42,7 +42,6 @@ public class NetworkConverter {
 
 	private static final double MIN_DISTANCE = 5.0;
 
-	// yoyoyo need consistency in the labelling of attributes so they are the same as in the EMME shapefile. Proabably a global parameter in FEMATtributes
 	public static final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
 	public static final String DESCRIPTION = getGlobalConfig().getAttribDescr();
 	private final String nodesFile;

@@ -29,7 +29,7 @@ public class RunFromSourceTest {
 
 	@Test
 	public void runFromSource() throws IOException {
-		Config config = ConfigUtils.loadConfig("scenarios/FEM2TestDataOctober18/2016/config_2016.xml");
+		Config config = ConfigUtils.loadConfig("scenarios/FEM2TestDataOctober18/config_2016.xml");
 		new File(config.controler().getOutputDirectory()).mkdirs();
 		Scenario scenario = ScenarioUtils.createScenario(config);
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);

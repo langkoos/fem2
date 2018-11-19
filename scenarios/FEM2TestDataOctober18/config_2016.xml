@@ -5,7 +5,7 @@
         <!-- FEM run type.  Options: justRunInputPlansFile runFromEvacuationSchedule runFromSource optimizeSafeNodesByPerson optimizeSafeNodesBySubsector  -->
         <param name="FEMRunType" value="runFromSource"/>
         <!-- CSV file containing hydrograph data. First column is time in hours, subsequent columns have the ID of the associated hydrograph point in the first line and floating point values in subsequent lines denoting water level in AHD. -->
-        <param name="hydrographData" value="wma-flood-events/Exg/d00045_H_TS.csv"/>
+        <param name="hydrographData" value="wma-flood-events/Exg/d00229_H_TS.csv"/>
         <!-- Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields:
             ID 		 Integer unique id of point            links_ids 	 [sic, this typo now sticks] String referring to EMME link ids.
             SUBSECTOR 	 String of the subsector name, needs to match exactly in other files.
@@ -70,7 +70,7 @@
     </module>
     <module name="controler">
         <param name="outputDirectory" value="2016/output"/>
-        <param name="lastIteration" value="10"/>
+        <param name="lastIteration" value="20"/>
 
     </module>
 

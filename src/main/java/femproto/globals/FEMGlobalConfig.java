@@ -15,7 +15,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 		super(NAME);
 	}
 
-	public static FEMGlobalConfig getGlobalConfig(){
+	public static FEMGlobalConfig getDefaultGlobalConfig(){
 		Config config = ConfigUtils.createConfig();
 		return ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
 	}

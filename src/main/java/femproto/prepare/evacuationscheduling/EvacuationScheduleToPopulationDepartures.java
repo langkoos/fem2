@@ -154,11 +154,11 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
 
-			if (subsectorData.getVehicleCount() <= 0){
-				log.warn(String.format("Subsector %s has no vehicles associated with it.",subsectorData.getSubsector()));
+			if (subsectorData.getVehicleCount() <= 0) {
+				log.warn(String.format("Subsector %s has no vehicles associated with it.", subsectorData.getSubsector()));
 				continue;
 			}
-			if (subsectorData.getSafeNodesByTime().size() == 0 ){
+			if (subsectorData.getSafeNodesByTime().size() == 0) {
 				String message = String.format("Subsector %s has no safe nodes associated with it.", subsectorData.getSubsector());
 				log.error(message);
 				throw new RuntimeException(message);
@@ -168,6 +168,11 @@ public final class EvacuationScheduleToPopulationDepartures {
 			Set<Node> safeNodesByDecreasingPriority = subsectorData.getSafeNodesByDecreasingPriority();
 			for (int i = 0; i < subsectorData.getVehicleCount(); i++) {
 				Person person = pf.createPerson(Id.createPersonId(personCnt++));
+
+				// for playing follow the leader
+				if(i==0){
+					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),"leader");
+				}
 				FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
 				for (Node safeNode : safeNodesByDecreasingPriority) {
 

@@ -1,5 +1,6 @@
 package femproto.prepare.demand;
 
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.parsers.EvacuationToSafeNodeMapping;
 import femproto.globals.Gis;
 import femproto.run.FEMUtils;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
-
+@Deprecated
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
 	
@@ -35,6 +36,7 @@ public class SubSectorsToPopulation {
 	private SubSectorsToPopulation() {
 //		log.setLevel(Level.DEBUG);
 		this.scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
+		FEMUtils.setGlobalConfig(ConfigUtils.addOrGetModule(scenario.getConfig(),FEMGlobalConfig.class));
 	}
 	
 	public static void main(String[] args) throws IOException {

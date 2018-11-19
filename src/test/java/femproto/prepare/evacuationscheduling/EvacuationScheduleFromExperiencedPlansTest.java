@@ -2,6 +2,8 @@ package femproto.prepare.evacuationscheduling;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import femproto.globals.FEMGlobalConfig;
+import femproto.run.FEMUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.api.core.v01.Id;
@@ -23,6 +25,10 @@ import java.util.Map;
 public class EvacuationScheduleFromExperiencedPlansTest {
 	@Rule
 	public MatsimTestUtils utils = new MatsimTestUtils() ;
+	{
+		if (FEMUtils.getGlobalConfig() == null)
+			FEMUtils.setGlobalConfig(FEMGlobalConfig.getDefaultGlobalConfig());
+	}
 	@Test
 	public void test() {
 		String networkFile = "test/input/femproto/prepare/evacuationscheduling/output_network.xml.gz";

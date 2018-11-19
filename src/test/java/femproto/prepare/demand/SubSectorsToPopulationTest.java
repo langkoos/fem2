@@ -11,7 +11,7 @@ public class SubSectorsToPopulationTest {
 	@Test
 	public void readBadSubSectorsShapeFile() throws Exception {
 		String dir = utils.getPackageInputDirectory() + "/2016_scenario_1A_v20180706/";
-		final String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz" ;
+		final String networkFile = "scenarios/fem2016_v20180706/input_network.xml" ;
 //		final String networkFile = "scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz" ;
 		final String inputShapeFile = dir+ "hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp" ;
 		final String evacNodesFile = dir + "2016_subsectors_safe_node_mapping.txt" ;
