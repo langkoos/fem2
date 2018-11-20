@@ -258,7 +258,15 @@ public class RunMatsim4FloodEvacuation {
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
 					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
+					strategySettings.setWeight(0.001);
+					config.strategy().addStrategySettings(strategySettings);
+				}
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
 					strategySettings.setWeight(0.8);
+					strategySettings.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
 					config.strategy().addStrategySettings(strategySettings);
 				}
 				{
