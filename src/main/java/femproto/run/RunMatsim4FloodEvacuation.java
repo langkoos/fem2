@@ -250,8 +250,17 @@ public class RunMatsim4FloodEvacuation {
 
 					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
 					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettingsReroute.setWeight(0.2);
-					strategySettingsReroute.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
+					strategySettingsReroute.setWeight(0.1);
+					strategySettingsReroute.setDisableAfter((int) (0.7*config.controler().getLastIteration()));
+					config.strategy().addStrategySettings(strategySettingsReroute);
+				}
+				{
+					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
+
+					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
+					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettingsReroute.setWeight(0.3);
+					strategySettingsReroute.setDisableAfter((int) (0.5*config.controler().getLastIteration()));
 					config.strategy().addStrategySettings(strategySettingsReroute);
 				}
 				{
@@ -264,9 +273,9 @@ public class RunMatsim4FloodEvacuation {
 				{
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
-					strategySettings.setWeight(0.8);
-					strategySettings.setDisableAfter((int) (0.8*config.controler().getLastIteration()));
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectExpBeta);
+					strategySettings.setWeight(0.7);
+					strategySettings.setDisableAfter((int) (0.9*config.controler().getLastIteration()));
 					config.strategy().addStrategySettings(strategySettings);
 				}
 				{

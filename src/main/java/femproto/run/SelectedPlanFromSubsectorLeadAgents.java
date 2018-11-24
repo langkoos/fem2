@@ -32,9 +32,13 @@ public class SelectedPlanFromSubsectorLeadAgents implements ReplanningListener, 
 			if (!person.getAttributes().getAttribute(scenario.getConfig().plans().getSubpopulationAttributeName()).equals(LeaderOrFollower.LEADER.name())) {
 				Id<Person> leaderId = Id.createPersonId(person.getAttributes().getAttribute(LeaderOrFollower.LEADER.name()).toString());
 				Person leader = scenario.getPopulation().getPersons().get(leaderId);
-				Id<Link> safeLinkId = PopulationUtils.getLastActivity(leader.getSelectedPlan()).getLinkId();
+				try {
+					Id<Link> safeLinkId = PopulationUtils.getLastActivity(leader.getSelectedPlan()).getLinkId();
 				PopulationUtils.getLastActivity(person.getSelectedPlan()).setLinkId(safeLinkId);
 
+				}catch (NullPointerException ne){
+					System.out.println();
+				}
 				Leg leaderLeg = (Leg) leader.getSelectedPlan().getPlanElements().get(1);
 				NetworkRoute networkRoute = ((NetworkRoute) leaderLeg.getRoute()).clone();
 				networkRoute.setVehicleId(Id.createVehicleId(person.getId().toString()));

@@ -129,7 +129,7 @@ public class HydrographParser {
 	 *
 	 * @param fileName
 	 */
-	public void readHydrographData(String fileName) {
+	public void readHydrographData(String fileName, int offsetTime) {
 		BufferedReader reader = IOUtils.getBufferedReader(fileName);
 		List<List<Double>> entries = new ArrayList<>();
 		String[] header;
@@ -163,7 +163,7 @@ public class HydrographParser {
 			if (hydrographPoint != null) {
 				for (int j = 2; j < entries.get(i).size(); j++) {
 					//  it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime, entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime + offsetTime, entries.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
 			}

@@ -47,7 +47,7 @@ public class RunFromSourceTest {
 
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
 		hydrographParser.parseHydrographShapefile(femConfigGroup.getHydrographShapeFile());
-		hydrographParser.readHydrographData(femConfigGroup.getHydrographData());
+		hydrographParser.readHydrographData(femConfigGroup.getHydrographData(), 36000);
 		hydrographParser.hydrographToViaXY(config.controler().getOutputDirectory()+"/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(config.controler().getOutputDirectory()+"/hydrograph_linkID_time.txt",scenario.getNetwork());
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), config.controler().getOutputDirectory() + "/input_change_events.xml.gz");

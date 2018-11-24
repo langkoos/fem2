@@ -64,23 +64,45 @@ public final class EvacuationScheduleFromHydrographData {
 		Set<String> prioritySubsectors = new HashSet<>();
 		log.warn("About to check the shortest paths between evacuation nodes and priority safe nodes for flooding times.");
 		log.warn("This process will hang if the network is disconnected between these nodes.");
+
+		double latestFloodTime = Double.NEGATIVE_INFINITY;
+		for (HydrographPoint hydrographPoint : hydrographParser.getConsolidatedHydrographPointMap().values()) {
+			latestFloodTime = Math.max(latestFloodTime, hydrographPoint.getFloodTime());
+		}
+
 		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
 
 			subsectorData.clearSafeNodesByTime();
 
 			Node prioritySafeNode = subsectorData.getSafeNodesByDecreasingPriority().iterator().next();
 			String message = "Checking the path for subsector %s which is supposed to evacuate from node %s to safe node %s";
-			log.info(String.format(message, subsectorData.getSubsector(),subsectorData.getEvacuationNode().getId().toString(),prioritySafeNode.getId().toString()));
-			LeastCostPathCalculator.Path path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+			log.info(String.format(message, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), prioritySafeNode.getId().toString()));
+			LeastCostPathCalculator.Path path;
+			path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+					prioritySafeNode.getId(), latestFloodTime + 1);
+			LeastCostPathCalculator.Path freePath = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
 					prioritySafeNode.getId(), 0);
-
 			double floodTime = Double.POSITIVE_INFINITY;
-			for (Link link : path.links) {
-				HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(link.getId().toString());
-				if (hydrographPoint != null && hydrographPoint.getFloodTime() > 0)
-					floodTime = Math.min(floodTime, hydrographPoint.getFloodTime());
-
+			if (path.travelTime - freePath.travelTime > 3 * 3600) {
+				floodTime = latestFloodTime;
+				while (path.travelTime - freePath.travelTime > 3 * 3600) {
+					path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+							prioritySafeNode.getId(), floodTime);
+					floodTime -= 60;
+				}
 			}
+
+			// yoyo subsector flooding trumps path flooding
+			HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(path.links.get(0).getFromNode().getId().toString());
+			if (hydrographPoint != null && hydrographPoint.getFloodTime() > 0) {
+				floodTime = Math.min(floodTime, hydrographPoint.getFloodTime());
+			}
+//			for (Link link : path.links) {
+//				HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(link.getId().toString());
+//				if (hydrographPoint != null && hydrographPoint.getFloodTime() > 0)
+//					floodTime = Math.min(floodTime, hydrographPoint.getFloodTime());
+//
+//			}
 
 			if (floodTime < Double.POSITIVE_INFINITY) {
 				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime(), prioritySafeNode);
