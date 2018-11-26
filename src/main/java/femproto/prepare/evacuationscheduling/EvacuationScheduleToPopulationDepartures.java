@@ -207,8 +207,9 @@ public final class EvacuationScheduleToPopulationDepartures {
 					person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
 				}
 				FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
+				int priority=-1;
 				for (Node safeNode : safeNodesByDecreasingPriority) {
-
+					priority++;
 
 					// find a qualifying outgoing link
 					// this is now the dummy link associated with the subsector - pieter nov'18
@@ -257,7 +258,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
 					plan.addActivity(safe);
-
+					plan.getAttributes().putAttribute("priority",priority);
 
 					person.addPlan(plan);
 				}
@@ -272,7 +273,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 	}
 
 
-	private void writeAttributes(String fileName) {
+	public void writeAttributes(String fileName) {
 		// yoyo writing out attributes to a separate file for diagnostics
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);
 		try {

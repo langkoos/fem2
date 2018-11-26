@@ -55,7 +55,7 @@ public final class EvacuationScheduleFromHydrographData {
 	/**
 	 * This goes through each subsector in the input schedule, then checks the path to its first safe node.
 	 * If the path contains a link in the hydrograph map, then the flood time for that link is checked.
-	 * If the link gets flooded, departures are scheduled to start at look ahead time specced inthe config (see {@link femproto.globals.FEMGlobalConfig})
+	 * If the link gets flooded, departures are scheduled to start at look ahead time specced in the config (see {@link femproto.globals.FEMGlobalConfig})
 	 * before flooding starts.
 	 */
 	public void createEvacuationSchedule() {
@@ -83,18 +83,36 @@ public final class EvacuationScheduleFromHydrographData {
 			LeastCostPathCalculator.Path freePath = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
 					prioritySafeNode.getId(), 0);
 			double floodTime = Double.POSITIVE_INFINITY;
-			if (path.travelTime - freePath.travelTime > 3 * 3600) {
+			if (path.travelCost > 3 * freePath.travelCost) {
 				floodTime = latestFloodTime;
-				while (path.travelTime - freePath.travelTime > 3 * 3600) {
+				double lowerBoundFloodTime = 0.;
+				double potentialTime = floodTime/2;
+				boolean converged = false;
+				while (! converged) {
 					path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
-							prioritySafeNode.getId(), floodTime);
-					floodTime -= 60;
+							prioritySafeNode.getId(), potentialTime);
+					if(path.travelCost > 3 * freePath.travelCost) {
+						floodTime = potentialTime;
+					}else {
+						lowerBoundFloodTime = potentialTime;
+					}
+					potentialTime = lowerBoundFloodTime + (floodTime - lowerBoundFloodTime)/2;
+					if(Math.abs(potentialTime - floodTime) < 2) {
+						converged = true;
+						floodTime = Math.floor(lowerBoundFloodTime);
+						path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+								prioritySafeNode.getId(), floodTime);
+					}
 				}
+			}
+			if (floodTime < Double.POSITIVE_INFINITY) {
+				log.info(String.format("Subsector %s last possible path to 1st priority safe node gets flooded at %05.0f seconds", subsectorData.getSubsector(),floodTime));
 			}
 
 			// yoyo subsector flooding trumps path flooding
 			HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(path.links.get(0).getFromNode().getId().toString());
 			if (hydrographPoint != null && hydrographPoint.getFloodTime() > 0) {
+				log.info(String.format("Subsector %s has raising road access flooding at %05.0f", subsectorData.getSubsector(),hydrographPoint.getFloodTime()));
 				floodTime = Math.min(floodTime, hydrographPoint.getFloodTime());
 			}
 //			for (Link link : path.links) {
@@ -106,6 +124,7 @@ public final class EvacuationScheduleFromHydrographData {
 
 			if (floodTime < Double.POSITIVE_INFINITY) {
 				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime(), prioritySafeNode);
+				log.info(String.format("Subsector %s gets trapped at %05.0f, will evacuate %05.0f seconds earlier at %05.0f", subsectorData.getSubsector(),floodTime, subsectorData.getLookAheadTime(), floodTime - subsectorData.getLookAheadTime()));
 				lastPriorityEvacuationStartTime = Math.max(lastPriorityEvacuationStartTime, floodTime);
 				prioritySubsectors.add(subsectorData.getSubsector());
 			}

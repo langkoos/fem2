@@ -245,37 +245,35 @@ public class RunMatsim4FloodEvacuation {
 		switch( femConfig.getFemRunType() ) {
 			case runFromSource:
 				config.strategy().clearStrategySettings();
-				{
-					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
-
-					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
-					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettingsReroute.setWeight(0.1);
-					strategySettingsReroute.setDisableAfter((int) (0.7*config.controler().getLastIteration()));
-					config.strategy().addStrategySettings(strategySettingsReroute);
-				}
-				{
-					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
-
-					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
-					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettingsReroute.setWeight(0.3);
-					strategySettingsReroute.setDisableAfter((int) (0.5*config.controler().getLastIteration()));
-					config.strategy().addStrategySettings(strategySettingsReroute);
-				}
+//				{
+//					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
+//
+//					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
+//					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
+//					strategySettingsReroute.setWeight(0.1);
+//					strategySettingsReroute.setDisableAfter((int) (0.7*config.controler().getLastIteration()));
+//					config.strategy().addStrategySettings(strategySettingsReroute);
+//				}
+//				{
+//					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+//					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+//					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
+//					strategySettings.setWeight(0.001);
+//					config.strategy().addStrategySettings(strategySettings);
+//				}
+//				{
+//					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+//					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+//					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectExpBeta);
+//					strategySettings.setWeight(0.7);
+//					strategySettings.setDisableAfter((int) (0.9*config.controler().getLastIteration()));
+//					config.strategy().addStrategySettings(strategySettings);
+//				}
 				{
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
-					strategySettings.setWeight(0.001);
-					config.strategy().addStrategySettings(strategySettings);
-				}
-				{
-					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectExpBeta);
-					strategySettings.setWeight(0.7);
-					strategySettings.setDisableAfter((int) (0.9*config.controler().getLastIteration()));
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
+					strategySettings.setWeight(1);
 					config.strategy().addStrategySettings(strategySettings);
 				}
 				{
@@ -285,7 +283,21 @@ public class RunMatsim4FloodEvacuation {
 					strategySettings.setWeight(1);
 					config.strategy().addStrategySettings(strategySettings);
 				}
-				// (here, all strategy selection is done in a separate controler listener.  kai, jul'18)
+							{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettings.setStrategyName(KEEP_LAST_REROUTE);
+					strategySettings.setWeight(0.2);
+					strategySettings.setDisableAfter((int) (0.9*config.controler().getLastIteration()));
+					config.strategy().addStrategySettings(strategySettings);
+				}							{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
+					strategySettings.setStrategyName(KEEP_LAST_REROUTE);
+					strategySettings.setWeight(0.2);
+					strategySettings.setDisableAfter((int) (0.9*config.controler().getLastIteration()));
+					config.strategy().addStrategySettings(strategySettings);
+				}
 				configureDecongestion( config );
 				break;
 			case optimizeSafeNodesBySubsector: {
@@ -581,12 +593,13 @@ public class RunMatsim4FloodEvacuation {
 				controler.addOverridingModule( new DecongestionModule( scenario ) );
 				controler.addOverridingModule( new AbstractModule() {
 					@Override public void install() {
-						this.addControlerListenerBinding().to( SelectedPlanFromSubsectorLeadAgents.class );
+//						this.addControlerListenerBinding().to( SelectedPlanFromSubsectorLeadAgents.class );
 
 						//these methods didn't seem to work,
 						// working towards decongestion rerouting - getting jumpy results when used in conjunction with the one best safe node per subsector strategy and enforcing the rule of everybody on the same route per subsector
-//						this.addControlerListenerBinding().to( SelectOneBestRoutePerSubsector.class );
-//						addPlanStrategyBinding(KEEP_LAST_REROUTE).toProvider(RerouteLastSelected.class);
+						this.addControlerListenerBinding().to( SelectOneBestRoutePerSubsector.class );
+						this.addControlerListenerBinding().to( SelectOneBestSafeNodePerSubsector.class );
+						addPlanStrategyBinding(KEEP_LAST_REROUTE).toProvider(RerouteLastSelected.class);
 					}
 				} );
 				break;
@@ -780,6 +793,7 @@ class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFact
 			sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring( parameters ));
 			sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring( parameters ));
 			sumScoringFunction.addScoringFunction(new NonevacLinksPenalizerV2( travelDisutility, person, network) );
+			sumScoringFunction.addScoringFunction(new SafeNodePriorityPenaliser(person));
 			return sumScoringFunction;
 		}
 }

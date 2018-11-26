@@ -191,10 +191,10 @@ public class SelectOneBestSafeNodePerSubsector implements StartupListener,
 	@Override
 	public void notifyStartup(StartupEvent event) {
 		// remember to set strategy to "keepSelected"
-		Gbl.assertIf( config.strategy().getStrategySettings().size()==1 ) ;
-		for ( StrategyConfigGroup.StrategySettings settings : config.strategy().getStrategySettings() ) {
-			Gbl.assertIf( settings.getStrategyName().equals(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected ) );
-		}
+//		Gbl.assertIf( config.strategy().getStrategySettings().size()==1 ) ;
+//		for ( StrategyConfigGroup.StrategySettings settings : config.strategy().getStrategySettings() ) {
+//			Gbl.assertIf( settings.getStrategyName().equals(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected ) );
+//		}
 	}
 	
 	static Id<Link> getDestinationLinkId(Plan plan) {

@@ -65,7 +65,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		if ( result != null ) { // found special link, in this case evac link, do not penalize
 			return 0. ;
 		} else { // non-evac link --> penalize
-			return 100. * delegate.getLinkTravelDisutility(link,time,person,vehicle) ;
+			return 1000. * delegate.getLinkTravelDisutility(link,time,person,vehicle) ;
 		}
 	}
 	

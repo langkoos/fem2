@@ -43,7 +43,7 @@ public class RunFromSource {
 
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
 		hydrographParser.parseHydrographShapefile(femConfigGroup.getHydrographShapeFile());
-		hydrographParser.readHydrographData(femConfigGroup.getHydrographData(), 36000);
+		hydrographParser.readHydrographData(femConfigGroup.getHydrographData(), 54961);
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");
@@ -58,6 +58,7 @@ public class RunFromSource {
 //		populationDepartures.createPlans();
 		populationDepartures.createPlansForAllSafeNodes();
 		populationDepartures.writePopulation(outputDirectory + "/input_population.xml.gz");
+		populationDepartures.writeAttributes(outputDirectory + "/input_population_attrs.txt");
 		config.plans().setInputFile("input_population.xml.gz");
 
 		config.controler().setOutputDirectory(outputDirectory+"/output");
