@@ -11,7 +11,6 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -97,28 +96,28 @@ public class HydrographParser {
 			 when they provide updated data, where subsector evacuations will happen from a single link that wont be passed through
 			 by other agents, then this wont be an issue. for now, I will still attempt to poer it by killing the loop link at the evac node..
 			 */
-			if (linkIDs.equals("") && !subsector.equals("")) {
-				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
-				if (evacuationNode == null) {
-					String message = "The evacuation schedule has not been properly initialised for hydrograph parsing. No evacuation node for subsector " + subsector;
-					log.error(message);
-					throw new RuntimeException(message);
-				}
+//			if (linkIDs.equals("") && !subsector.equals("")) {
+//				Node evacuationNode = evacuationSchedule.getOrCreateSubsectorData(subsector).getEvacuationNode();
+//				if (evacuationNode == null) {
+//					String message = "The evacuation schedule has not been properly initialised for hydrograph parsing. No evacuation node for subsector " + subsector;
+//					log.error(message);
+//					throw new RuntimeException(message);
+//				}
 //				Set<Id<Link>> evacLinkIds = new HashSet<>();
 //				evacLinkIds.addAll(evacuationNode.getOutLinks().keySet());
 //				evacLinkIds.addAll(evacuationNode.getInLinks().keySet());
 //				for (Id<Link> evacLinkId : evacLinkIds) {
 //					hydrographPoint.addLinkId(evacLinkId.toString());
 //				}
-				for (Link link : evacuationNode.getOutLinks().values()) {
-					if (link.getFromNode().equals(link.getToNode()))
-						hydrographPoint.addLinkId(link.getId().toString());
-
-				}
-
-
-			} else
-				hydrographPoint.addLinkIds(linkIDs.split(","));
+//				for (Link link : evacuationNode.getOutLinks().values()) {
+//					if (link.getFromNode().equals(link.getToNode()))
+//						hydrographPoint.addLinkId(link.getId().toString());
+//
+//				}
+//
+//
+//			} else
+			hydrographPoint.addLinkIds(linkIDs.split(","));
 		}
 	}
 
@@ -170,19 +169,19 @@ public class HydrographParser {
 		}
 
 
-		removeHydrographPointsWithNoData();
+		removeHydrographPointsWithNoDataOrThatNeverFlood();
 
 		consolidateHydrographPointsByLink();
 
 	}
 
 
-	private void removeHydrographPointsWithNoData() {
+	private void removeHydrographPointsWithNoDataOrThatNeverFlood() {
 		Set<String> badkeys = new HashSet<>();
 		badkeys.addAll(hydrographPointMap.keySet());
 
 		for (Map.Entry<String, HydrographPoint> pointEntry : hydrographPointMap.entrySet()) {
-			if (pointEntry.getValue().inHydrograph())
+			if (pointEntry.getValue().inHydrograph() && pointEntry.getValue().getFloodTime() > 0)
 				badkeys.remove(pointEntry.getKey());
 		}
 
@@ -200,7 +199,7 @@ public class HydrographParser {
 	 * David et al will remove excess points so that ultimately only a single point is associated with a subsector, which will make this method redundant.
 	 */
 	private void consolidateHydrographPointsByLink() {
-		log.info("Consolidating hydrograph data by link (some points are associated with a link, others with subsector's centroid connector, which can have multiple points ending up with the same link)");
+		log.info("Consolidating hydrograph data by link and subsector (it is possible to have multiple associations on both so need to sort out which have priority)");
 		consolidatedHydrographPointMap = new HashMap<>();
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
 			for (String linkId : hydrographPoint.getLinkIds()) {
@@ -216,20 +215,33 @@ public class HydrographParser {
 					double currentFloodTime = linkHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
 					if (currentFloodTime > 0 && newFloodTime > 0) {
-						// yoyo check if this is only associated with a subsecctor (so loop link, which has no - in its id - maybe brittle)
-						if (linkId.contains("-")) {
-							linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
-						} else {
-							linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
-						}
+						linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
 					} else {
 						linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
 					}
 
 				}
 			}
+			if (!hydrographPoint.getSubSector().equals("")) {
+				String subsectorId = hydrographPoint.getSubSector();
+				HydrographPoint subsectorHydroPoint = consolidatedHydrographPointMap.get(subsectorId);
+				if (subsectorHydroPoint == null) {
+					subsectorHydroPoint = new HydrographPoint(subsectorId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
+					subsectorHydroPoint.setSubSector(hydrographPoint.getSubSector());
+					subsectorHydroPoint.addLinkId(subsectorId);
+					subsectorHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
+					consolidatedHydrographPointMap.put(subsectorId, subsectorHydroPoint);
+				} else {
+					// yoyo set the flood time to the MAXIMUM of the existing and new data point
+					double currentFloodTime = subsectorHydroPoint.getFloodTime();
+					double newFloodTime = hydrographPoint.getFloodTime();
+
+					subsectorHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
+
+				}
+			}
 		}
-		log.info("Done consolidating hydrograph data by link");
+		log.info("Done consolidating hydrograph data by link and subsector");
 	}
 
 	public void hydrographToViaXY(String fileName) {

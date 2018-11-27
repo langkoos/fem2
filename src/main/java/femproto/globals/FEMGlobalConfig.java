@@ -29,6 +29,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	public Map<String, String> getComments() {
 		final Map<String, String> map = super.getComments();
 		map.put(EVACUATION_RATE, EVACUATION_RATE_CMT);
+		map.put(LONGEST_ALLOWED_EVACUATION_TIME, LONGEST_ALLOWED_EVACUATION_TIME_CMT);
 		map.put(ATTRIB_SUBSECTOR, ATTRIB_SUBSECTOR_CMT);
 		map.put(ATTRIB_LOOK_AHEAD_TIME, ATTRIB_LOOK_AHEAD_TIME_CMT);
 		map.put(ATTRIB_HYDROGRAPH_POINT_ID_FIELD, ATTRIB_HYDROGRAPH_POINT_ID_FIELD_CMT);
@@ -66,6 +67,21 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	@StringSetter(EVACUATION_RATE)
 	public void setEvacuationRate(double evacuationRate) {
 		this.evacuationRate = evacuationRate;
+	}
+
+
+	private double longestAllowedEvacuationTime = 600;
+	private static final String LONGEST_ALLOWED_EVACUATION_TIME = "longestAllowedEvacuationTime";
+	private static final String LONGEST_ALLOWED_EVACUATION_TIME_CMT = "If an agent takes longer than this time, they are marked as unevacuated in the model, and a better solution will be sought (Floating point value in minutes, positive).";
+
+	@StringGetter(LONGEST_ALLOWED_EVACUATION_TIME)
+	public double getLongestAllowedEvacuationTime() {
+		return evacuationRate;
+	}
+
+	@StringSetter(LONGEST_ALLOWED_EVACUATION_TIME)
+	public void SetLongestAllowedEvacuationTime(double longestAllowedEvacuationTime) {
+		this.longestAllowedEvacuationTime = longestAllowedEvacuationTime;
 	}
 
 

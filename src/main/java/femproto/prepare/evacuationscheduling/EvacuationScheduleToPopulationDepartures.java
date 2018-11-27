@@ -131,8 +131,6 @@ public final class EvacuationScheduleToPopulationDepartures {
 				}
 
 
-				int totalVehicles = safeNodeAllocation.getVehicles();
-				int safeNodeAllocationPaxCounter = 0;
 				Person subsectorLeader = null;
 				for (int i = 0; i < safeNodeAllocation.getVehicles(); i++) {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
@@ -152,7 +150,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 					Plan plan = pf.createPlan();
 
 					Activity startAct = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getEvacuationActivity(), startLink.getId());
-					startAct.setEndTime(safeNodeAllocation.getStartTime() + safeNodeAllocationPaxCounter++ * (3600 / FEMUtils.getGlobalConfig().getEvacuationRate()));
+					startAct.setEndTime(safeNodeAllocation.getStartTime() + i * (3600 / FEMUtils.getGlobalConfig().getEvacuationRate()));
 					plan.addActivity(startAct);
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
@@ -160,7 +158,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
 					plan.addActivity(safe);
-
+					plan.getAttributes().putAttribute("priority",0);
 
 					person.addPlan(plan);
 					scenario.getPopulation().addPerson(person);

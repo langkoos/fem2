@@ -55,8 +55,8 @@ public class RunFromSource {
 		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputDirectory + "/input_evac_plan.csv");
 
 		EvacuationScheduleToPopulationDepartures populationDepartures = new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule);
-//		populationDepartures.createPlans();
-		populationDepartures.createPlansForAllSafeNodes();
+		populationDepartures.createPlans();
+//		populationDepartures.createPlansForAllSafeNodes();
 		populationDepartures.writePopulation(outputDirectory + "/input_population.xml.gz");
 		populationDepartures.writeAttributes(outputDirectory + "/input_population_attrs.txt");
 		config.plans().setInputFile("input_population.xml.gz");

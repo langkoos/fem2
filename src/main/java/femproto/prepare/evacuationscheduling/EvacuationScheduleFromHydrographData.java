@@ -13,6 +13,7 @@ import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityF
 import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
+import org.matsim.core.utils.misc.Time;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,45 +75,57 @@ public final class EvacuationScheduleFromHydrographData {
 
 			subsectorData.clearSafeNodesByTime();
 
-			Node prioritySafeNode = subsectorData.getSafeNodesByDecreasingPriority().iterator().next();
-			String message = "Checking the path for subsector %s which is supposed to evacuate from node %s to safe node %s";
-			log.info(String.format(message, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), prioritySafeNode.getId().toString()));
-			LeastCostPathCalculator.Path path;
-			path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
-					prioritySafeNode.getId(), latestFloodTime + 1);
-			LeastCostPathCalculator.Path freePath = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
-					prioritySafeNode.getId(), 0);
-			double floodTime = Double.POSITIVE_INFINITY;
-			if (path.travelCost > 3 * freePath.travelCost) {
-				floodTime = latestFloodTime;
-				double lowerBoundFloodTime = 0.;
-				double potentialTime = floodTime/2;
-				boolean converged = false;
-				while (! converged) {
-					path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
-							prioritySafeNode.getId(), potentialTime);
-					if(path.travelCost > 3 * freePath.travelCost) {
-						floodTime = potentialTime;
-					}else {
-						lowerBoundFloodTime = potentialTime;
-					}
-					potentialTime = lowerBoundFloodTime + (floodTime - lowerBoundFloodTime)/2;
-					if(Math.abs(potentialTime - floodTime) < 2) {
-						converged = true;
-						floodTime = Math.floor(lowerBoundFloodTime);
+			double floodTime = Double.NEGATIVE_INFINITY;
+			Node assignedSafeNode = subsectorData.getSafeNodesByDecreasingPriority().iterator().next();
+			for (Node prioritySafeNode : subsectorData.getSafeNodesByDecreasingPriority()) {
+				String message = "Checking the path for subsector %s from evac node %s to safe node %s";
+				double safenodeFloodTime = Double.POSITIVE_INFINITY;
+				log.info(String.format(message, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), prioritySafeNode.getId().toString()));
+				LeastCostPathCalculator.Path path;
+				path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+						prioritySafeNode.getId(), latestFloodTime + 1);
+				LeastCostPathCalculator.Path freePath = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+						prioritySafeNode.getId(), 0);
+				if (path.travelCost > 3 * freePath.travelCost) {
+					safenodeFloodTime = latestFloodTime;
+					double lowerBoundFloodTime = 0.;
+					double potentialTime = safenodeFloodTime / 2;
+					boolean converged = false;
+					while (!converged) {
 						path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
-								prioritySafeNode.getId(), floodTime);
+								prioritySafeNode.getId(), potentialTime);
+						if (path.travelCost > 3 * freePath.travelCost) {
+							safenodeFloodTime = potentialTime;
+						} else {
+							lowerBoundFloodTime = potentialTime;
+						}
+						potentialTime = lowerBoundFloodTime + (safenodeFloodTime - lowerBoundFloodTime) / 2;
+						if (Math.abs(potentialTime - safenodeFloodTime) < 2) {
+							converged = true;
+							safenodeFloodTime = Math.floor(lowerBoundFloodTime);
+							path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
+									prioritySafeNode.getId(), safenodeFloodTime);
+						}
 					}
 				}
-			}
-			if (floodTime < Double.POSITIVE_INFINITY) {
-				log.info(String.format("Subsector %s last possible path to 1st priority safe node gets flooded at %05.0f seconds", subsectorData.getSubsector(),floodTime));
+				if (safenodeFloodTime < Double.POSITIVE_INFINITY) {
+					log.info(String.format("Subsector %s last possible path to safe node %s gets flooded at %05.0f seconds = %05.0f mins = %s", subsectorData.getSubsector(), prioritySafeNode.getId().toString(), safenodeFloodTime, safenodeFloodTime / 60, Time.writeTime(safenodeFloodTime)));
+					// according to the nicta doc they find the latest possible evac time
+					if (safenodeFloodTime > floodTime) {
+						assignedSafeNode = prioritySafeNode;
+						floodTime = safenodeFloodTime;
+					}
+				} else {
+					log.info(String.format("Subsector %s has a path to safe node %s that never gets flooded.", subsectorData.getSubsector(), prioritySafeNode.getId().toString()));
+					floodTime = Double.POSITIVE_INFINITY;
+					break;
+				}
 			}
 
 			// yoyo subsector flooding trumps path flooding
-			HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(path.links.get(0).getFromNode().getId().toString());
+			HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(subsectorData.getSubsector());
 			if (hydrographPoint != null && hydrographPoint.getFloodTime() > 0) {
-				log.info(String.format("Subsector %s has raising road access flooding at %05.0f", subsectorData.getSubsector(),hydrographPoint.getFloodTime()));
+				log.info(String.format("Subsector %s has raising road access flooding at %05.0f seconds = %05.0f mins = %s", subsectorData.getSubsector(), hydrographPoint.getFloodTime(), hydrographPoint.getFloodTime() / 60, Time.writeTime(hydrographPoint.getFloodTime())));
 				floodTime = Math.min(floodTime, hydrographPoint.getFloodTime());
 			}
 //			for (Link link : path.links) {
@@ -123,8 +136,9 @@ public final class EvacuationScheduleFromHydrographData {
 //			}
 
 			if (floodTime < Double.POSITIVE_INFINITY) {
-				subsectorData.addSafeNodeAllocation(floodTime - subsectorData.getLookAheadTime(), prioritySafeNode);
-				log.info(String.format("Subsector %s gets trapped at %05.0f, will evacuate %05.0f seconds earlier at %05.0f", subsectorData.getSubsector(),floodTime, subsectorData.getLookAheadTime(), floodTime - subsectorData.getLookAheadTime()));
+				double evacTime = floodTime - subsectorData.getLookAheadTime();
+				subsectorData.addSafeNodeAllocation(evacTime, assignedSafeNode);
+				log.info(String.format("Subsector %s gets trapped at %05.0f = %s, will evacuate %05.2f hours earlier at %05.0f seconds = %05.0f mins = %s", subsectorData.getSubsector(), floodTime, Time.writeTime(floodTime), subsectorData.getLookAheadTime() / 3600, evacTime, evacTime / 60, Time.writeTime(evacTime)));
 				lastPriorityEvacuationStartTime = Math.max(lastPriorityEvacuationStartTime, floodTime);
 				prioritySubsectors.add(subsectorData.getSubsector());
 			}
