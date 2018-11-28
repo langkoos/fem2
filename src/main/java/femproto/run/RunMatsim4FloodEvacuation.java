@@ -818,7 +818,7 @@ class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFact
 		sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(parameters));
 		sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring(parameters));
 		sumScoringFunction.addScoringFunction(new NonevacLinksPenalizerV2(travelDisutility, person, network));
-		sumScoringFunction.addScoringFunction(new SafeNodePriorityPenaliser(person));
+//		sumScoringFunction.addScoringFunction(new SafeNodePriorityPenaliser(person));
 		return sumScoringFunction;
 	}
 }

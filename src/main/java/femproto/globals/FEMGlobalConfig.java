@@ -70,7 +70,7 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 	}
 
 
-	private double longestAllowedEvacuationTime = 600;
+	private double longestAllowedEvacuationTime = 900;
 	private static final String LONGEST_ALLOWED_EVACUATION_TIME = "longestAllowedEvacuationTime";
 	private static final String LONGEST_ALLOWED_EVACUATION_TIME_CMT = "If an agent takes longer than this time, they are marked as unevacuated in the model, and a better solution will be sought (Floating point value in minutes, positive).";
 
