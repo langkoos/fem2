@@ -67,8 +67,10 @@
 	</module>
 	<module name="controler" >
 		<!-- Default=1000;  -->
-		<param name="lastIteration" value="20" />
+		<param name="lastIteration" value="200" />
 		<param name="outputDirectory" value="2016/output-t/output" />
+		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
+		<param name="writeEventsInterval" value="1" />
 	</module>
 	<module name="network" >
 		<param name="inputChangeEventsFile" value="input_change_events.xml.gz" />

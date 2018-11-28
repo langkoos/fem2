@@ -54,7 +54,11 @@ public class SubsectorShapeFileParser {
 			int subsectorVehicleCount;
 			try {
 				String totalvehic = FEMUtils.getGlobalConfig().getAttribTotalVehiclesForSubsector();
-				subsectorVehicleCount = (int) (double) feature.getAttribute(totalvehic);
+				try {
+					subsectorVehicleCount = (int) feature.getAttribute(totalvehic);
+				}catch(ClassCastException e){
+					subsectorVehicleCount = (int) (double) feature.getAttribute(totalvehic);
+				}
 				log.info("Subsector " + subsector + " contains " + subsectorVehicleCount + " vehicles.");
 			} catch (NullPointerException ne) {
 				subsectorVehicleCount = 0;
