@@ -22,19 +22,19 @@ public class RunFromSchedule {
 
 	@Test
 	public void runFromSchedule() throws IOException {
-		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
-		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
-//		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/simpleEvacuationScheduleV1.csv";
-		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/changedEvacSchedule.csv";
+//		String inputshapefile = "test/input/femproto/prepare/demand/2016_scenario_1A_v20180706/hn_evacuationmodel_PL2016_V12subsectorsVehic2016.shp";
+//		String networkFile = "scenarios/fem2016_v20180706/hn_net_ses_emme_2016_V12_network.xml.gz";
+////		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/simpleEvacuationScheduleV1.csv";
+//		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/changedEvacSchedule.csv";
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
 		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
+		new MatsimNetworkReader(scenario.getNetwork()).readFile("test/input/scenario/input_network.xml");
 
-		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork());
-		subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
+//		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork());
+//		subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
 
-		new EvacuationScheduleReader(evacuationSchedule,scenario.getNetwork()).readFile(inputEvacScheduleFile);
+		new EvacuationScheduleReader(evacuationSchedule,scenario.getNetwork()).readFile("test/input/scenario/input_evac_plan.csv");
 
 		new EvacuationScheduleToPopulationDepartures(scenario,evacuationSchedule).createPlans();
 
