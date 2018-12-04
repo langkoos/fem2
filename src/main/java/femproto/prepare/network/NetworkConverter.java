@@ -2,19 +2,22 @@ package femproto.prepare.network;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import femproto.globals.Gis;
-import femproto.run.FEMUtils;
+import femproto.run.FEMConfigGroup;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.*;
+import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.network.NetworkUtils;
@@ -24,7 +27,6 @@ import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -44,20 +46,28 @@ public class NetworkConverter {
 
 	public static final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
 	public static final String DESCRIPTION = getGlobalConfig().getAttribDescr();
-	private final String nodesFile;
-	private final String linksFile;
+	private final URL nodesUrl;
+	private final URL linksUrl;
 
 	private Scenario scenario;
-
-	public NetworkConverter(String nodesFile, String linksFile, Scenario scenario) {
-		this.nodesFile = nodesFile;
-		this.linksFile = linksFile;
-		this.scenario = scenario;
+	
+	public NetworkConverter( Scenario scenario ) {
+		this.scenario = scenario ;
+		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( scenario.getConfig(), FEMConfigGroup.class );
+		nodesUrl = IOUtils.newUrl( scenario.getConfig().getContext(), femConfig.getInputNetworkNodesShapefile() ) ;
+		linksUrl = IOUtils.newUrl( scenario.getConfig().getContext(), femConfig.getInputNetworkLinksShapefile() ) ;
 	}
 
-	public NetworkConverter(String nodesFile, String linksFile) {
-		this.nodesFile = nodesFile;
-		this.linksFile = linksFile;
+//	public NetworkConverter( String nodesFile, String linksFile, Scenario scenario) {
+//		this.nodesUrl = IOUtils.newUrl( null, nodesFile ) ;
+//		this.linksUrl = IOUtils.newUrl( null, linksFile ) ;
+//		this.scenario = scenario;
+//	}
+	// no longer used.  kai, dec'18
+
+	public NetworkConverter( String nodesFile, String linksFile) {
+		this.nodesUrl = IOUtils.newUrl( null, nodesFile ) ;
+		this.linksUrl = IOUtils.newUrl( null, linksFile ) ;
 		this.scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 	}
 
@@ -68,14 +78,14 @@ public class NetworkConverter {
 	}
 
 	private void parseNodes() {
-		File dataFile = new File(nodesFile);
-		log.info("Will attempt to convert nodes from " + dataFile.getAbsolutePath());
-		Gbl.assertIf(dataFile.exists());
-
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(nodesFile);
+		log.info("Will attempt to convert nodes from " + nodesUrl.getPath() ) ;
+		
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures( nodesUrl );
 		String wkt = null;
 		try {
-			wkt = IOUtils.getBufferedReader(nodesFile.replaceAll("shp$", "prj")).readLine().toString();
+			final URL prjUrl = IOUtils.newUrl( null, nodesUrl.getPath().replaceAll( "shp$", "prj" ) );
+			// yyyy no idea if this also works with http urls. kai, dec'18
+			wkt = IOUtils.getBufferedReader( prjUrl ).readLine().toString();
 		} catch (IOException e) {
 			String message = "There is an error loading the nodes projection information. Cannot convert to default projection.";
 			log.error(message);
@@ -146,7 +156,7 @@ public class NetworkConverter {
 
 
 	private void parseLinks() {
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(linksFile);
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures( linksUrl );
 		NetworkFactory networkFactory = scenario.getNetwork().getFactory();
 		Map<Id<Node>, ? extends Node> nodes = scenario.getNetwork().getNodes();
 
