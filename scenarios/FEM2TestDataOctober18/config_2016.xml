@@ -69,7 +69,7 @@
         <param name="timeVariantNetwork" value="true"/>
     </module>
     <module name="controler">
-        <param name="outputDirectory" value="2016/output-t"/>
+        <param name="outputDirectory" value="2016/output"/>
         <param name="lastIteration" value="20"/>
         <!--<param name="writeEventsInterval" value="1" />-->
         <!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->

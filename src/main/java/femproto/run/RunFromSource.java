@@ -43,6 +43,7 @@ public class RunFromSource {
 
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
 		hydrographParser.parseHydrographShapefile(femConfigGroup.getHydrographShapeFile());
+		// yoyoyo this forces the first network change evnt to be synchronised wioth the 2016 NICTA reference results
 		hydrographParser.readHydrographData(femConfigGroup.getHydrographData(), 54961);
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 

@@ -275,30 +275,30 @@ public class RunMatsim4FloodEvacuation {
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 				strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
 				strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-				strategySettings.setWeight(1);
+				strategySettings.setWeight(7);
 				config.strategy().addStrategySettings(strategySettings);
 			}
 			{
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 				strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
 				strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-				strategySettings.setWeight(1);
+				strategySettings.setWeight(7);
 				config.strategy().addStrategySettings(strategySettings);
 			}
 			{
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 				strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
 				strategySettings.setStrategyName(KEEP_LAST_REROUTE);
-				strategySettings.setWeight(0.2);
-				strategySettings.setDisableAfter((int) (0.9 * config.controler().getLastIteration()));
+				strategySettings.setWeight(3);
+				strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
 				config.strategy().addStrategySettings(strategySettings);
 			}
 			{
 				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 				strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
 				strategySettings.setStrategyName(KEEP_LAST_REROUTE);
-				strategySettings.setWeight(0.2);
-				strategySettings.setDisableAfter((int) (0.9 * config.controler().getLastIteration()));
+				strategySettings.setWeight(3);
+				strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
 				config.strategy().addStrategySettings(strategySettings);
 			}
 			configureDecongestion(config);
