@@ -33,7 +33,7 @@ public class RunFromSource {
 		//yoyo this needs to be marked as an essential step for the moment until injection works
 		FEMUtils.setGlobalConfig(globalConfig);
 //		ConfigUtils.writeMinimalConfig(config,"scenarios/FEM2TestDataOctober18/2016/config_2016.xml");
-		NetworkConverter networkConverter = new NetworkConverter(femConfigGroup.getInputNetworkNodesShapefile(), femConfigGroup.getInputNetworkLinksShapefile(), scenario);
+		NetworkConverter networkConverter = new NetworkConverter( scenario);
 		networkConverter.run();
 		networkConverter.writeNetwork(outputDirectory + "/input_network.xml");
 		config.network().setInputFile("input_network.xml");
