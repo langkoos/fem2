@@ -1,5 +1,6 @@
 package femproto.run;
 
+import femproto.globals.FEMGlobalConfig;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
 import femproto.prepare.evacuationscheduling.EvacuationScheduleReader;
 import femproto.prepare.evacuationscheduling.EvacuationScheduleToPopulationDepartures;
@@ -27,14 +28,15 @@ public class RunFromSchedule {
 ////		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/simpleEvacuationScheduleV1.csv";
 //		String inputEvacScheduleFile = "test/input/femproto/prepare/evacuationscheduling/changedEvacSchedule.csv";
 
+		FEMUtils.setGlobalConfig(FEMGlobalConfig.getDefaultGlobalConfig());
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
 		Scenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-		new MatsimNetworkReader(scenario.getNetwork()).readFile("test/input/scenario/input_network.xml");
+		new MatsimNetworkReader(scenario.getNetwork()).readFile(utils.getPackageInputDirectory()+"scenario/input_network.xml");
 
 //		SubsectorShapeFileParser subSectorsToPopulation = new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork());
 //		subSectorsToPopulation.readSubSectorsShapeFile(inputshapefile);
 
-		new EvacuationScheduleReader(evacuationSchedule,scenario.getNetwork()).readFile("test/input/scenario/input_evac_plan.csv");
+		new EvacuationScheduleReader(evacuationSchedule,scenario.getNetwork()).readFile(utils.getPackageInputDirectory()+"scenario/input_evac_plan.csv");
 
 		new EvacuationScheduleToPopulationDepartures(scenario,evacuationSchedule).createPlans();
 

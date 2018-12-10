@@ -145,7 +145,7 @@ public class RunMatsim4FloodEvacuation {
 
 //			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-just-run-plans-file.xml" );
 //			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config.xml" );
-			config = ConfigUtils.loadConfig("scenarios/00sandbox/00config.xml");
+			config = ConfigUtils.loadConfig("scenarios/FEM2TestDataOctober18/config_2016.xml");
 
 //			config = ConfigUtils.createConfig() ;
 //			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
@@ -503,10 +503,19 @@ public class RunMatsim4FloodEvacuation {
 						// NOT using the toll based travel disutility, since we are routing without toll, on the
 						// empty network, before the iterations start, and then never again.  kai, jul'18
 						// yoyo this changes because of new requirements pieter nov'18
-						bind(TollTimeDistanceTravelDisutilityFactory.class);
-						addTravelDisutilityFactoryBinding(routingMode).to(
-								FEMPreferEmergencyLinksTravelDisutility.Factory.class
-						);
+						switch (femConfig.getFemRunType()) {
+							case justRunInputPlansFile:
+								addTravelDisutilityFactoryBinding(routingMode).toInstance(
+										new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork(),new OnlyTimeDependentTravelDisutilityFactory())
+								);
+								break;
+							default:
+								bind(TollTimeDistanceTravelDisutilityFactory.class);
+								addTravelDisutilityFactoryBinding(routingMode).to(
+										FEMPreferEmergencyLinksTravelDisutility.Factory.class
+								);
+
+						}
 
 						break;
 					default:
@@ -598,7 +607,6 @@ public class RunMatsim4FloodEvacuation {
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
 				// computed in prepareForSim. kai, jul'18
 				break;
-			case justRunInputPlansFile:
 			case runFromSource:
 				controler.addOverridingModule(new DecongestionModule(scenario));
 				controler.addOverridingModule(new AbstractModule() {
@@ -614,6 +622,7 @@ public class RunMatsim4FloodEvacuation {
 					}
 				});
 				break;
+			case justRunInputPlansFile:
 			case runFromEvacuationSchedule:
 				break;
 			default:
@@ -755,7 +764,7 @@ class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScorin
 			departureTime = event.getTime();
 		}
 		if (event instanceof PersonLeavesVehicleEvent) {
-			if (event.getTime() - departureTime > FEMUtils.getGlobalConfig().getLongestAllowedEvacuationTime() * 60){
+			if (event.getTime() - departureTime > FEMUtils.getGlobalConfig().getLongestAllowedEvacuationTime() * 60) {
 				score -= 100000.;
 			}
 		}

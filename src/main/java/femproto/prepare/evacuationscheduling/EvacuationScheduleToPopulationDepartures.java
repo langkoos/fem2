@@ -71,8 +71,8 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 			subsectorData.completeAllocations();
 
-			if (subsectorData.getVehicleCount() <= 0) {
-				log.warn(String.format("Subsector %s has no vehicles associated with it.", subsectorData.getSubsector()));
+			if (subsectorData.getSafeNodesByTime().size() <= 0) {
+				log.warn(String.format("Subsector %s has no departures associated with it.", subsectorData.getSubsector()));
 				continue;
 			}
 			if (subsectorData.getSafeNodesByTime().size() == 0) {
@@ -114,7 +114,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 				Node safeNode = safeNodeAllocation.getNode();
 				Link safeLink = null;
 				for (Link link : safeNode.getInLinks().values()) {
-					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
+					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(FEMUtils.getGlobalConfig().getAttribEvacMarker())) {
 						safeLink = link;
 					}
 				}

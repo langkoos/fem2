@@ -123,7 +123,7 @@ public final class FEMPreferEmergencyLinksTravelDisutility implements TravelDisu
 		if ( link==null ) {
 			return false ;
 		}
-		return (boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
+		return (boolean) link.getAttributes().getAttribute(FEMUtils.getGlobalConfig().getAttribEvacMarker());
 	}
 	
 }
