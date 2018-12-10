@@ -17,8 +17,10 @@ import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.io.IOUtils;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 public class RunFromSource {
@@ -39,12 +41,15 @@ public class RunFromSource {
 		config.network().setInputFile("input_network.xml");
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
-		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(femConfigGroup.getInputSubsectorsShapefile());
+		URL subsectorURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getInputSubsectorsShapefile());
+		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(subsectorURL);
 
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
-		hydrographParser.parseHydrographShapefile(femConfigGroup.getHydrographShapeFile());
+		URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
+		hydrographParser.parseHydrographShapefile(hydrographURL);
 		// yoyoyo this forces the first network change evnt to be synchronised wioth the 2016 NICTA reference results
-		hydrographParser.readHydrographData(femConfigGroup.getHydrographData(), 54961);
+		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
+		hydrographParser.readHydrographData(hydrographDataURL, 54961);
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");

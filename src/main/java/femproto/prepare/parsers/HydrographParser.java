@@ -22,6 +22,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 public class HydrographParser {
@@ -50,6 +51,10 @@ public class HydrographParser {
 	private final EvacuationSchedule evacuationSchedule;
 
 
+	public void parseHydrographShapefile(String shapefile) {
+		parseHydrographShapefile(IOUtils.newUrl(null,shapefile));
+	}
+
 	/**
 	 * This initialises the data structure and populates it with the subsectors and/or link ids that this point may affect,
 	 * as well as its altitude.
@@ -59,13 +64,13 @@ public class HydrographParser {
 	 *
 	 * @param shapefile
 	 */
-	public void parseHydrographShapefile(String shapefile) {
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile);
+	public void parseHydrographShapefile(URL shapefile) {
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile.getPath());
 		CoordinateTransformation transformation = null;
 		// coordinate transformation:
 		String wkt = null;
 		try {
-			wkt = IOUtils.getBufferedReader(shapefile.replaceAll("shp$", "prj")).readLine().toString();
+			wkt = IOUtils.getBufferedReader(shapefile.getPath().replaceAll("shp$", "prj")).readLine().toString();
 			transformation = TransformationFactory.getCoordinateTransformation(wkt, Gis.EPSG28356);
 		} catch (IOException e) {
 			log.warn("The shapefile doesn't have a .prj file; continuing, but no guarantees on projection.");
@@ -121,6 +126,10 @@ public class HydrographParser {
 		}
 	}
 
+
+	public void readHydrographData(String fileName, int offsetTime) {
+		readHydrographData(IOUtils.newUrl(null,fileName),offsetTime);
+	}
 	/**
 	 * This reads the  time series from the hydrograph file, and populates the relevant point data structures.
 	 *
@@ -128,8 +137,8 @@ public class HydrographParser {
 	 *
 	 * @param fileName
 	 */
-	public void readHydrographData(String fileName, int offsetTime) {
-		BufferedReader reader = IOUtils.getBufferedReader(fileName);
+	public void readHydrographData(URL fileName, int offsetTime) {
+		BufferedReader reader = IOUtils.getBufferedReader(fileName.getPath());
 		List<List<Double>> entries = new ArrayList<>();
 		String[] header;
 		try {

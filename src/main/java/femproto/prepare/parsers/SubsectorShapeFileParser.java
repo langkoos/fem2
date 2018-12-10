@@ -10,8 +10,10 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.utils.gis.ShapeFileReader;
+import org.matsim.core.utils.io.IOUtils;
 import org.opengis.feature.simple.SimpleFeature;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -36,9 +38,14 @@ public class SubsectorShapeFileParser {
 	}
 
 	public void readSubSectorsShapeFile(String fileName) {
-		log.info("entering readSubSectorsShapeFile with fileName=" + fileName);
+		URL url = IOUtils.newUrl(null, fileName);
+		readSubSectorsShapeFile(url);
+	}
 
-		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName);
+	public void readSubSectorsShapeFile(URL fileName) {
+		log.info("entering readSubSectorsShapeFile with fileName=" + fileName.getPath());
+
+		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(fileName.getPath());
 
 		//iterate through features and modify/generate SubsectorData structures
 		Iterator<SimpleFeature> iterator = features.iterator();
