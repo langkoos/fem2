@@ -51,6 +51,7 @@ public class RunFromSource {
 		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
 		hydrographParser.readHydrographData(hydrographDataURL, 54961);
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
+		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt");
 
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");
 		config.network().setChangeEventsInputFile("input_change_events.xml.gz");

@@ -310,7 +310,7 @@ public class HydrographParser {
 	}
 
 
-	public void hydrographToViaLinkAttributesFromLinkData(String fileName, Network network) {
+	public void hydrographToViaLinkAttributesFromLinkData(String fileName) {
 		Set<Id<Link>> ids = new TreeSet<>();
 		ids.addAll(network.getLinks().keySet());
 		BufferedWriter writer = IOUtils.getBufferedWriter(fileName);

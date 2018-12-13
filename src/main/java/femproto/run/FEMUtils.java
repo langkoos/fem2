@@ -45,39 +45,39 @@ public class FEMUtils {
 	} // do not instantiate
 
 	private static FEMGlobalConfig globalConfig;
-	private static boolean globalConfigIsLocked = false ;
+	private static boolean globalConfigIsLocked = false;
 
 	public static EvacuationSchedule getEvacuationSchedule() {
 		return evacuationSchedule;
 	}
 
 	private static EvacuationSchedule evacuationSchedule;
-	private static boolean evacuationScheduleIsLocked = false ;
+	private static boolean evacuationScheduleIsLocked = false;
 
 	public static FEMGlobalConfig getGlobalConfig() {
 		return globalConfig;
 	}
 
-	public static void setGlobalConfig( final FEMGlobalConfig globalConfig ) {
-		if ( globalConfigIsLocked ) {
-			throw new RuntimeException("too late") ;
+	public static void setGlobalConfig(final FEMGlobalConfig globalConfig) {
+		if (globalConfigIsLocked) {
+			throw new RuntimeException("too late");
 		}
-		if ( globalConfig==null ) {
-			throw new RuntimeException("too early") ;
+		if (globalConfig == null) {
+			throw new RuntimeException("too early");
 		}
 		FEMUtils.globalConfig = globalConfig;
-		globalConfigIsLocked = true ;
+		globalConfigIsLocked = true;
 	}
 
-	public static void setEvacuationSchedule( final EvacuationSchedule evacuationSchedule ) {
-		if ( evacuationScheduleIsLocked ) {
-			throw new RuntimeException("too late") ;
+	public static void setEvacuationSchedule(final EvacuationSchedule evacuationSchedule) {
+		if (evacuationScheduleIsLocked) {
+			throw new RuntimeException("too late");
 		}
-		if ( evacuationSchedule==null ) {
-			throw new RuntimeException("too early") ;
+		if (evacuationSchedule == null) {
+			throw new RuntimeException("too early");
 		}
 		FEMUtils.evacuationSchedule = evacuationSchedule;
-		evacuationScheduleIsLocked = true ;
+		evacuationScheduleIsLocked = true;
 	}
 
 	static void preparationsForRmitHawkesburyScenario(Scenario scenario) {
@@ -203,7 +203,12 @@ public class FEMUtils {
 			scenario.getPopulation().removePerson(toBeRemoved);
 		}
 		scenario.getConfig().qsim().setFlowCapFactor(sample);
-		scenario.getConfig().qsim().setStorageCapFactor(sample);
+		if (sample > 0.1)
+			scenario.getConfig().qsim().setStorageCapFactor(sample);
+		if (sample <= 0.1)
+			scenario.getConfig().qsim().setStorageCapFactor(2 * sample);
+		if (sample <= 0.01)
+			scenario.getConfig().qsim().setStorageCapFactor(3 * sample);
 	}
 
 	static void giveAllSafeNodesToAllAgents(Scenario scenario) {
@@ -273,12 +278,12 @@ public class FEMUtils {
 		}
 	}
 
-	public static void setSubsectorName( final String subsector, final Person person ) {
-		person.getAttributes().putAttribute( globalConfig.getAttribSubsector(), subsector);
+	public static void setSubsectorName(final String subsector, final Person person) {
+		person.getAttributes().putAttribute(globalConfig.getAttribSubsector(), subsector);
 	}
 
-	public static String getSubsectorName( final Person person ) {
-		return (String) person.getAttributes().getAttribute( globalConfig.getAttribSubsector() );
+	public static String getSubsectorName(final Person person) {
+		return (String) person.getAttributes().getAttribute(globalConfig.getAttribSubsector());
 	}
 
 	public static Link getLinkFromSafeNode(String defaultSafeNode, final Scenario scenario) {
@@ -290,7 +295,7 @@ public class FEMUtils {
 		// yoyo find an incoming link, preferably an EVAC_SES one.
 		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
 		for (Link link : node.getInLinks().values()) {
-			if ( link.getAllowedModes().contains( TransportMode.car) && (boolean)link.getAttributes().getAttribute(globalConfig.getAttribEvacMarker())) {
+			if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(globalConfig.getAttribEvacMarker())) {
 				endLink = link;
 			}
 		}
