@@ -20,7 +20,7 @@ import java.util.Iterator;
 /**
  * I am trying to break the demand generation process up into subsector data parsing,
  * contained in a schedule that interprets subsector data to have departures from evacuation to safe nodes.
- * <p/>
+ *
  * Such a schedule can then be used to be re-organised into a new schedule, or to produce a plans file
  */
 public class SubsectorShapeFileParser {

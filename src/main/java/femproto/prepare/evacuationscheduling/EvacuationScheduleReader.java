@@ -29,7 +29,6 @@ public final class EvacuationScheduleReader {
 	/**
 	 * This will look at the header of the csv file, and try and pick an appropriate builder.
 	 * @param fileName
-	 * @throws IOException
 	 */
 	public void readFile(String fileName) {
 

@@ -110,6 +110,7 @@ public class ShapeFileReader implements MatsimSomeReader {
 
 	/**
 	 * Reads all Features in the file into the returned Set and initializes the instance of this class.
+	 * @param filename Path to file
 	 */
 	public Collection<SimpleFeature> readFileAndInitialize(final String filename) throws UncheckedIOException {
 		try {
@@ -143,7 +144,7 @@ public class ShapeFileReader implements MatsimSomeReader {
 	 * <p></p>
 	 * Then, get the features by
 	 * <p></p>
-	 * <pre> Set<{@link Feature}> features = shapeFileReader.getFeatureSet(); </pre>
+	 * <pre> Set&lt;{@link Feature}&gt; features = shapeFileReader.getFeatureSet(); </pre>
 	 * <p></p>
 	 * If you need metadata you can use
 	 * <p></p>

@@ -22,7 +22,7 @@
         <param name="inputSubsectorsShapefile"
                value="2016/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp"/>
         <!-- Re-routing can probably be done at 0.01 sample size. -->
-        <param name="sampleSize" value="1"/>
+        <param name="sampleSize" value="1.0"/>
     </module>
     <module name="FEMGlobal" >
         <param name="attribDescr" value="T_DES" />

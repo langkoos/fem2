@@ -317,8 +317,8 @@ public class FEMUtils {
 	 * This will produce a file with link volumes if it is run on the output directory of a MATSim run.
 	 * It takes an integer time bin size (seconds) as its first parameter and maximum time for analysis (hour, inteer) as its second.
 	 *
-	 * @param args
-	 * @throws IOException
+	 * @param args args
+	 * @throws IOException IOException
 	 */
 	public static void runLinkVolumeAnalysisOnOutputDirectory(String[] args) throws IOException {
 		Network network = NetworkUtils.createNetwork();

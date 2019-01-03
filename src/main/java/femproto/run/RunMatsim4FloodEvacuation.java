@@ -125,7 +125,7 @@ public class RunMatsim4FloodEvacuation {
 	/**
 	 * Assume that you have constructred a scenario elsewhere and just want to run
 	 *
-	 * @param scenario
+	 * @param scenario input scenario
 	 */
 	public RunMatsim4FloodEvacuation(Scenario scenario) {
 		// catch log entries early (before the output directory is there):
