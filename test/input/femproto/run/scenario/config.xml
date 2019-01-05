@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
 <config>
+	<module name="FEM" >
+	<param name="evacuationScheduleFile" value="input_evac_plan.csv" />
+	</module>
+
 
 	<module name="network" >
 		<param name="inputChangeEventsFile" value="input_change_events.xml.gz" />

@@ -28,7 +28,7 @@ public class RunMatsim4FloodEvacuationTestIT {
 	public void testA_startWithFullEvacRun() {
 //		Config config = ConfigUtils.createConfig() ;
 //
-		String scenarioBase = "scenarios/fem2016_v20180706/" ;
+		String scenarioBase = "test/input/femproto/run/scenario/";
 //
 //		config.network().setInputFile( "hn_net_ses_emme_2016_V12_network.xml.gz");
 //		// (relative to config file location!)
@@ -67,7 +67,7 @@ public class RunMatsim4FloodEvacuationTestIT {
 //
 //		// ---
 //
-		String configFilename = scenarioBase + "configSmall.xml" ;
+		String configFilename = scenarioBase + "config.xml" ;
 //
 //		ConfigUtils.writeConfig( config, configFilename );
 		
