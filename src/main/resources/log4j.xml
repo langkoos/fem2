@@ -46,7 +46,9 @@
   <logger name="org.matsim.replanning">
       <level value="ERROR"/>
   </logger> -->
-  
+	<logger name="org.matsim.contrib.decongestion.routing.TollTimeDistanceTravelDisutility">
+		<level value="WARN"/>
+	</logger>
 	<root>
 		<priority value="info"></priority>
 		<appender-ref ref="stdout"/>

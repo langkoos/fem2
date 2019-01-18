@@ -1,5 +1,6 @@
 package femproto.run;
 
+import femproto.run.eventhandlers.FEMEvacuationLinkRoutingCounter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -18,8 +19,8 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.testcases.MatsimTestUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RunMatsim4FloodEvacuationTestIT {
-	private static final Logger log = Logger.getLogger( RunMatsim4FloodEvacuationTestIT.class ) ;
+public class RunInputPlansOnlyEvacRoutingTest {
+	private static final Logger log = Logger.getLogger( RunInputPlansOnlyEvacRoutingTest.class ) ;
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
@@ -30,44 +31,10 @@ public class RunMatsim4FloodEvacuationTestIT {
 //
 		String scenarioBase = "test/input/femproto/run/scenario/";
 //
-//		config.network().setInputFile( "hn_net_ses_emme_2016_V12_network.xml.gz");
-//		// (relative to config file location!)
-//
-//		config.plans().setInputFile( "plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz" ) ;
-//		// (relative to config file location!)
-//
-//		config.controler().setOutputDirectory( utils.getOutputDirectory() );
-//		config.controler().setOverwriteFileSetting( OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists );
-//
-//		config.controler().setLastIteration(0);
-//
-//		config.network().setChangeEventsInputFile("d09693_H_change_events.xml.gz");
-//		config.network().setTimeVariantNetwork(true);
-//
-//		Set<String> set = new HashSet<>();
-//		set.add(TransportMode.car ) ;
-//		config.plansCalcRoute().setNetworkModes(set);
-//		config.qsim().setMainModes(set);
-//
-////		config.qsim().setEndTime(36*3600);
-//
-//		{
-//			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("evac") ;
-//			params.setScoringThisActivityAtAll(false);
-//			config.planCalcScore().addActivityParams(params);
-//		}
-//		{
-//			PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams("safe") ;
-//			params.setScoringThisActivityAtAll(false);
-//			config.planCalcScore().addActivityParams(params);
-//		}
-//
-//
-//
-//
+
 //		// ---
 //
-		String configFilename = scenarioBase + "config.xml" ;
+		String configFilename = scenarioBase + "config_justRunInputPlansFile.xml" ;
 //
 //		ConfigUtils.writeConfig( config, configFilename );
 		
@@ -116,8 +83,8 @@ public class RunMatsim4FloodEvacuationTestIT {
 			log.warn("yyyyyy That number should really be zero; need to investigate!!!") ;
 		}
 		
-		if(counter.getBadLinkEnterEventCount()/counter.getTotalLinkEnterEventCount() > 0.1) {
-			Assert.fail("Number fo vehicles on non-evac links exceeds 10%");
+		if(counter.getBadLinkEnterEventCount()/counter.getTotalLinkEnterEventCount() > 0.01) {
+			Assert.fail("Number of vehicles on non-evac links exceeds 1%");
 		}
 
 	}

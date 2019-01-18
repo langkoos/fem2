@@ -21,13 +21,10 @@ package femproto.run;
 import com.google.inject.Inject;
 import femproto.RerouteLastSelected;
 import femproto.globals.FEMGlobalConfig;
-import femproto.prepare.evacuationscheduling.EvacuationSchedule;
-import femproto.prepare.evacuationscheduling.EvacuationScheduleFromExperiencedPlans;
-import femproto.prepare.evacuationscheduling.EvacuationScheduleReader;
-import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
-import femproto.prepare.evacuationscheduling.SafeNodeAllocation;
-import femproto.prepare.evacuationscheduling.SubsectorData;
+import femproto.prepare.evacuationscheduling.*;
 import femproto.prepare.network.NetworkConverter;
+import femproto.prepare.parsers.HydrographParser;
+import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -65,6 +62,10 @@ import org.matsim.core.controler.events.ShutdownEvent;
 import org.matsim.core.controler.listener.ShutdownListener;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.network.NetworkChangeEvent;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.network.io.NetworkChangeEventsParser;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
 import org.matsim.core.router.NetworkRoutingProvider;
 import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutilityFactory;
@@ -86,10 +87,8 @@ import org.matsim.core.utils.io.IOUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
 
 import static femproto.run.FEMPreferEmergencyLinksTravelDisutility.isEvacLink;
 import static org.matsim.core.network.NetworkUtils.getEuclideanDistance;
@@ -123,7 +122,7 @@ public class RunMatsim4FloodEvacuation {
 	}
 
 	/**
-	 * Assume that you have constructred a scenario elsewhere and just want to run
+	 * Assume that you have constructed a scenario elsewhere and just want to run
 	 *
 	 * @param scenario input scenario
 	 */
@@ -140,36 +139,35 @@ public class RunMatsim4FloodEvacuation {
 
 	}
 
+	/**
+	 * In case a config file is prepared programmatically
+	 *
+	 * @param config input config
+	 */
+	public RunMatsim4FloodEvacuation(Config config) {
+		// catch log entries early (before the output directory is there):
+		OutputDirectoryLogging.catchLogEntries();
+		this.config = config;
+		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
+
+		FEMUtils.setGlobalConfig(globalConfig);
+		hasLoadedConfig = true;
+
+	}
+
 	Config loadConfig(final String[] args) {
 		if (args == null || args.length == 0 || args[0] == "") {
-
-//			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config-just-run-plans-file.xml" );
-//			config = ConfigUtils.loadConfig( "scenarios/fem2016_v20180307/00config.xml" );
 			config = ConfigUtils.loadConfig("scenarios/FEM2TestDataOctober18/config_2016.xml");
-
-//			config = ConfigUtils.createConfig() ;
-//			config.network().setInputFile( "test/output/femproto/gis/NetworkConverterTest/testMain/netconvert.xml.gz");
-//			config.plans().setInputFile("plans_from_hn_evacuationmodel_PL2016_V12subsectorsVehic2016.xml.gz");
-
-//			config = ConfigUtils.loadConfig( "workspace-csiro/proj1/wsconfig-for-matsim-v10.xml" ) ;
-//			config = ConfigUtils.loadConfig( "scenarios/hawkesbury-from-bdi-project-2018-01-16/00config-just-run-plans-file.xml" ) ;
-
-
 		} else {
 			log.info("found an argument, thus loading config from file ...");
 			config = ConfigUtils.loadConfig(args[0]);
 		}
 
-		// ---
-
-		hasLoadedConfig = true;
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
-		//yoyo this needs to be marked as an essential step for the moment until injection works
-		try {
-			FEMUtils.setGlobalConfig(globalConfig);
-		} catch (Exception e) {
 
-		}
+		FEMUtils.setGlobalConfig(globalConfig);
+		hasLoadedConfig = true;
+
 		return config;
 	}
 
@@ -189,17 +187,17 @@ public class RunMatsim4FloodEvacuation {
 		//  should come from config file so user can change it.
 		// agree - fouriep nov 18
 
-//		config.controler().setLastIteration( lastIteration );
-
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 
 		config.controler().setRoutingAlgorithmType(ControlerConfigGroup.RoutingAlgorithmType.FastDijkstra);
-		// yy landmarks algorithm does not work when network is disconnected.  kai, aug'18
+		// landmarks algorithm does not work when network is disconnected.  kai, aug'18
+		// I think this can be marked resolved as we can only consider safe nodes assigned to a subsector - pieter jan 19
 
 		// --- strategies:
-		switch (femConfig.getFemRunType()) {
-			//yoyo will need some planremovalselector that will maintain diversity of destinations; setting memory to a relatively large value for now, and using BestScore plan selection
-			case runFromSource:
+		switch (femConfig.getFemOptimizationType()) {
+			/* yoyo will need some planremovalselector that will maintain diversity of destinations when doing replanning;
+			 kai's approach keeps the shortest patn and only relies on the scoring function */
+			case optimizeLikeNICTA:
 				config.strategy().setMaxAgentPlanMemorySize(10);
 			default:
 				config.strategy().setMaxAgentPlanMemorySize(0);
@@ -240,106 +238,77 @@ public class RunMatsim4FloodEvacuation {
 		}
 		config.planCalcScore().setWriteExperiencedPlans(true);
 
-		// --- fem:
+		// --- fem: are we running from source, plans or from evacuation schedule
 
 		log.warn("runType=" + femConfig.getFemRunType());
+		log.warn("optimizationType=" + femConfig.getFemOptimizationType());
 
-		switch (femConfig.getFemRunType()) {
-			case runFromSource:
+		switch (femConfig.getFemOptimizationType()) {
+			case optimizeLikeNICTA:
 				config.strategy().clearStrategySettings();
-//				{
-//					StrategyConfigGroup.StrategySettings strategySettingsReroute = new StrategyConfigGroup.StrategySettings();
-//
-//					strategySettingsReroute.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
-//					strategySettingsReroute.setSubpopulation(LeaderOrFollower.LEADER.name());
-//					strategySettingsReroute.setWeight(0.1);
-//					strategySettingsReroute.setDisableAfter((int) (0.7*config.controler().getLastIteration()));
-//					config.strategy().addStrategySettings(strategySettingsReroute);
-//				}
-//				{
-//					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-//					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-//					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
-//					strategySettings.setWeight(0.001);
-//					config.strategy().addStrategySettings(strategySettings);
-//				}
-//				{
-//					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-//					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-//					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectExpBeta);
-//					strategySettings.setWeight(0.7);
-//					strategySettings.setDisableAfter((int) (0.9*config.controler().getLastIteration()));
-//					config.strategy().addStrategySettings(strategySettings);
-//				}
-			{
-				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-				strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-				strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-				strategySettings.setWeight(7);
-				config.strategy().addStrategySettings(strategySettings);
-			}
-			{
-				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-				strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
-				strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-				strategySettings.setWeight(7);
-				config.strategy().addStrategySettings(strategySettings);
-			}
-			{
-				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-				strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
-				strategySettings.setStrategyName(KEEP_LAST_REROUTE);
-				strategySettings.setWeight(3);
-				strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
-				config.strategy().addStrategySettings(strategySettings);
-			}
-			{
-				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-				strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
-				strategySettings.setStrategyName(KEEP_LAST_REROUTE);
-				strategySettings.setWeight(3);
-				strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
-				config.strategy().addStrategySettings(strategySettings);
-			}
-			configureDecongestion(config);
-			break;
+
+				for (LeaderOrFollower leaderOrFollower : LeaderOrFollower.values()) {
+					{
+						StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+						strategySettings.setSubpopulation(leaderOrFollower.name());
+						strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
+						strategySettings.setWeight(7);
+						config.strategy().addStrategySettings(strategySettings);
+					}
+
+					{
+						StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+						strategySettings.setSubpopulation(leaderOrFollower.name());
+						strategySettings.setStrategyName(KEEP_LAST_REROUTE);
+						strategySettings.setWeight(3);
+						strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
+						config.strategy().addStrategySettings(strategySettings);
+					}
+
+				}
+
+
+				configureDecongestion(config);
+				break;
+
 			case optimizeSafeNodesBySubsector: {
 				config.strategy().clearStrategySettings();
-				StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-				strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
-				strategySettings.setWeight(1);
-				config.strategy().addStrategySettings(strategySettings);
+				for (LeaderOrFollower leaderOrFollower : LeaderOrFollower.values()) {
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(leaderOrFollower.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
+					strategySettings.setWeight(1);
+					config.strategy().addStrategySettings(strategySettings);
+				}
 				// (here, all strategy selection is done in a separate controler listener.  kai, jul'18)
 				configureDecongestion(config);
 			}
 			break;
+
 			case optimizeSafeNodesByPerson: {
-//				{
-//					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-//					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
-//					strategySettings.setWeight(1);
-//					strategySettings.setDisableAfter( (int) (0.9*lastIteration) ); // (50 iterations was not enough)
-//					config.strategy().addStrategySettings(strategySettings);
-//				}
-				{
-					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
-					strategySettings.setWeight(1);
-					config.strategy().addStrategySettings(strategySettings);
-				}
-				{
-					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
-					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectRandom);
-					strategySettings.setWeight(0.1);
-					strategySettings.setDisableAfter((int) (0.9 * lastIteration)); // (50 iterations was not enough) (not innovative!)
-					config.strategy().addStrategySettings(strategySettings);
+				for (LeaderOrFollower leaderOrFollower : LeaderOrFollower.values()) {
+
+					{
+						StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+						strategySettings.setSubpopulation(leaderOrFollower.name());
+						strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.BestScore);
+						strategySettings.setWeight(1);
+						config.strategy().addStrategySettings(strategySettings);
+					}
+					{
+						StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+						strategySettings.setSubpopulation(leaderOrFollower.name());
+						strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectRandom);
+						strategySettings.setWeight(0.1);
+						strategySettings.setDisableAfter((int) (0.9 * lastIteration)); // (50 iterations was not enough) (not innovative!)
+						config.strategy().addStrategySettings(strategySettings);
+					}
 				}
 				configureDecongestion(config);
 			}
 			break;
-			case justRunInputPlansFile:
 
-			case runFromEvacuationSchedule:
+			case none:
 				config.controler().setLastIteration(0);
 				// I don't think we need strategies since we would run only the zeroth iteration.  kai, jul'18
 				break;
@@ -348,10 +317,9 @@ public class RunMatsim4FloodEvacuation {
 		}
 
 		MatsimRandom.reset();
-		// need this stable so that the sampling is stable.  not sure why it is unstable without this.  kai, sep'18
+		// need this so that the sampling is stable.  not sure why it is unstable without this.  kai, sep'18
 
 		// ---
-
 		hasPreparedConfig = true;
 	}
 
@@ -361,83 +329,79 @@ public class RunMatsim4FloodEvacuation {
 		}
 
 		// === add overriding config material if there is something in that file:
-		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL(config.getContext(), "overridingConfig.xml"));
+		// yoyo we've had some gripes from D61 on this; can we make it optional - pieter jan 19
+//		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL(config.getContext(), "overridingConfig.xml"));
+//			log.warn("loaded overriding config settings from overrirdingConfig.xml");
+
 
 		// === prepare scenario === :
 
-		log.info("here10");
-
-		scenario = ScenarioUtils.loadScenario(config);
-
-		log.info("here20");
 
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
 
-//		new NetworkCleaner().run(scenario.getNetwork());
-		// yyyyyy fem2016 network seems to have unconnected pieces.
-
-		// yyyyyy reduce to sample for debugging:
-		FEMUtils.sampleDown(scenario, femConfig.getSampleSize());
-		// yyyy decide how to do this for UI. kai, jul'18
-		// yyyy try running validation run always on 100%.  Does not work because 1% has subsectors with no departures, thus no safe node.
-		// woud need to have sub-sector-based stratified sampling.
-
 
 		switch (femConfig.getFemRunType()) {
-			case runFromSource:
-			case justRunInputPlansFile:
+			case runFromSource: {
+				scenario = ScenarioUtils.createMutableScenario(config);
+				NetworkConverter networkConverter = new NetworkConverter(scenario);
+				networkConverter.run();
+
+				EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
+				URL subsectorURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getInputSubsectorsShapefile());
+				new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(subsectorURL);
+
+				HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
+				URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getHydrographShapeFile());
+				hydrographParser.parseHydrographShapefile(hydrographURL);
+
+				URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getHydrographData());
+				hydrographParser.readHydrographData(hydrographDataURL, 54961);
+
+				if(config.network().isTimeVariantNetwork()) {
+					List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork());
+					config.network().setChangeEventsInputFile("input_change_events.xml.gz");
+					NetworkUtils.setNetworkChangeEvents(scenario.getNetwork(), networkChangeEvents);
+				}
+
+				new EvacuationScheduleFromHydrographData(scenario.getNetwork(), evacuationSchedule, hydrographParser).createEvacuationSchedule();
+
+				EvacuationScheduleToPopulationDepartures populationDepartures = new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule);
+				populationDepartures.createPlansForAllSafeNodes();
+
 				break;
-			case runFromEvacuationSchedule:
-				log.info("here30");
+			}
 
-				final String fileName = config.controler().getOutputDirectory() + "/" + FEMConfigGroup.FEMRunType.optimizeSafeNodesBySubsector + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION;
-				final EvacuationSchedule evacSched = new EvacuationSchedule();
-				new EvacuationScheduleReader(evacSched, scenario.getNetwork()).readFile(fileName);
-
-				log.info("here40");
-
-				log.info("here50");
-
+			case justRunInputPlansFile: {
+				scenario = ScenarioUtils.loadScenario(config);
+				//yoyoyo it seems person attributes do no propagate to population.getPersonAttributes(), only to person.getAttributes()
 				for (Person person : scenario.getPopulation().getPersons().values()) {
-					// remove unselected plans:
-					person.getPlans().removeIf(plan -> !person.getSelectedPlan().equals(plan));
-					// get subsector info:
-					final SubsectorData data = evacSched.getOrCreateSubsectorData(FEMUtils.getSubsectorName(person));
-					final Set<SafeNodeAllocation> set = data.getSafeNodesByTime();
-					if (set.size() > 1) {
-						throw new RuntimeException("more than one safe node for a subsector.  cannot deal with this in verification run. Aborting ...");
+					for (Map.Entry<String, Object> stringObjectEntry : person.getAttributes().getAsMap().entrySet()) {
+
+						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(), stringObjectEntry.getKey(), stringObjectEntry.getValue());
 					}
-					if (set.size() == 0) {
-						log.info("subsectorName=" + FEMUtils.getSubsectorName(person));
-						log.info("set=" + set);
-						throw new RuntimeException("somehow, there is no safe node for the subsector.  cannot deal with this in verification run.  Aborting ...");
-					}
-					final SafeNodeAllocation alloc = set.iterator().next(); // there should now be only one!
-
-					final List<PlanElement> planElements = person.getSelectedPlan().getPlanElements();
-
-					// set evacuation time:
-					final Activity initialAct = (Activity) planElements.get(0);
-					initialAct.setEndTime(alloc.getStartTime());
-					// (start time is indeed the departure time)
-
-					// remove route so that it will be re-computed:
-					final Leg evacLeg = (Leg) planElements.get(1);
-					evacLeg.setRoute(null);
-
-					// set safe node:
-					final Activity safeAct = (Activity) planElements.get(2);
-					safeAct.setLinkId(FEMUtils.getLinkFromSafeNode(alloc.getNode().getId().toString(), scenario).getId());
-					// yy arrrggghhh ... kai, sep'18
 
 				}
-				break;
 
-			case optimizeSafeNodesByPerson:
-			case optimizeSafeNodesBySubsector:
-				FEMUtils.giveAllSafeNodesToAllAgents(scenario);
-				// yyyy will we get valid initial mappings?  kai, jul'18
 				break;
+			}
+			case runFromEvacuationSchedule: {
+				/*yoyoyo I am making the most radical changes here, assuming that verification runs from an evacuation schedule are set up by a graphical interface of sorts,
+				 and that such infrastructure will point to all the relevant files, rather than making assumptions about where the output from a run resides.
+				 Purpose-built classes like RunFromSource can perform such tricks.
+				 */
+				EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
+				scenario = ScenarioUtils.createMutableScenario(config);
+
+				new MatsimNetworkReader(scenario.getNetwork()).readFile(IOUtils.newUrl(scenario.getConfig().getContext(), config.network().getInputFile()).getFile());
+
+				loadNetworkChangeEvents();
+
+				new EvacuationScheduleReader(evacuationSchedule, scenario.getNetwork()).readFile(IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getEvacuationScheduleFile()).getFile());
+
+				new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).createPlans();
+				break;
+			}
+
 		}
 
 		switch (femConfig.getFemEvacuationTimeAdjustment()) {
@@ -451,16 +415,23 @@ public class RunMatsim4FloodEvacuation {
 				throw new RuntimeException(Gbl.NOT_IMPLEMENTED);
 		}
 
-		//		preparationsForRmitHawkesburyScenario();
 
-		config.controler().setOutputDirectory(config.controler().getOutputDirectory() + "/" + femConfig.getFemRunType().name());
+		//  reduce to sample for debugging:
+		FEMUtils.sampleDown(scenario, femConfig.getSampleSize());
+		//  decide how to do this for UI. kai, jul'18
+		//  try running validation run always on 100%.  Does not work because 1% has subsectors with no departures, thus no safe node.
+		// would need to have sub-sector-based stratified sampling. done - pieter, jan 19
+
+//		config.controler().setOutputDirectory(config.controler().getOutputDirectory() + "/" + femConfig.getFemRunType().name());
 		// yyyy this needs to be _after_ the evac schedule was read in the verification run since otherwise I can't
 		// find the directory.  Probably do in some other way. kai, sep'18
+		// yoyo proposing to break away from this approach as stated earlier: this class should only run simulations. other classes shoud decide what to do wtth simulation results
 
 		// ---
 		hasPreparedScenario = true;
 		return scenario;
 	}
+
 
 	void prepareControler(AbstractModule... overridingModules) {
 		if (!hasPreparedScenario) {
@@ -502,18 +473,23 @@ public class RunMatsim4FloodEvacuation {
 //						TravelDisutilityFactory delegateFactory = new TollTimeDistanceTravelDisutilityFactory() ;
 						// NOT using the toll based travel disutility, since we are routing without toll, on the
 						// empty network, before the iterations start, and then never again.  kai, jul'18
-						// yoyo this changes because of new requirements pieter nov'18
-						switch (femConfig.getFemRunType()) {
-							case justRunInputPlansFile:
-								addTravelDisutilityFactoryBinding(routingMode).toInstance(
-										new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork(),new OnlyTimeDependentTravelDisutilityFactory())
-								);
-								break;
-							default:
+						//  this changes because of new requirements pieter nov'18
+						// if we need to run the other optmisation approaches, we need to re-route and so Kai proposed this approach of being able to switch between the two
+
+						switch (femConfig.getFemOptimizationType()) {
+							case optimizeLikeNICTA:
+							case optimizeSafeNodesByPerson:
+							case optimizeSafeNodesBySubsector:
 								bind(TollTimeDistanceTravelDisutilityFactory.class);
 								addTravelDisutilityFactoryBinding(routingMode).to(
 										FEMPreferEmergencyLinksTravelDisutility.Factory.class
 								);
+								break;
+							default:
+								addTravelDisutilityFactoryBinding(routingMode).toInstance(
+										new FEMPreferEmergencyLinksTravelDisutility.Factory(scenario.getNetwork(), new OnlyTimeDependentTravelDisutilityFactory())
+								);
+								break;
 
 						}
 
@@ -547,19 +523,16 @@ public class RunMatsim4FloodEvacuation {
 						if (event.isUnexpected()) {
 							return;
 						}
+						//yoyoyo the vehicles from the original evacuationschedule needs to be stored and written out with the optimized schedule
 						final EvacuationScheduleFromExperiencedPlans converter = new EvacuationScheduleFromExperiencedPlans(population, network);
 						converter.parseExperiencedPlans(eps.getExperiencedPlans(), network);
 						final EvacuationSchedule schedule = converter.createEvacuationSchedule();
 						EvacuationScheduleWriter writer = new EvacuationScheduleWriter(schedule);
-						writer.writeEvacuationScheduleRecordComplete(outDirs.getOutputFilename(Controler.OUTPUT_PREFIX + "evacuationSchedule.csv"));
-						switch (ConfigUtils.addOrGetModule(config, FEMConfigGroup.class).getFemRunType()) {
-							case justRunInputPlansFile:
-							case runFromEvacuationSchedule:
+						writer.writeEvacuationScheduleRecordComplete(outDirs.getOutputFilename(Controler.OUTPUT_PREFIX + "output_evacuationSchedule.csv"));
+						switch (femConfig.getFemOptimizationType()) {
+							case none:
 								break;
-
-							case runFromSource:
-							case optimizeSafeNodesByPerson:
-							case optimizeSafeNodesBySubsector:
+							default:
 								writer.writeEvacuationScheduleRecordNoVehiclesNoDurations(config.controler().getOutputDirectory() + "/" + EVACUATION_SCHEDULE_FOR_VERIFICATION);
 								break;
 						}
@@ -572,7 +545,8 @@ public class RunMatsim4FloodEvacuation {
 				// * we do not overwrite material written in earlier stage
 
 				// * we write both output_evacuationSchedule and optimized_evacuationSchedule.  The former is meant as input
-				// to analysis.  The latter is meant to be manually modified, and is input for the verification run.
+				// to analysis, representing the executed run's results.  The latter is meant to be manually modified,
+				// and is input for the verification run.
 
 				// * if the verification run wants automatic access to the optimized_evacuationSchedule, it needs to be
 				// directly in the "output" directory.  In contrast, the output dir of the verification run could be in
@@ -590,7 +564,7 @@ public class RunMatsim4FloodEvacuation {
 
 		// yyyy should have the infrastructure that is not needed for justRun only enabled for the other runs.  kai, jul'18
 
-		switch (femConfig.getFemRunType()) {
+		switch (femConfig.getFemOptimizationType()) {
 			case optimizeSafeNodesBySubsector:
 				controler.addOverridingModule(new DecongestionModule(scenario));
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
@@ -607,7 +581,7 @@ public class RunMatsim4FloodEvacuation {
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
 				// computed in prepareForSim. kai, jul'18
 				break;
-			case runFromSource:
+			case optimizeLikeNICTA:
 				controler.addOverridingModule(new DecongestionModule(scenario));
 				controler.addOverridingModule(new AbstractModule() {
 					@Override
@@ -622,8 +596,7 @@ public class RunMatsim4FloodEvacuation {
 					}
 				});
 				break;
-			case justRunInputPlansFile:
-			case runFromEvacuationSchedule:
+			case none:
 				break;
 			default:
 				throw new RuntimeException(Gbl.NOT_IMPLEMENTED);
@@ -666,6 +639,18 @@ public class RunMatsim4FloodEvacuation {
 		decongestionSettings.setWriteOutputIteration(100);
 	}
 
+
+	private void loadNetworkChangeEvents() {
+		if ((this.config.network().getChangeEventsInputFile() != null) && this.config.network().isTimeVariantNetwork()) {
+			log.info("loading network change events from " + this.config.network().getChangeEventsInputFileUrl(this.config.getContext()).getFile());
+			Network network = this.scenario.getNetwork();
+			List<NetworkChangeEvent> changeEvents = new ArrayList<>();
+			NetworkChangeEventsParser parser = new NetworkChangeEventsParser(network, changeEvents);
+			parser.parse(this.config.network().getChangeEventsInputFileUrl(config.getContext()));
+			NetworkUtils.setNetworkChangeEvents(network, changeEvents);
+		}
+	}
+
 	public static void main(String[] args) {
 		// The GUI executes the "main" method, with the config file name as the only argument.
 
@@ -705,130 +690,5 @@ public class RunMatsim4FloodEvacuation {
 
 	}
 
-}
-
-class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScoring {
-	// the difference of this one to V1 is that it is heavily penalized to leave the evac network and
-	// then re-enter it again.  penalizing things like shortcutting through ferry links, or through
-	// centroid connectors.  kai, jul'18
-
-	private final TravelDisutility travelDisutility;
-	private final Person person;
-	private final Network network;
-	private double score = 0.;
-	private Link prevLink = null;
-	private boolean hasBeenOnEvacNetwork = false;
-	private boolean hasLeftEvacNetworkAfterHavingBeenOnIt = false;
-	private boolean hasDiedFromStarvation = false;
-	private double departureTime;
-
-	NonevacLinksPenalizerV2(TravelDisutility travelDisutility, Person person, Network network) {
-		this.travelDisutility = travelDisutility;
-		this.person = person;
-		this.network = network;
-	}
-
-	@Override
-	public void finish() {
-	}
-
-	@Override
-	public double getScore() {
-		return score;
-	}
-
-	@Override
-	public void handleEvent(Event event) {
-		if (event instanceof LinkEnterEvent) {
-			// (by the framework, only link events where the person is involved (as driver or passenger) end up here!)
-
-			Link link = network.getLinks().get(((LinkEnterEvent) event).getLinkId());
-			score -= ((FEMPreferEmergencyLinksTravelDisutility) travelDisutility).getAdditionalLinkTravelDisutility(link, event.getTime(), person, null);
-
-			if (isEvacLink(link)) {
-				hasBeenOnEvacNetwork = true;
-			}
-			if (hasBeenOnEvacNetwork && !isEvacLink(link)) {
-				hasLeftEvacNetworkAfterHavingBeenOnIt = true;
-			}
-			if (hasLeftEvacNetworkAfterHavingBeenOnIt) {
-				if (!isEvacLink(prevLink) && isEvacLink(link)) {
-					// (means has re-entered evac network for second time; this is what we penalize)
-					score -= 100000.;
-				}
-			}
-
-			prevLink = link;
-		}
-		if (event instanceof PersonEntersVehicleEvent) {
-			departureTime = event.getTime();
-		}
-		if (event instanceof PersonLeavesVehicleEvent) {
-			if (event.getTime() - departureTime > FEMUtils.getGlobalConfig().getLongestAllowedEvacuationTime() * 60) {
-				score -= 100000.;
-			}
-		}
-	}
-}
-
-class NonevacLinksPenalizerV1 implements SumScoringFunction.ArbitraryEventScoring {
-	private final TravelDisutility travelDisutility;
-	private final Person person;
-	private final Network network;
-	private double score = 0.;
-
-	NonevacLinksPenalizerV1(TravelDisutility travelDisutility, Person person, Network network) {
-		this.travelDisutility = travelDisutility;
-		this.person = person;
-		this.network = network;
-	}
-
-	@Override
-	public void finish() {
-	}
-
-	@Override
-	public double getScore() {
-		return score;
-	}
-
-	@Override
-	public void handleEvent(Event event) {
-		if (event instanceof LinkEnterEvent) {
-			// (by the framework, only link events where the person is involved (as driver or passenger) end up here!)
-
-			Link link = network.getLinks().get(((LinkEnterEvent) event).getLinkId());
-			score -= ((FEMPreferEmergencyLinksTravelDisutility) travelDisutility).getAdditionalLinkTravelDisutility(link, event.getTime(), person, null);
-		}
-	}
-}
-
-class NonEvacLinkPenalizingScoringFunctionFactory implements ScoringFunctionFactory {
-	@Inject
-	private ScoringParametersForPerson params;
-	@Inject
-	private Map<String, TravelDisutilityFactory> travelDisutilityFactories;
-	@Inject
-	private Map<String, TravelTime> travelTimes;
-	@Inject
-	private Network network;
-
-	@Override
-	public ScoringFunction createNewScoringFunction(Person person) {
-
-		final ScoringParameters parameters = params.getScoringParameters(person);
-
-		TravelTime travelTime = travelTimes.get(TransportMode.car);
-		TravelDisutility travelDisutility = travelDisutilityFactories.get(TransportMode.car).createTravelDisutility(travelTime);
-
-		SumScoringFunction sumScoringFunction = new SumScoringFunction();
-		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring(parameters));
-		sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring(parameters, network));
-		sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(parameters));
-		sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring(parameters));
-		sumScoringFunction.addScoringFunction(new NonevacLinksPenalizerV2(travelDisutility, person, network));
-//		sumScoringFunction.addScoringFunction(new SafeNodePriorityPenaliser(person));
-		return sumScoringFunction;
-	}
 }
 

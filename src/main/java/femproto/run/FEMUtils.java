@@ -30,11 +30,7 @@ import org.matsim.core.utils.io.IOUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.matsim.core.network.NetworkUtils.getEuclideanDistance;
 
@@ -187,12 +183,18 @@ public class FEMUtils {
 
 	static void sampleDown(Scenario scenario, double sample) {
 		List<Id<Person>> list = new ArrayList<>();
+		Set<String> subsectors = new HashSet<>();
 		boolean first = true;
 		for (Person person : scenario.getPopulation().getPersons().values()) {
 			final double rnd = MatsimRandom.getRandom().nextDouble();
 			if (first) {
 				first = false;
 				log.info("going into the sampling with first rnd=" + rnd);
+			}
+			// yoyoyo this will ensure at least one person per subsector when sampling down
+			if (!subsectors.contains(FEMUtils.getSubsectorName(person))){
+				subsectors.add(FEMUtils.getSubsectorName(person));
+				continue;
 			}
 			if (rnd < (1. - sample)) {
 				list.add(person.getId());
@@ -203,12 +205,13 @@ public class FEMUtils {
 			scenario.getPopulation().removePerson(toBeRemoved);
 		}
 		scenario.getConfig().qsim().setFlowCapFactor(sample);
-		if (sample > 0.1)
 			scenario.getConfig().qsim().setStorageCapFactor(sample);
-		if (sample <= 0.1)
-			scenario.getConfig().qsim().setStorageCapFactor(2 * sample);
-		if (sample <= 0.01)
-			scenario.getConfig().qsim().setStorageCapFactor(3 * sample);
+			//yoyo I am not increasing storageCapFactor here as it's probably a good ting if the network behaves more congested
+//		if (sample > 0.1)
+//		if (sample <= 0.1)
+//			scenario.getConfig().qsim().setStorageCapFactor(2 * sample);
+//		if (sample <= 0.01)
+//			scenario.getConfig().qsim().setStorageCapFactor(3 * sample);
 	}
 
 	static void giveAllSafeNodesToAllAgents(Scenario scenario) {

@@ -368,7 +368,7 @@ public class HydrographParser {
 	}
 
 
-	public List<NetworkChangeEvent> networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network, String outputFileName) {
+	public List<NetworkChangeEvent> networkChangeEventsFromConsolidatedHydrographFloodTimes(Network network) {
 		log.info("Generating network change events from hydrograph data...");
 		List<NetworkChangeEvent> networkChangeEvents = new ArrayList<>();
 		double maxTime = Double.NEGATIVE_INFINITY;
@@ -406,7 +406,6 @@ public class HydrographParser {
 			networkChangeEvents.add(capacityResetEvent);
 		}
 
-		new NetworkChangeEventsWriter().write(outputFileName, networkChangeEvents);
 		log.info("DONE Generating network change events from hydrograph data.");
 		return networkChangeEvents;
 	}

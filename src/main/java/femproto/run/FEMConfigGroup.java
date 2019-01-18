@@ -30,6 +30,13 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 			}
 			map.put(FEM_RUN_TYPE, str);
 		}
+		{
+			String str = FEM_OPTIMIZATION_TYPE_CMT + " Options: ";
+			for (FEMOptimizationType type : FEMOptimizationType.values()) {
+				str += type.name() + " ";
+			}
+			map.put(FEM_OPTIMIZATION_TYPE, str);
+		}
 		map.put(INPUT_SUBSECTORS_SHAPEFILE, INPUT_SUBSECTORS_SHAPEFILE_CMT);
 		map.put(INPUT_NETWORK_NODES_SHAPEFILE, INPUT_NETWORK_NODES_SHAPEFILE_CMT);
 		map.put(INPUT_NETWORK_LINKS_SHAPEFILE, INPUT_NETWORK_LINKS_SHAPEFILE_CMT);
@@ -70,7 +77,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 
 	// ---
 	enum FEMRunType {
-		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource, optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector
+		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource
 	}
 
 	private FEMRunType femRunType = FEMRunType.runFromSource;
@@ -85,6 +92,24 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	@StringSetter(FEM_RUN_TYPE)
 	public void setFemRunType(final FEMRunType femRunType) {
 		this.femRunType = femRunType;
+	}
+
+	enum FEMOptimizationType {
+		optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, none
+	}
+
+	private FEMOptimizationType femOptimizationType = FEMOptimizationType.optimizeLikeNICTA;
+	private static final String FEM_OPTIMIZATION_TYPE = "FEMOptimizationType";
+	private static final String FEM_OPTIMIZATION_TYPE_CMT = "Optimization process for routing, safe node allocation, timing, etc.";
+
+	@StringGetter(FEM_OPTIMIZATION_TYPE)
+	FEMOptimizationType getFemOptimizationType() {
+		return femOptimizationType;
+	}
+
+	@StringSetter(FEM_OPTIMIZATION_TYPE)
+	public void setFemOptimizationType(final FEMOptimizationType femOptimizationTType) {
+		this.femOptimizationType = femOptimizationTType;
 	}
 
 	// ---

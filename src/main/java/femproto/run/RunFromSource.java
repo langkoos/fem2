@@ -16,6 +16,7 @@ import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
+import org.matsim.core.network.io.NetworkChangeEventsWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.io.IOUtils;
 
@@ -53,7 +54,8 @@ public class RunFromSource {
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt");
 
-		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork(), outputDirectory + "/input_change_events.xml.gz");
+		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork());
+		new NetworkChangeEventsWriter().write(outputDirectory + "/input_change_events.xml.gz", networkChangeEvents);
 		config.network().setChangeEventsInputFile("input_change_events.xml.gz");
 		NetworkUtils.setNetworkChangeEvents(scenario.getNetwork(), networkChangeEvents);
 
