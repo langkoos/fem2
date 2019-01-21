@@ -244,7 +244,7 @@ public class RunMatsim4FloodEvacuation {
 		log.warn("optimizationType=" + femConfig.getFemOptimizationType());
 
 		switch (femConfig.getFemOptimizationType()) {
-			case optimizeLikeNICTA:
+			case optimizeLikeNICTA: {
 				config.strategy().clearStrategySettings();
 
 				for (LeaderOrFollower leaderOrFollower : LeaderOrFollower.values()) {
@@ -270,6 +270,40 @@ public class RunMatsim4FloodEvacuation {
 
 				configureDecongestion(config);
 				break;
+			}
+			case followTheLeader: {
+				config.strategy().clearStrategySettings();
+
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectExpBeta);
+					strategySettings.setWeight(0.7);
+					config.strategy().addStrategySettings(strategySettings);
+				}
+
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
+					strategySettings.setWeight(0.3);
+					strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
+					config.strategy().addStrategySettings(strategySettings);
+				}
+
+				{
+					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+					strategySettings.setSubpopulation(LeaderOrFollower.FOLLOWER.name());
+					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.KeepLastSelected);
+					strategySettings.setWeight(1);
+					config.strategy().addStrategySettings(strategySettings);
+				}
+				//yoyoyo this approach will require a terminationcriterion that checks for a good score and terminates, so it needs to always have events at hand (I guess)
+				config.controler().setWriteEventsInterval(1);
+
+				configureDecongestion(config);
+				break;
+			}
 
 			case optimizeSafeNodesBySubsector: {
 				config.strategy().clearStrategySettings();
@@ -357,7 +391,7 @@ public class RunMatsim4FloodEvacuation {
 				URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getHydrographData());
 				hydrographParser.readHydrographData(hydrographDataURL, 54961);
 
-				if(config.network().isTimeVariantNetwork()) {
+				if (config.network().isTimeVariantNetwork()) {
 					List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork());
 					config.network().setChangeEventsInputFile("input_change_events.xml.gz");
 					NetworkUtils.setNetworkChangeEvents(scenario.getNetwork(), networkChangeEvents);
@@ -448,6 +482,7 @@ public class RunMatsim4FloodEvacuation {
 				this.addControlerListenerBinding().to(KaiAnalysisListener.class);
 				this.addControlerListenerBinding().to(OutputEvents2TravelDiaries.class);
 
+
 				// routing:
 				switch (femConfig.getFemRoutingMode()) {
 					case preferEvacuationLinks:
@@ -477,6 +512,7 @@ public class RunMatsim4FloodEvacuation {
 						// if we need to run the other optmisation approaches, we need to re-route and so Kai proposed this approach of being able to switch between the two
 
 						switch (femConfig.getFemOptimizationType()) {
+							case followTheLeader:
 							case optimizeLikeNICTA:
 							case optimizeSafeNodesByPerson:
 							case optimizeSafeNodesBySubsector:
@@ -565,6 +601,14 @@ public class RunMatsim4FloodEvacuation {
 		// yyyy should have the infrastructure that is not needed for justRun only enabled for the other runs.  kai, jul'18
 
 		switch (femConfig.getFemOptimizationType()) {
+			case followTheLeader:
+				// needs an additional listener
+				controler.addOverridingModule(new AbstractModule() {
+					@Override
+					public void install() {
+						addControlerListenerBinding().to(SelectedPlanFromSubsectorLeadAgents.class);
+					}
+				});
 			case optimizeSafeNodesBySubsector:
 				controler.addOverridingModule(new DecongestionModule(scenario));
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are

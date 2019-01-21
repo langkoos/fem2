@@ -95,7 +95,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 
 	enum FEMOptimizationType {
-		optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, none
+		optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, followTheLeader, none
 	}
 
 	private FEMOptimizationType femOptimizationType = FEMOptimizationType.optimizeLikeNICTA;
