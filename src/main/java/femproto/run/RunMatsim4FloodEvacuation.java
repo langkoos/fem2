@@ -286,7 +286,7 @@ public class RunMatsim4FloodEvacuation {
 					StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
 					strategySettings.setSubpopulation(LeaderOrFollower.LEADER.name());
 					strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
-					strategySettings.setWeight(0.3);
+					strategySettings.setWeight(0.2);
 					strategySettings.setDisableAfter((int) (0.6 * config.controler().getLastIteration()));
 					config.strategy().addStrategySettings(strategySettings);
 				}
@@ -601,7 +601,8 @@ public class RunMatsim4FloodEvacuation {
 		// yyyy should have the infrastructure that is not needed for justRun only enabled for the other runs.  kai, jul'18
 
 		switch (femConfig.getFemOptimizationType()) {
-			case followTheLeader:
+			case followTheLeader: {
+				controler.addOverridingModule(new DecongestionModule(scenario));
 				// needs an additional listener
 				controler.addOverridingModule(new AbstractModule() {
 					@Override
@@ -609,6 +610,8 @@ public class RunMatsim4FloodEvacuation {
 						addControlerListenerBinding().to(SelectedPlanFromSubsectorLeadAgents.class);
 					}
 				});
+				break;
+			}
 			case optimizeSafeNodesBySubsector:
 				controler.addOverridingModule(new DecongestionModule(scenario));
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
