@@ -519,9 +519,9 @@ public class RunMatsim4FloodEvacuation {
 						// empty network, before the iterations start, and then never again.  kai, jul'18
 						//  this changes because of new requirements pieter nov'18
 						// if we need to run the other optmisation approaches, we need to re-route and so Kai proposed this approach of being able to switch between the two
-						if (femConfig.getSampleSize() < 1) {
-							addControlerListenerBinding().toInstance(new PCUEquivalentSetter(femConfig.getSampleSize(), scenario));
-						}
+//						if (femConfig.getSampleSize() < 1) {
+//							addControlerListenerBinding().toInstance(new PCUEquivalentSetter(femConfig.getSampleSize(), scenario));
+//						}
 						switch (femConfig.getFemOptimizationType()) {
 							case followTheLeader:
 							case optimizeLikeNICTA:
@@ -765,7 +765,7 @@ public class RunMatsim4FloodEvacuation {
 
 
 	}
-
+// yoyo this could be an issue if
 	private class PCUEquivalentSetter implements BeforeMobsimListener {
 		private final double pcuEquivalent;
 		private final Scenario scenario;

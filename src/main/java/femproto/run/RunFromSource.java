@@ -25,9 +25,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// yoyo this is the entry point for D61, so keeping it
 public class RunFromSource {
 	public static void main(String[] args) {
-		optimizationThenVerification(args);
+		standardFullSizeOptimization(args);
 	}
 	public static void optimizationThenVerification(String[] args){
 		Config config = ConfigUtils.loadConfig(args[0]);
