@@ -372,6 +372,9 @@ public class RunMatsim4FloodEvacuation {
 		// yoyo we've had some gripes from D61 on this; can we make it optional - pieter jan 19
 //		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL(config.getContext(), "overridingConfig.xml"));
 //			log.warn("loaded overriding config settings from overrirdingConfig.xml");
+		// The main reason for providing this is that we are setting config switches in our run script.  Now if you don't like some of them, but you only have the built jar,
+		// then you are out of options if there is no additional insertion point _after_ we set them.  If data61 rather does not want this kind of flexibility, I have no
+		// issue with that.  kai, feb'19
 
 
 		// === prepare scenario === :
