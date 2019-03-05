@@ -138,21 +138,19 @@ public class HydrographParser {
 	 * @param fileName
 	 */
 	public void readHydrographData(URL fileName, int offsetTime) {
-		BufferedReader reader = IOUtils.getBufferedReader(fileName.getPath());
-		List<List<Double>> entries = new ArrayList<>();
+		List<List<Double>> columns = new ArrayList<>();
 		String[] header;
-		try {
+		try ( BufferedReader reader = IOUtils.getBufferedReader(fileName.getPath()) ) {
 			header = reader.readLine().split(",");
-			for (String s : header) {
-				entries.add(new ArrayList<>());
+			for ( int ii = 0 ; ii < header.length ; ii++ ) {
+				columns.add(new ArrayList<>()); // for each header we now have a list
 			}
 
 			String line = reader.readLine();
 			while (line != null) {
 				String[] lineArray = line.split(",");
-				for (int i = 0; i < header.length; i++) {
-					entries.get(i).add(Double.valueOf(lineArray[i].trim()));
-
+				for (int ii = 0; ii < header.length; ii++) {
+					columns.get(ii).add(Double.valueOf(lineArray[ii].trim()));
 				}
 				line = reader.readLine();
 			}
@@ -165,13 +163,13 @@ public class HydrographParser {
 		//find minimum time value
 		//normalise all
 		//  note that Peter said the 3rd row of the hydrograph is actually time 0
-		double minTime = entries.get(0).get(2) * 3600;
+		double minTime = columns.get(0).get(2) * 3600;
 		for (int i = 1; i < header.length; i++) {
 			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
 			if (hydrographPoint != null) {
-				for (int j = 2; j < entries.get(i).size(); j++) {
+				for (int j = 2; j < columns.get(i).size(); j++) {
 					//  it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
-					hydrographPoint.addTimeSeriesData(entries.get(0).get(j) * 3600 - minTime + offsetTime, entries.get(i).get(j));
+					hydrographPoint.addTimeSeriesData(columns.get(0).get(j) * 3600 - minTime + offsetTime, columns.get(i).get(j));
 				}
 				hydrographPoint.calculateFloodTimeFromData();
 			}

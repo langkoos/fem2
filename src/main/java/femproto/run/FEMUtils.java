@@ -49,11 +49,17 @@ public class FEMUtils {
 
 	private static EvacuationSchedule evacuationSchedule;
 	private static boolean evacuationScheduleIsLocked = false;
-
+	
+	/**
+	 *  this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.
+	 */
 	public static FEMGlobalConfig getGlobalConfig() {
 		return globalConfig;
 	}
-
+	
+	/**
+	 *  this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.
+	 */
 	public static void setGlobalConfig(final FEMGlobalConfig globalConfig) {
 		if (globalConfigIsLocked) {
 			throw new RuntimeException("too late");

@@ -50,6 +50,9 @@ public class NetworkConverter {
 
 	private Scenario scenario;
 	
+	/**
+	 * Convert shapefiles from emme to matsim network.
+	 */
 	public NetworkConverter( Scenario scenario ) {
 		this.scenario = scenario ;
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( scenario.getConfig(), FEMConfigGroup.class );
