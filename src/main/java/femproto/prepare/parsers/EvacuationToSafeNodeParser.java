@@ -81,23 +81,15 @@ public class EvacuationToSafeNodeParser {
 	public final static class Record {
 		// needs to be public, otherwise one gets some incomprehensible exception.  kai, nov'17
 
-		@CsvBindByName
-		private String SUBSECTOR;
-		@CsvBindByName
-		private String EVAC_NODE;
-		@CsvBindByName
-		private String SAFE_NODE1;
-		@CsvBindByName
-		private String SAFE_NODE2;
-		@CsvBindByName
-		private String SAFE_NODE3;
-		@CsvBindByName
-		private String SAFE_NODE4;
-		@CsvBindByName
-		private String SAFE_NODE5;
+		@CsvBindByName private String SUBSECTOR;
+		@CsvBindByName private String EVAC_NODE;
+		@CsvBindByName private String SAFE_NODE1;
+		@CsvBindByName private String SAFE_NODE2;
+		@CsvBindByName private String SAFE_NODE3;
+		@CsvBindByName private String SAFE_NODE4;
+		@CsvBindByName private String SAFE_NODE5;
 
-		@Override
-		public String toString() {
+		@Override public String toString() {
 			return this.SUBSECTOR
 					+ "\t" + this.EVAC_NODE
 					+ "\t" + this.SAFE_NODE1

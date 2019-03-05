@@ -30,7 +30,12 @@ public class RunFromSourceTest {
 	@Test
 	public void test(){
 		Config config = ConfigUtils.loadConfig(utils.getPackageInputDirectory()+"scenario/config_runFromSource_optimizeLikeNICTA.xml");
+
 		config.controler().setOutputDirectory(utils.getOutputDirectory());
+
+//		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
+//		femConfig.setSampleSize( 1. );
+		
 		new RunMatsim4FloodEvacuation(config).run();
 
 

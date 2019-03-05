@@ -39,7 +39,7 @@ public class DifferentVariantsTestIT {
 		this.timeDepNetwork = timeDepNetwork;
 	}
 
-	@Parameters(name = "{index}: {0} {1}") // the "name" entry is just for the test output
+	@Parameters(name = "{index}: {0} | {1} | {2} | timeDepNetw={3} ") // the "name" entry is just for the test output
 	public static Collection<Object[]> abc() { // the name of this method does not matter as long as it is correctly annotated
 		List<Object[]> combos = new ArrayList<>();
 

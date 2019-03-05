@@ -157,8 +157,9 @@ public class RunMatsim4FloodEvacuation {
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
 
 		FEMUtils.setGlobalConfig(globalConfig);
-		hasLoadedConfig = true;
+		// (this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.)
 
+		hasLoadedConfig = true;
 	}
 
 	Config loadConfig(final String[] args) {
@@ -372,6 +373,9 @@ public class RunMatsim4FloodEvacuation {
 		// yoyo we've had some gripes from D61 on this; can we make it optional - pieter jan 19
 //		ConfigUtils.loadConfig(config, ConfigGroup.getInputFileURL(config.getContext(), "overridingConfig.xml"));
 //			log.warn("loaded overriding config settings from overrirdingConfig.xml");
+		// The main reason for providing this is that we are setting config switches in our run script.  Now if you don't like some of them, but you only have the built jar,
+		// then you are out of options if there is no additional insertion point _after_ we set them.  If data61 rather does not want this kind of flexibility, I have no
+		// issue with that.  kai, feb'19
 
 
 		// === prepare scenario === :
@@ -476,7 +480,7 @@ public class RunMatsim4FloodEvacuation {
 	}
 
 
-	void prepareControler(AbstractModule... overridingModules) {
+	private void prepareControler( AbstractModule... overridingModules ) {
 		if (!hasPreparedScenario) {
 			prepareScenario();
 		}
@@ -503,6 +507,8 @@ public class RunMatsim4FloodEvacuation {
 						addRoutingModuleBinding(routingMode).toProvider(new NetworkRoutingProvider(TransportMode.car, routingMode));
 
 						// define how the travel time is computed:
+						// (all commented out, so using default)
+
 //						addTravelTimeBinding(routingMode).to(FreeSpeedTravelTime.class);
 
 						// congested travel time:
@@ -518,6 +524,7 @@ public class RunMatsim4FloodEvacuation {
 						// NOT using the toll based travel disutility, since we are routing without toll, on the
 						// empty network, before the iterations start, and then never again.  kai, jul'18
 						//  this changes because of new requirements pieter nov'18
+
 						// if we need to run the other optmisation approaches, we need to re-route and so Kai proposed this approach of being able to switch between the two
 //						if (femConfig.getSampleSize() < 1) {
 //							addControlerListenerBinding().toInstance(new PCUEquivalentSetter(femConfig.getSampleSize(), scenario));
@@ -556,17 +563,11 @@ public class RunMatsim4FloodEvacuation {
 				this.bind(PrepareForSimImpl.class);
 				this.bind(PrepareForSim.class).to(FEMPrepareForSim.class);
 				this.addControlerListenerBinding().toInstance(new ShutdownListener() {
-					@Inject
-					private ExperiencedPlansService eps;
-					@Inject
-					private Network network;
-					@Inject
-					private Population population;
-					@Inject
-					private OutputDirectoryHierarchy outDirs;
-
-					@Override
-					public void notifyShutdown(final ShutdownEvent event) {
+					@Inject private ExperiencedPlansService eps;
+					@Inject private Network network;
+					@Inject private Population population;
+					@Inject private OutputDirectoryHierarchy outDirs;
+					@Override public void notifyShutdown(final ShutdownEvent event) {
 						if (event.isUnexpected()) {
 							return;
 						}
@@ -758,7 +759,6 @@ public class RunMatsim4FloodEvacuation {
 				writer.write(Boolean.toString((boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK)));
 				writer.newLine();
 			}
-			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -780,6 +780,7 @@ public class RunMatsim4FloodEvacuation {
 		public void notifyBeforeMobsim(BeforeMobsimEvent event) {
 			scenario.getVehicles().getVehicleTypes().values().iterator().next().setPcuEquivalents(pcuEquivalent);
 			log.warn("Setting PCU equiv to " + pcuEquivalent);
+			// yyyyyy you say it came from me ... but why are we _both_ sampling down the population _and_ reducing the pcu? kai, mar'19
 		}
 	}
 }

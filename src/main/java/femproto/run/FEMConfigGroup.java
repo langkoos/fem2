@@ -47,72 +47,54 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 
 
-	// ===
-	enum FEMRoutingMode {
-		preferEvacuationLinks
-	}
-
+	// ============================================
+	// ============================================
+	enum FEMRoutingMode {preferEvacuationLinks}
 	private FEMRoutingMode femRoutingMode = preferEvacuationLinks;
-
 	public final FEMRoutingMode getFemRoutingMode() {
 		return femRoutingMode;
 	}
 	// would need a setter if we needed a second routing mode.  kai, jul'18
-
-	// ---
-	enum FEMEvacuationTimeAdjustment {
-		takeTimesFromInput, allDepartAtMidnight
-	}
-
-	;
+	// ============================================
+	// ============================================
+	enum FEMEvacuationTimeAdjustment {takeTimesFromInput, allDepartAtMidnight }
 	private FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment = takeTimesFromInput;
-
 	public FEMEvacuationTimeAdjustment getFemEvacuationTimeAdjustment() {
 		return femEvacuationTimeAdjustment;
 	}
-
 	public void setFemEvacuationTimeAdjustment(final FEMEvacuationTimeAdjustment femEvacuationTimeAdjustment) {
 		this.femEvacuationTimeAdjustment = femEvacuationTimeAdjustment;
 	}
-
-	// ---
-	enum FEMRunType {
-		justRunInputPlansFile, runFromEvacuationSchedule, runFromSource
-	}
-
+	// ============================================
+	// ============================================
+	enum FEMRunType {justRunInputPlansFile, runFromEvacuationSchedule, runFromSource}
 	private FEMRunType femRunType = FEMRunType.runFromSource;
 	private static final String FEM_RUN_TYPE = "FEMRunType";
 	private static final String FEM_RUN_TYPE_CMT = "FEM run type. ";
-
 	@StringGetter(FEM_RUN_TYPE)
 	FEMRunType getFemRunType() {
 		return femRunType;
 	}
-
 	@StringSetter(FEM_RUN_TYPE)
 	public void setFemRunType(final FEMRunType femRunType) {
 		this.femRunType = femRunType;
 	}
-
-	enum FEMOptimizationType {
-		optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, followTheLeader, none
-	}
-
+	// ============================================
+	// ============================================
+	enum FEMOptimizationType {optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, followTheLeader, none}
 	private FEMOptimizationType femOptimizationType = FEMOptimizationType.optimizeLikeNICTA;
 	private static final String FEM_OPTIMIZATION_TYPE = "FEMOptimizationType";
 	private static final String FEM_OPTIMIZATION_TYPE_CMT = "Optimization process for routing, safe node allocation, timing, etc.";
-
 	@StringGetter(FEM_OPTIMIZATION_TYPE)
 	FEMOptimizationType getFemOptimizationType() {
 		return femOptimizationType;
 	}
-
 	@StringSetter(FEM_OPTIMIZATION_TYPE)
 	public void setFemOptimizationType(final FEMOptimizationType femOptimizationTType) {
 		this.femOptimizationType = femOptimizationTType;
 	}
-
-	// ---
+	// ============================================
+	// ============================================
 	private String inputNetworkNodesShapefile = null;
 	private static final String INPUT_NETWORK_NODES_SHAPEFILE = "inputNetworkNodesShapefile";
 	private static final String INPUT_NETWORK_NODES_SHAPEFILE_CMT = "EMME nodes in a shapefile. " +

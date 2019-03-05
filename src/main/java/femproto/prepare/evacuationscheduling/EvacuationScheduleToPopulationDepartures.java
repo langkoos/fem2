@@ -252,6 +252,8 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 
 					Plan plan = pf.createPlan();
+					//yoyo use plan.setType to keep the default plans from being deleted. this way we can keep one guaranteed path to a safe node (the last resort path)
+					plan.setType("safety");
 
 					Activity startAct = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getEvacuationActivity(), startLink.getId());
 					startAct.setEndTime(startTime + i * (3600 / FEMUtils.getGlobalConfig().getEvacuationRate()));
