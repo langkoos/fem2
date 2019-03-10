@@ -9,10 +9,10 @@ import org.matsim.core.controler.PrepareForSim;
 import org.matsim.core.controler.PrepareForSimImpl;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.population.routes.NetworkRoute;
-import org.matsim.core.router.ActivityWrapperFacility;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.utils.misc.Counter;
+import org.matsim.facilities.FacilitiesUtils;
 import org.matsim.facilities.Facility;
 
 import java.util.ArrayList;
@@ -41,8 +41,8 @@ class FEMPrepareForSim implements PrepareForSim {
 				List<Activity> acts = TripStructureUtils.getActivities( plan, tripRouter.getStageActivityTypes() );
 				Activity origAct = acts.get( 0 );
 				Activity destAct = acts.get( 1 );
-				Facility fromFacility = new ActivityWrapperFacility( origAct );
-				Facility toFacility = new ActivityWrapperFacility( destAct );
+				Facility fromFacility = FacilitiesUtils.wrapActivity( origAct );
+				Facility toFacility = FacilitiesUtils.wrapActivity( destAct );
 				try {
 					List<? extends PlanElement> trip = tripRouter.calcRoute( TransportMode.car, fromFacility, toFacility, origAct.getEndTime(), person );
 					TripRouter.insertTrip( plan, origAct, trip, destAct );
