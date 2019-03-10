@@ -3,6 +3,7 @@ package femproto.prepare.evacuationscheduling;
 import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Node;
+import org.matsim.core.router.util.LeastCostPathCalculator;
 
 import java.util.*;
 
@@ -17,13 +18,14 @@ public class SubsectorData {
 	private TreeSet<SafeNodeAllocation> safeNodesByTime = new TreeSet<>();
 	private Node evacuationNode;
 	private LinkedHashSet<Node> safeNodesByDecreasingPriority = new LinkedHashSet<>(); //maintain insertion order
+	private HashMap<Node, LeastCostPathCalculator.Path> lastOpenPathToSafeNode = new HashMap<>(); //maintain insertion order
 	private int vehicleCount;
 
 	public void setLookAheadTime(double lookAheadTime) {
 		this.lookAheadTime = lookAheadTime;
 	}
 
-	private  double lookAheadTime;
+	private double lookAheadTime;
 
 	public SubsectorData(String subsector) {
 		this.subsector = subsector;
@@ -37,10 +39,18 @@ public class SubsectorData {
 		safeNodesByDecreasingPriority.add(node);
 	}
 
+	public void addSafeNodePath(Node safeNode, LeastCostPathCalculator.Path path) {
+		lastOpenPathToSafeNode.put(safeNode, path);
+	}
+
+	public LeastCostPathCalculator.Path getLastOpenPathToSafeNode(Node safeNode){
+		return lastOpenPathToSafeNode.get(safeNode);
+	}
+
 	public SafeNodeAllocation addSafeNodeAllocation(double startTime, double endTime, Node node, int vehicles) {
 		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, endTime, node, vehicles, this);
 		safeNodesByTime.add(safeNodeAllocation);
-		if(!safeNodesByDecreasingPriority.contains(node))
+		if (!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
 		return safeNodeAllocation;
 	}
@@ -48,7 +58,7 @@ public class SubsectorData {
 	public SafeNodeAllocation addSafeNodeAllocation(double startTime, Node node) {
 		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, node, this);
 		safeNodesByTime.add(safeNodeAllocation);
-		if(!safeNodesByDecreasingPriority.contains(node))
+		if (!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
 		return safeNodeAllocation;
 	}
@@ -56,7 +66,7 @@ public class SubsectorData {
 	public SafeNodeAllocation addSafeNodeAllocation(double startTime, Node node, int vehicles) {
 		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, node, vehicles, this);
 		safeNodesByTime.add(safeNodeAllocation);
-		if(!safeNodesByDecreasingPriority.contains(node))
+		if (!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
 		return safeNodeAllocation;
 	}
@@ -64,7 +74,7 @@ public class SubsectorData {
 	public SafeNodeAllocation addSafeNodeAllocation(double startTime, double endTime, Node node) {
 		SafeNodeAllocation safeNodeAllocation = new SafeNodeAllocation(startTime, endTime, node, this);
 		safeNodesByTime.add(safeNodeAllocation);
-		if(!safeNodesByDecreasingPriority.contains(node))
+		if (!safeNodesByDecreasingPriority.contains(node))
 			addSafeNode(node);
 		return safeNodeAllocation;
 	}
@@ -120,13 +130,13 @@ public class SubsectorData {
 	/**
 	 * When a schedule has been completely parsed, not all {@link SafeNodeAllocation} objects will have a vehicle count, end time assigned.
 	 * We need all these to be pre-specified, otherwise destinations need to be changed while the simulation is running, which we don't want to do.
-	 *
+	 * <p>
 	 * This will go through the list and complete with expected values where information is missing, and make the schedule explicit.
-	 *
+	 * <p>
 	 * IMPORTANT: assume departure rate specified in {@link femproto.globals.FEMGlobalConfig}, unless <tt>vehicles</tt> and <tt>endTime</tt> have both been set explicitly.
 	 * If only one {@link SafeNodeAllocation} exists and it has fewer vehicles assigned than the subsector total, tough cookies, but raise a warning.
 	 */
-	public void completeAllocations(){
+	public void completeAllocations() {
 
 		LinkedList<SafeNodeAllocation> noVehicles = new LinkedList<>();
 		LinkedList<SafeNodeAllocation> noDurations = new LinkedList<>();
@@ -140,44 +150,42 @@ public class SubsectorData {
 			vehiclesAllocated += safeNodeAllocation.getVehicles() > 0 ? safeNodeAllocation.getVehicles() : 0;
 			sumTimeWeights += safeNodeAllocation.getEndTime() > safeNodeAllocation.getStartTime() ? safeNodeAllocation.getEndTime() - safeNodeAllocation.getStartTime() : 0;
 
-			if(safeNodeAllocation.getVehicles() < 0)
+			if (safeNodeAllocation.getVehicles() < 0)
 				noVehicles.add(safeNodeAllocation);
-			if(safeNodeAllocation.getEndTime() < safeNodeAllocation.getStartTime())
+			if (safeNodeAllocation.getEndTime() < safeNodeAllocation.getStartTime())
 				noDurations.add(safeNodeAllocation);
 
 		}
 
 		int remainingVehicles = vehicleCount - vehiclesAllocated;
-		if(remainingVehicles < 0  ) {
+		if (remainingVehicles < 0) {
 			log.warn("Subsector " + subsector + " has more vehicles evacuating from it than what was specified in the shapefile.");
 			return;
 		}
 
 		//fill in expected durations
-		if(remainingVehicles == 0){
-			if(noDurations.size()>0){
+		if (remainingVehicles == 0) {
+			if (noDurations.size() > 0) {
 				for (SafeNodeAllocation noDuration : noDurations) {
 					//just allocate acording to evac rate
-					noDuration.setEndTime( noDuration.getStartTime() + noDuration.getVehicles() * 3600 / FEMUtils.getGlobalConfig().getEvacuationRate());
+					noDuration.setEndTime(noDuration.getStartTime() + noDuration.getVehicles() * 3600 / FEMUtils.getGlobalConfig().getEvacuationRate());
 				}
 			}
 			return;
 		}
 
 		// split the remaining vehicles equally between allocations
-		if(noVehicles.size()>0 ){
+		if (noVehicles.size() > 0) {
 			for (SafeNodeAllocation nodeAllocation : noVehicles) {
 				nodeAllocation.setVehicles(remainingVehicles / noVehicles.size());
 				remainingVehicles -= nodeAllocation.getVehicles();
 			}
-			if(remainingVehicles > 0)
+			if (remainingVehicles > 0)
 				noVehicles.getLast().setVehicles(noVehicles.getLast().getVehicles() + remainingVehicles);
 			// run the whole thing again to do the rest of rebalancing
 			completeAllocations();
 
 		}
-
-
 
 
 	}

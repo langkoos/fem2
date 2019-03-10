@@ -30,7 +30,8 @@ public class RunFromSource {
 	public static void main(String[] args) {
 		standardFullSizeOptimization(args);
 	}
-	public static void optimizationThenVerification(String[] args){
+
+	public static void optimizationThenVerification(String[] args) {
 		Config config = ConfigUtils.loadConfig(args[0]);
 		config.network().setTimeVariantNetwork(true);
 		String outputDirectory = config.controler().getOutputDirectory();
@@ -93,7 +94,7 @@ public class RunFromSource {
 			scenario.getPopulation().removePerson(personId);
 		}
 		evacuationSchedule = new EvacuationSchedule();
-		new EvacuationScheduleReader(evacuationSchedule, scenario.getNetwork()).readFile(IOUtils.newUrl(scenario.getConfig().getContext(), outputDirectory +"/optimization/optimized_evacuationSchedule.csv").getFile());
+		new EvacuationScheduleReader(evacuationSchedule, scenario.getNetwork()).readFile(IOUtils.newUrl(scenario.getConfig().getContext(), outputDirectory + "/optimization/optimized_evacuationSchedule.csv").getFile());
 
 		new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).createPlans();
 
@@ -102,7 +103,7 @@ public class RunFromSource {
 		femConfigGroup.setSampleSize(1.0);
 		config.qsim().setFlowCapFactor(1.0);
 		config.qsim().setStorageCapFactor(1.0);
-		config.controler().setOutputDirectory(outputDirectory +"/output");
+		config.controler().setOutputDirectory(outputDirectory + "/output");
 		config.strategy().clearStrategySettings();
 		new ConfigWriter(config, ConfigWriter.Verbosity.minimal).write(outputDirectory + "/config.xml");
 
@@ -120,7 +121,7 @@ public class RunFromSource {
 		//yoyo this needs to be marked as an essential step for the moment until injection works
 		FEMUtils.setGlobalConfig(globalConfig);
 //		ConfigUtils.writeMinimalConfig(config,"scenarios/FEM2TestDataOctober18/2016/config_2016.xml");
-		NetworkConverter networkConverter = new NetworkConverter( scenario);
+		NetworkConverter networkConverter = new NetworkConverter(scenario);
 		networkConverter.run();
 		networkConverter.writeNetwork(outputDirectory + "/input_network.xml");
 		config.network().setInputFile("input_network.xml");
@@ -146,6 +147,7 @@ public class RunFromSource {
 		new EvacuationScheduleFromHydrographData(scenario.getNetwork(), evacuationSchedule, hydrographParser).createEvacuationSchedule();
 
 		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputDirectory + "/input_evac_plan.csv");
+		FEMUtils.setEvacuationSchedule(evacuationSchedule);
 
 		EvacuationScheduleToPopulationDepartures populationDepartures = new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule);
 //		populationDepartures.createPlans();
@@ -154,8 +156,9 @@ public class RunFromSource {
 		populationDepartures.writeAttributes(outputDirectory + "/input_population_attrs.txt");
 		config.plans().setInputFile("input_population.xml.gz");
 
-		config.controler().setOutputDirectory(outputDirectory+"/output");
+		config.controler().setOutputDirectory(outputDirectory + "/output");
 		new ConfigWriter(config, ConfigWriter.Verbosity.minimal).write(outputDirectory + "/config.xml");
+
 
 		new RunMatsim4FloodEvacuation(scenario).run();
 

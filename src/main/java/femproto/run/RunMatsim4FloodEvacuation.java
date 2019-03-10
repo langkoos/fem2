@@ -202,10 +202,9 @@ public class RunMatsim4FloodEvacuation {
 
 		// --- strategies:
 		switch (femConfig.getFemOptimizationType()) {
-			/* yoyo will need some planremovalselector that will maintain diversity of destinations when doing replanning;
+			/* not limiting the numebr of plans that get created
 			 kai's approach keeps the shortest patn and only relies on the scoring function */
 			case optimizeLikeNICTA:
-				config.strategy().setMaxAgentPlanMemorySize(10);
 			default:
 				config.strategy().setMaxAgentPlanMemorySize(0);
 				break;
@@ -480,7 +479,7 @@ public class RunMatsim4FloodEvacuation {
 	}
 
 
-	private void prepareControler( AbstractModule... overridingModules ) {
+	private void prepareControler(AbstractModule... overridingModules) {
 		if (!hasPreparedScenario) {
 			prepareScenario();
 		}
@@ -560,14 +559,24 @@ public class RunMatsim4FloodEvacuation {
 
 				// calculating all routes at initialization (assuming that they are sufficiently defined by the evac
 				// network).  kai, may'18
-				this.bind(PrepareForSimImpl.class);
-				this.bind(PrepareForSim.class).to(FEMPrepareForSim.class);
+				switch (femConfig.getFemOptimizationType()) {
+					case optimizeSafeNodesByPerson:
+					case optimizeSafeNodesBySubsector:
+						this.bind(PrepareForSimImpl.class);
+						this.bind(PrepareForSim.class).to(FEMPrepareForSim.class);
+				}
 				this.addControlerListenerBinding().toInstance(new ShutdownListener() {
-					@Inject private ExperiencedPlansService eps;
-					@Inject private Network network;
-					@Inject private Population population;
-					@Inject private OutputDirectoryHierarchy outDirs;
-					@Override public void notifyShutdown(final ShutdownEvent event) {
+					@Inject
+					private ExperiencedPlansService eps;
+					@Inject
+					private Network network;
+					@Inject
+					private Population population;
+					@Inject
+					private OutputDirectoryHierarchy outDirs;
+
+					@Override
+					public void notifyShutdown(final ShutdownEvent event) {
 						if (event.isUnexpected()) {
 							return;
 						}
@@ -765,7 +774,8 @@ public class RunMatsim4FloodEvacuation {
 
 
 	}
-// yoyo this could be an issue if
+
+	// yoyo this could be an issue if
 	private class PCUEquivalentSetter implements BeforeMobsimListener {
 		private final double pcuEquivalent;
 		private final Scenario scenario;

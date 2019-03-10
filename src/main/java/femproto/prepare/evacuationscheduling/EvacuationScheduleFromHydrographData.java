@@ -82,8 +82,10 @@ public final class EvacuationScheduleFromHydrographData {
 				double safenodeFloodTime = Double.POSITIVE_INFINITY;
 				log.info(String.format(message, subsectorData.getSubsector(), subsectorData.getEvacuationNode().getId().toString(), prioritySafeNode.getId().toString()));
 				LeastCostPathCalculator.Path path;
+				LeastCostPathCalculator.Path lastBestPath;
 				path = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
 						prioritySafeNode.getId(), latestFloodTime + 1);
+				lastBestPath = path;
 				LeastCostPathCalculator.Path freePath = femPathCalculator.getPath(subsectorData.getEvacuationNode().getId(),
 						prioritySafeNode.getId(), 0);
 				if (path.travelCost > 3 * freePath.travelCost) {
@@ -98,6 +100,7 @@ public final class EvacuationScheduleFromHydrographData {
 							safenodeFloodTime = potentialTime;
 						} else {
 							lowerBoundFloodTime = potentialTime;
+							lastBestPath = path;
 						}
 						potentialTime = lowerBoundFloodTime + (safenodeFloodTime - lowerBoundFloodTime) / 2;
 						if (Math.abs(potentialTime - safenodeFloodTime) < 2) {
@@ -107,6 +110,8 @@ public final class EvacuationScheduleFromHydrographData {
 									prioritySafeNode.getId(), safenodeFloodTime);
 						}
 					}
+				} else {
+					lastBestPath = path;
 				}
 				if (safenodeFloodTime < Double.POSITIVE_INFINITY) {
 					log.info(String.format("Subsector %s last possible path to safe node %s gets flooded at %05.0f seconds = %05.0f mins = %s", subsectorData.getSubsector(), prioritySafeNode.getId().toString(), safenodeFloodTime, safenodeFloodTime / 60, Time.writeTime(safenodeFloodTime)));
@@ -114,13 +119,17 @@ public final class EvacuationScheduleFromHydrographData {
 					if (safenodeFloodTime > floodTime) {
 						assignedSafeNode = prioritySafeNode;
 						floodTime = safenodeFloodTime;
+						//yoyo keep this last route
 					}
 				} else {
 					log.info(String.format("Subsector %s has a path to safe node %s that never gets flooded.", subsectorData.getSubsector(), prioritySafeNode.getId().toString()));
+					// now the sign needs to change to evaluate the raising road access criteria
 					floodTime = Double.POSITIVE_INFINITY;
 					break;
 				}
+				subsectorData.addSafeNodePath(prioritySafeNode, lastBestPath);
 			}
+
 
 			// yoyo subsector flooding trumps path flooding
 			HydrographPoint hydrographPoint = hydrographParser.getConsolidatedHydrographPointMap().get(subsectorData.getSubsector());

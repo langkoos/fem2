@@ -13,13 +13,20 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
+import org.matsim.core.population.routes.LinkNetworkRouteFactory;
 import org.matsim.core.population.routes.NetworkRoute;
+import org.matsim.core.population.routes.RouteUtils;
+import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.io.IOUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
@@ -113,6 +120,8 @@ public final class EvacuationScheduleToPopulationDepartures {
 				}
 
 				Node safeNode = safeNodeAllocation.getNode();
+				LeastCostPathCalculator.Path safePath = subsectorData.getLastOpenPathToSafeNode(safeNode);
+
 				Link safeLink = null;
 				for (Link link : safeNode.getInLinks().values()) {
 					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(FEMUtils.getGlobalConfig().getAttribEvacMarker())) {
@@ -137,14 +146,14 @@ public final class EvacuationScheduleToPopulationDepartures {
 					Person person = pf.createPerson(Id.createPersonId(personCnt++));
 
 					// for playing follow the leader
-					if(i==0){
-						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
-						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
+					if (i == 0) {
+						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.LEADER.name());
+						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(), scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.LEADER.name());
 						subsectorLeader = person;
-					}else {
-						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
-						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
-						person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
+					} else {
+						person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.FOLLOWER.name());
+						scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(), scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.FOLLOWER.name());
+						person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(), subsectorLeader.getId().toString());
 					}
 
 					FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
@@ -156,15 +165,28 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
 					plan.addLeg(evacLeg);
-					if(safeNodeAllocation.getNetworkRoute()!=null){
+					if (safeNodeAllocation.getNetworkRoute() != null) {
 						NetworkRoute route = safeNodeAllocation.getNetworkRoute().clone();
 						route.setVehicleId(Id.createVehicleId(person.getId()));
+						evacLeg.setRoute(route);
+					} else if (safePath != null) {
+						LinkedList<Id<Link>> linkIds = new LinkedList<>();
+						for (Link link : safePath.links) {
+							linkIds.add(link.getId());
+						}
+						//drop the last link id if it is the same as the safelink
+						if(linkIds.getLast().equals(safeLink.getId())) {
+							linkIds.removeLast();
+						}
+
+//						NetworkRoute route = RouteUtils.createNetworkRoute(linkIds, scenario.getNetwork());
+						NetworkRoute route = RouteUtils.createLinkNetworkRouteImpl(startLink.getId(),linkIds,safeLink.getId());
 						evacLeg.setRoute(route);
 					}
 
 					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
 					plan.addActivity(safe);
-					plan.getAttributes().putAttribute("priority",0);
+					plan.getAttributes().putAttribute("priority", 0);
 
 					person.addPlan(plan);
 					scenario.getPopulation().addPerson(person);
@@ -201,17 +223,17 @@ public final class EvacuationScheduleToPopulationDepartures {
 				Person person = pf.createPerson(Id.createPersonId(personCnt++));
 
 				// for playing follow the leader
-				if(i==0){
-					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
-					scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.LEADER.name());
+				if (i == 0) {
+					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.LEADER.name());
+					scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(), scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.LEADER.name());
 					subsectorLeader = person;
-				}else {
-					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
-					scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(),scenario.getConfig().plans().getSubpopulationAttributeName(),LeaderOrFollower.FOLLOWER.name());
-					person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(),subsectorLeader.getId().toString());
+				} else {
+					person.getAttributes().putAttribute(scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.FOLLOWER.name());
+					scenario.getPopulation().getPersonAttributes().putAttribute(person.getId().toString(), scenario.getConfig().plans().getSubpopulationAttributeName(), LeaderOrFollower.FOLLOWER.name());
+					person.getAttributes().putAttribute(LeaderOrFollower.LEADER.name(), subsectorLeader.getId().toString());
 				}
 				FEMUtils.setSubsectorName(subsectorData.getSubsector(), person);
-				int priority=-1;
+				int priority = -1;
 				for (Node safeNode : safeNodesByDecreasingPriority) {
 					priority++;
 
@@ -261,10 +283,25 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 					Leg evacLeg = pf.createLeg(TransportMode.car);
 					plan.addLeg(evacLeg);
+					LeastCostPathCalculator.Path safePath = subsectorData.getLastOpenPathToSafeNode(safeNode);
+					if (safePath != null) {
+						LinkedList<Id<Link>> linkIds = new LinkedList<>();
+						for (Link link : safePath.links) {
+							linkIds.add(link.getId());
+						}
+						//drop the last link id if it is the same as the safelink
+						if(linkIds.getLast().equals(safeLink.getId())) {
+							linkIds.removeLast();
+						}
+
+//						NetworkRoute route = RouteUtils.createNetworkRoute(linkIds, scenario.getNetwork());
+						NetworkRoute route = RouteUtils.createLinkNetworkRouteImpl(startLink.getId(),linkIds,safeLink.getId());
+						evacLeg.setRoute(route);
+					}
 
 					Activity safe = pf.createActivityFromLinkId(FEMUtils.getGlobalConfig().getSafeActivity(), safeLink.getId());
 					plan.addActivity(safe);
-					plan.getAttributes().putAttribute("priority",priority);
+					plan.getAttributes().putAttribute("priority", priority);
 
 					person.addPlan(plan);
 				}
