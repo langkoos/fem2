@@ -28,11 +28,12 @@ import java.util.Set;
 // yoyo this is the entry point for D61, so keeping it
 public class RunFromSource {
 	public static void main(String[] args) {
-		standardFullSizeOptimization(args);
+		Config config = ConfigUtils.loadConfig(args[0]);
+		standardFullSizeOptimization(config);
 	}
 
-	public static void optimizationThenVerification(String[] args) {
-		Config config = ConfigUtils.loadConfig(args[0]);
+
+	public static void optimizationThenVerification(Config config) {
 		config.network().setTimeVariantNetwork(true);
 		String outputDirectory = config.controler().getOutputDirectory();
 		new File(outputDirectory).mkdirs();
@@ -110,8 +111,7 @@ public class RunFromSource {
 		new RunMatsim4FloodEvacuation(scenario).run();
 	}
 
-	public static void standardFullSizeOptimization(String[] args) {
-		Config config = ConfigUtils.loadConfig(args[0]);
+	public static void standardFullSizeOptimization(Config config) {
 		config.network().setTimeVariantNetwork(true);
 		String outputDirectory = config.controler().getOutputDirectory();
 		new File(outputDirectory).mkdirs();

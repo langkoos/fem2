@@ -22,7 +22,7 @@
 		<param name="inputSubsectorsShapefile" value="null" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
-		<param name="sampleSize" value="0.01" />
+		<param name="sampleSize" value="1.0" />
 	</module>
 	<module name="FEMGlobal" >
 		<param name="attribDescr" value="T_DES" />

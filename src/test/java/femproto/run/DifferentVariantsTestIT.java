@@ -1,6 +1,7 @@
 package femproto.run;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +10,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.testcases.MatsimTestUtils;
+import org.matsim.utils.eventsfilecomparison.EventsFileComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +19,7 @@ import java.util.List;
 import static femproto.run.FEMConfigGroup.FEMEvacuationTimeAdjustment;
 import static femproto.run.FEMConfigGroup.FEMRunType;
 import static femproto.run.FEMConfigGroup.FEMOptimizationType;
+import static org.matsim.utils.eventsfilecomparison.EventsFileComparator.compare;
 
 @RunWith(Parameterized.class)
 public class DifferentVariantsTestIT {
@@ -104,8 +107,8 @@ public class DifferentVariantsTestIT {
 		//yoyo this breaks the test
 //		String expected = utilsOutputDir + dirExtension + "/output_events.xml.gz";
 //		String actual = utilsOutputDir + dirExtension + "/output_events.xml.gz";
-//		Result result = compare(expected, actual);
-//		Assert.assertEquals(Result.FILES_ARE_EQUAL, result);
+//		EventsFileComparator.Result result = compare(expected, actual);
+//		Assert.assertEquals(EventsFileComparator.Result.FILES_ARE_EQUAL, result);
 
 	}
 
