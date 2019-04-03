@@ -33,7 +33,7 @@ public class DifferentVariantsTestIT {
 	private final FEMEvacuationTimeAdjustment timeAdjustment;
 	private final boolean timeDepNetwork;
 
-	private static String utilsOutputDir;
+	private String utilsOutputDir;
 
 	public DifferentVariantsTestIT(FEMRunType runType, FEMOptimizationType optimizationType, FEMEvacuationTimeAdjustment timeAdjustment, boolean timeDepNetwork) {
 		this.runType = runType;
@@ -73,8 +73,9 @@ public class DifferentVariantsTestIT {
 			// constructed here, this means that otherwise only the last parameterized test output would survive.
 			// There might be a better solution ...   kai, jul'18
 		}
-
-		String dirExtension = "/" + runType.name() + "_" + optimizationType.name() + "_" + timeAdjustment.name();
+		
+//		String dirExtension = "/" + runType.name() + "_" + optimizationType.name() + "_" + timeAdjustment.name();
+		String dirExtension = "_" + runType.name() + "_" + optimizationType.name() + "_" + timeAdjustment.name();
 		if (timeDepNetwork) {
 			dirExtension += "_withTimeDepNetwork/";
 		} else {
@@ -86,8 +87,12 @@ public class DifferentVariantsTestIT {
 		Config config = evac.loadConfig(new String[]{utils.getPackageInputDirectory() + "scenario/config_base.xml"});
 
 		config.network().setTimeVariantNetwork(timeDepNetwork);
-
-		config.controler().setOutputDirectory(utilsOutputDir + dirExtension);
+		
+		final String outputDirectory = utilsOutputDir.substring( 0,utilsOutputDir.length()-1 ) + dirExtension;
+		log.warn(outputDirectory) ;
+		
+		
+		config.controler().setOutputDirectory( outputDirectory );
 		if (optimizationType != FEMOptimizationType.none) {
 			config.controler().setLastIteration(10);
 		} else {
