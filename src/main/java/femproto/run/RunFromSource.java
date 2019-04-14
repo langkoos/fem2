@@ -123,6 +123,7 @@ public class RunFromSource {
 		Scenario scenario = ScenarioUtils.createScenario(config);
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(config, FEMGlobalConfig.class);
 		FEMConfigGroup femConfigGroup = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
+		femConfigGroup.setFemOptimizationType(FEMConfigGroup.FEMOptimizationType.userEquilibriumDecongestion);
 		//yoyo this needs to be marked as an essential step for the moment until injection works
 		FEMUtils.setGlobalConfig(globalConfig);
 //		ConfigUtils.writeMinimalConfig(config,"scenarios/FEM2TestDataOctober18/2016/config_2016.xml");
