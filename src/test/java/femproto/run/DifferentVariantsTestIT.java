@@ -109,11 +109,7 @@ public class DifferentVariantsTestIT {
 
 		evac.run();
 
-		//yoyo this breaks the test
-//		String expected = utilsOutputDir + dirExtension + "/output_events.xml.gz";
-//		String actual = utilsOutputDir + dirExtension + "/output_events.xml.gz";
-//		EventsFileComparator.Result result = compare(expected, actual);
-//		Assert.assertEquals(EventsFileComparator.Result.FILES_ARE_EQUAL, result);
+
 
 	}
 

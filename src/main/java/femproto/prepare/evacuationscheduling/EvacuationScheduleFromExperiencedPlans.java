@@ -28,10 +28,11 @@ import java.util.function.Consumer;
  */
 public final class EvacuationScheduleFromExperiencedPlans {
 	private Map<Id<Person>, String> pax2SubSectors;
-	private TreeMap<ODFlowCounter,ODFlowCounter> flowCounters = new TreeMap<>();
+	private TreeMap<ODFlowCounter, ODFlowCounter> flowCounters = new TreeMap<>();
 
 	/**
 	 * Run this in an output folder
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) throws CsvRequiredFieldEmptyException, IOException, CsvDataTypeMismatchException {
@@ -50,13 +51,14 @@ public final class EvacuationScheduleFromExperiencedPlans {
 
 		scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
 		new PopulationReader(scenario).readFile(experiencedPlansFile);
-		Map<Id<Person>,Plan> plans = new LinkedHashMap<>() ;
-		scenario.getPopulation().getPersons().values().forEach( p -> plans.put( p.getId(), p.getSelectedPlan() ) );
-		evacuationScheduleFromExperiencedPlans.parseExperiencedPlans(plans,network);
+		Map<Id<Person>, Plan> plans = new LinkedHashMap<>();
+		scenario.getPopulation().getPersons().values().forEach(p -> plans.put(p.getId(), p.getSelectedPlan()));
+		evacuationScheduleFromExperiencedPlans.parseExperiencedPlans(plans, network);
 
 		EvacuationSchedule evacuationSchedule = evacuationScheduleFromExperiencedPlans.createEvacuationSchedule();
 		new EvacuationScheduleWriter(evacuationSchedule).writeEvacuationScheduleRecordComplete(outputScheduleFile);
 	}
+
 	/**
 	 * This takes standard plans, not experienced plans, to get information on the subsector of each person.
 	 *
@@ -65,7 +67,7 @@ public final class EvacuationScheduleFromExperiencedPlans {
 	public EvacuationScheduleFromExperiencedPlans(Population population, Network network) {
 		pax2SubSectors = new HashMap<>(population.getPersons().size());
 		for (Person person : population.getPersons().values()) {
-			pax2SubSectors.put(person.getId(), FEMUtils.getSubsectorName( person ) ) ;
+			pax2SubSectors.put(person.getId(), FEMUtils.getSubsectorName(person));
 //			Node origin = null;
 //			Node destin = null;
 //			double startTime = Double.POSITIVE_INFINITY;
@@ -91,15 +93,19 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		}
 	}
 
-	public void parseExperiencedPlans( Map<Id<Person>, Plan> plans, Network network) {
+	public void parseExperiencedPlans(Map<Id<Person>, Plan> plans, Network network) {
 		// I changed the signature from Population to Map since that is the way in which it is returned
 		// by the ExperiencedPlansService.  kai, sep'18
-		
-		for (Plan plan : plans.values()) {
-			
-			Gbl.assertNotNull( plan.getPerson() );
-			Gbl.assertNotNull( plan.getPerson().getId() );
-			String subSector = pax2SubSectors.get(plan.getPerson().getId());
+		//yoyo commenting this out as the experienced plans service does not pass a person with the plan, only as a key in the hashmap.
+		//yoyo so
+//		for (Plan plan : plans.values()) {
+		//
+//			Gbl.assertNotNull( plan.getPerson() );
+//			Gbl.assertNotNull( plan.getPerson().getId() );
+		for (Map.Entry<Id<Person>, Plan> idPlanEntry : plans.entrySet()) {
+
+			Plan plan = idPlanEntry.getValue();
+			String subSector = pax2SubSectors.get(idPlanEntry.getKey());
 			Node origin = null;
 			Node destin = null;
 			double startTime = Double.POSITIVE_INFINITY;
@@ -130,14 +136,14 @@ public final class EvacuationScheduleFromExperiencedPlans {
 	}
 
 	private ODFlowCounter addOrCreateODFlowCounter(String subSector, Node origin, Node destin) {
-		ODFlowCounter flowCounter = new ODFlowCounter(subSector,origin,destin);
+		ODFlowCounter flowCounter = new ODFlowCounter(subSector, origin, destin);
 		ODFlowCounter outflowCounter = flowCounters.get(flowCounter);
-		if(outflowCounter == null){
-			flowCounters.put(flowCounter,flowCounter);
+		if (outflowCounter == null) {
+			flowCounters.put(flowCounter, flowCounter);
 			outflowCounter = flowCounter;
 		}
-		if(flowCounter.destin == null)
-			outflowCounter.setEndTime(200*3600);
+		if (flowCounter.destin == null)
+			outflowCounter.setEndTime(200 * 3600);
 		return outflowCounter;
 	}
 
@@ -146,7 +152,7 @@ public final class EvacuationScheduleFromExperiencedPlans {
 		for (ODFlowCounter flowCounter : flowCounters.values()) {
 			SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(flowCounter.subSector);
 			subsectorData.setEvacuationNode(flowCounter.origin);
-			subsectorData.addSafeNodeAllocation(flowCounter.startTime,flowCounter.endTime,flowCounter.destin,flowCounter.vehicles);
+			subsectorData.addSafeNodeAllocation(flowCounter.startTime, flowCounter.endTime, flowCounter.destin, flowCounter.vehicles);
 		}
 
 		return evacuationSchedule;

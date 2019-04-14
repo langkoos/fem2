@@ -24,12 +24,15 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // yoyo this is the entry point for D61, so keeping it
 public class RunFromSource {
 	public static void main(String[] args) {
 		Config config = ConfigUtils.loadConfig(args[0]);
 		standardFullSizeOptimization(config);
+//		optimizationThenVerification(config);
 	}
 
 
@@ -95,7 +98,7 @@ public class RunFromSource {
 			scenario.getPopulation().removePerson(personId);
 		}
 		evacuationSchedule = new EvacuationSchedule();
-		new EvacuationScheduleReader(evacuationSchedule, scenario.getNetwork()).readFile(IOUtils.newUrl(scenario.getConfig().getContext(), outputDirectory + "/optimization/optimized_evacuationSchedule.csv").getFile());
+		new EvacuationScheduleReader(evacuationSchedule, scenario.getNetwork()).readFile(outputDirectory + "/optimization/optimized_evacuationSchedule.csv");
 
 		new EvacuationScheduleToPopulationDepartures(scenario, evacuationSchedule).createPlans();
 
@@ -106,9 +109,11 @@ public class RunFromSource {
 		config.qsim().setStorageCapFactor(1.0);
 		config.controler().setOutputDirectory(outputDirectory + "/output");
 		config.strategy().clearStrategySettings();
+		config.controler().setLastIteration(0);
 		new ConfigWriter(config, ConfigWriter.Verbosity.minimal).write(outputDirectory + "/config.xml");
 
 		new RunMatsim4FloodEvacuation(scenario).run();
+
 	}
 
 	public static void standardFullSizeOptimization(Config config) {
@@ -161,6 +166,7 @@ public class RunFromSource {
 
 
 		new RunMatsim4FloodEvacuation(scenario).run();
+		populationDepartures.writeAttributes(outputDirectory + "/output/input_population_attrs.txt");
 
 	}
 }

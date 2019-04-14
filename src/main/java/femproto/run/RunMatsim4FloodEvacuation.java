@@ -204,9 +204,8 @@ public class RunMatsim4FloodEvacuation {
 		switch (femConfig.getFemOptimizationType()) {
 			/* not limiting the numebr of plans that get created
 			 kai's approach keeps the shortest patn and only relies on the scoring function */
-			case optimizeLikeNICTA:
 			default:
-				config.strategy().setMaxAgentPlanMemorySize(0);
+				config.strategy().setMaxAgentPlanMemorySize(10);
 				break;
 		}
 
@@ -267,6 +266,33 @@ public class RunMatsim4FloodEvacuation {
 						strategySettings.setSubpopulation(leaderOrFollower.name());
 						strategySettings.setStrategyName(KEEP_LAST_REROUTE);
 						strategySettings.setWeight(3);
+						strategySettings.setDisableAfter((int) (0.7 * config.controler().getLastIteration()));
+						config.strategy().addStrategySettings(strategySettings);
+					}
+
+				}
+
+
+				configureDecongestion(config);
+				break;
+			}
+			case userEquilibriumDecongestion: {
+				config.strategy().clearStrategySettings();
+
+				for (LeaderOrFollower leaderOrFollower : LeaderOrFollower.values()) {
+					{
+						StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+						strategySettings.setSubpopulation(leaderOrFollower.name());
+						strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.SelectExpBeta);
+						strategySettings.setWeight(8);
+						config.strategy().addStrategySettings(strategySettings);
+					}
+
+					{
+						StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+						strategySettings.setSubpopulation(leaderOrFollower.name());
+						strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute);
+						strategySettings.setWeight(2);
 						strategySettings.setDisableAfter((int) (0.8 * config.controler().getLastIteration()));
 						config.strategy().addStrategySettings(strategySettings);
 					}
@@ -533,6 +559,7 @@ public class RunMatsim4FloodEvacuation {
 							case optimizeLikeNICTA:
 							case optimizeSafeNodesByPerson:
 							case optimizeSafeNodesBySubsector:
+							case userEquilibriumDecongestion:
 								bind(TollTimeDistanceTravelDisutilityFactory.class);
 								addTravelDisutilityFactoryBinding(routingMode).to(
 										FEMPreferEmergencyLinksTravelDisutility.Factory.class
@@ -663,6 +690,7 @@ public class RunMatsim4FloodEvacuation {
 				});
 				break;
 			case optimizeSafeNodesByPerson:
+			case userEquilibriumDecongestion:
 				controler.addOverridingModule(new DecongestionModule(scenario));
 				// toll-dependent routing would have to be added elsewhere, but is not used here since all routes are
 				// computed in prepareForSim. kai, jul'18

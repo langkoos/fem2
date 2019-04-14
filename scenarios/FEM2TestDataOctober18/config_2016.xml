@@ -3,7 +3,7 @@
 <config>
 	<module name="FEM" >
 		<!-- Optimization process for routing, safe node allocation, timing, etc. Options: optimizeSafeNodesByPerson optimizeSafeNodesBySubsector optimizeLikeNICTA followTheLeader none  -->
-		<param name="FEMOptimizationType" value="optimizeLikeNICTA" />
+		<param name="FEMOptimizationType" value="userEquilibriumDecongestion" />
 		<!-- FEM run type.  Options: justRunInputPlansFile runFromEvacuationSchedule runFromSource  -->
 		<param name="FEMRunType" value="runFromSource" />
 		<param name="evacuationScheduleFile" value="null" />

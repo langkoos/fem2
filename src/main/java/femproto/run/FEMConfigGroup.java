@@ -81,7 +81,7 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 	}
 	// ============================================
 	// ============================================
-	enum FEMOptimizationType {optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, followTheLeader, none}
+	enum FEMOptimizationType {optimizeSafeNodesByPerson, optimizeSafeNodesBySubsector, optimizeLikeNICTA, followTheLeader, userEquilibriumDecongestion, none}
 	private FEMOptimizationType femOptimizationType = FEMOptimizationType.optimizeLikeNICTA;
 	private static final String FEM_OPTIMIZATION_TYPE = "FEMOptimizationType";
 	private static final String FEM_OPTIMIZATION_TYPE_CMT = "Optimization process for routing, safe node allocation, timing, etc.";
