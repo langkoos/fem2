@@ -1,13 +1,20 @@
 package femproto.run;
 
+import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.EvacuationScheduleReader;
+import femproto.prepare.evacuationscheduling.SafeNodeAllocation;
+import femproto.prepare.evacuationscheduling.SubsectorData;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.testcases.MatsimTestUtils;
 
 import java.util.*;
@@ -32,6 +39,7 @@ public class ValidationScenariosTestIT {
 		runIdToFloodEvent.put(3, "d00229_H_TS");
 		runIdToFloodEvent.put(8, "d00938_H_TS");
 		runIdToFloodEvent.put(13, "d01889_H_TS");
+		runIdToFloodEvent.put(45, "d09644_H_TS");
 	}
 
 	private final FEMOptimizationType optimizationType;
@@ -49,7 +57,8 @@ public class ValidationScenariosTestIT {
 	@Parameters(name = "{index}: {0} | {1} | iters={2} | runId={3} ") // the "name" entry is just for the test output
 	public static Collection<Object[]> abc() { // the name of this method does not matter as long as it is correctly annotated
 		List<Object[]> combos = new ArrayList<>();
-		int[] maxIters = new int[]{20, 40, 60};
+//		int[] maxIters = new int[]{40};
+		int[] maxIters = new int[]{20, 40};
 		String[] years = new String[]{"2016", "2026"};
 
 
@@ -89,6 +98,25 @@ public class ValidationScenariosTestIT {
 		femConfig.setSampleSize(1.0);
 
 		RunFromSource.standardFullSizeOptimization(config);
+
+
+//		Network network = NetworkUtils.readNetwork(getInputFileURL(config.getContext(),config.network().getInputFile()).getFile());
+//		EvacuationSchedule expectedSchedule = new EvacuationSchedule();
+//		new EvacuationScheduleReader(expectedSchedule, network).readFile(utilsPackageInputDir + "scenario/input_evac_plan.csv");
+//		EvacuationSchedule actualSchedule = new EvacuationSchedule();
+//		new EvacuationScheduleReader(actualSchedule, network).readFile(utilsOutputDir + "output/output_output_evacuationSchedule.csv");
+//
+//		Iterator<SafeNodeAllocation> expectedIterator = expectedSchedule.getSubsectorsByEvacuationTime().iterator();
+//
+//		while (expectedIterator.hasNext()) {
+//			SafeNodeAllocation expected = expectedIterator.next();
+//			SubsectorData actualData = actualSchedule.getSubsectorDataMap().get(expected.getContainer().getSubsector());
+//			SafeNodeAllocation actual = actualData.getSafeNodesByTime().iterator().next();
+//			Assert.assertEquals(expected.getStartTime(), actual.getStartTime(), 1.0);
+//			Assert.assertEquals(expected.getStartTime(), actual.getEndTime(), 1.0);
+//			Assert.assertEquals(expected.getVehicles(), actual.getVehicles());
+//		}
+
 	}
 
 }
