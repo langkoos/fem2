@@ -164,7 +164,7 @@ public class RunMatsim4FloodEvacuation {
 
 	Config loadConfig(final String[] args) {
 		if (args == null || args.length == 0 || args[0] == "") {
-			config = ConfigUtils.loadConfig("scenarios/FEM2TestDataOctober18/config_2016.xml");
+			config = ConfigUtils.loadConfig("data/config.xml");
 		} else {
 			log.info("found an argument, thus loading config from file ...");
 			config = ConfigUtils.loadConfig(args[0]);
