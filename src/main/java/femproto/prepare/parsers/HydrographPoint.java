@@ -1,5 +1,6 @@
 package femproto.prepare.parsers;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 public class HydrographPoint {
+	private static final Logger log = Logger.getLogger( HydrographPoint.class ) ;
+	
 	final String pointId;
 	final Double ALT_AHD;
 	final Coord coord;
@@ -79,7 +82,7 @@ public class HydrographPoint {
 			for (HydrographPointData pointDatum : this.getData()) {
 				if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
 					floodTime = pointDatum.getTime();
-					System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
+					log.info("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
 					break;
 				}
 			}
