@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+	<module name="FEM" >
+		<!-- Optimization process for routing, safe node allocation, timing, etc. Options: optimizeSafeNodesByPerson optimizeSafeNodesBySubsector optimizeLikeNICTA followTheLeader userEquilibriumDecongestion none  -->
+		<param name="FEMOptimizationType" value="userEquilibriumDecongestion" />
+		<!-- FEM run type.  Options: justRunInputPlansFile runFromEvacuationSchedule runFromSource  -->
+		<param name="FEMRunType" value="runFromSource" />
+		<param name="evacuationScheduleFile" value="null" />
+		<!-- CSV file containing hydrograph data. First column is time in hours, subsequent columns have the ID of the associated hydrograph point in the first line and floating point values in subsequent lines denoting water level in AHD. -->
+		<param name="hydrographData" value="wma-flood-events/FSL-5/d01664_H_TS.csv" />
+		<!-- Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields: 
+            ID 		 Integer unique id of point            links_ids 	 [sic, this typo now sticks] String referring to EMME link ids.
+            SUBSECTOR 	 String of the subsector name, needs to match exactly in other files.
+            ALT_AHD 	 Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded. -->
+		<param name="hydrographShapeFile" value="ScenarioA1/FEM2_wma_ref_points_01_16_nodes.shp" />
+		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputNetworkLinksShapefile" value="ScenarioA1/FEM2_ScenarioA1_links.shp" />
+		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputNetworkNodesShapefile" value="ScenarioA1/FEM2_ScenarioA1_nodes.shp" />
+		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputSubsectorsShapefile" value="ScenarioA1/FEM2_Subsectorvehicles_A1_2016.shp" />
+		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
+		<!-- Re-routing can probably be done at 0.01 sample size. -->
+		<param name="sampleSize" value="1.0" />
+	</module>
+	<module name="FEMGlobal" >
+		<param name="attribDescr" value="T_DES" />
+		<param name="attribEvacMarker" value="EVAC_SES" />
+		<param name="attribEvacNodeIdForSubsector" value="EVAC_NODE" />
+		<param name="attribHydrographLinkIds" value="LINK_IDS" />
+		<param name="attribHydrographPointId" value="ID" />
+		<param name="attribHydrographSelectedAltAHD" value="ALT_AHD" />
+		<param name="attribLookAheadTime" value="LOOK_AHEAD" />
+		<param name="attribNetworkLinksCapSES" value="CAP_SES" />
+		<param name="attribNetworkLinksINode" value="INODE" />
+		<param name="attribNetworkLinksJNode" value="JNODE" />
+		<param name="attribNetworkLinksLanes" value="LANES" />
+		<param name="attribNetworkLinksLength" value="LENGTH" />
+		<param name="attribNetworkLinksModes" value="MODES" />
+		<param name="attribNetworkLinksSpeed" value="SPEED" />
+		<param name="attribSafeNodeIdsForSubsector" value="SAFE_NODES" />
+		<param name="attribSubsector" value="SUBSECTOR" />
+		<param name="attribTotalVehiclesForSubsector" value="TOTAL_VEH" />
+		<param name="evacuationActivity" value="evac" />
+		<param name="evacuationRate" value="600.0" />
+		<param name="longestAllowedEvacuationTime" value="600.0" />
+		<param name="safeActivity" value="safe" />
+	</module>
+	<module name="controler" >
+		<!-- Default=1000;  -->
+		<param name="lastIteration" value="20" />
+		<param name="outputDirectory" value="output" />
+		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
+		<param name="writeEventsInterval" value="20" />
+		<!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->
+		<param name="writePlansInterval" value="20" />
+	</module>
+	<module name="network" >
+		<param name="timeVariantNetwork" value="true" />
+	</module>
+</config>
