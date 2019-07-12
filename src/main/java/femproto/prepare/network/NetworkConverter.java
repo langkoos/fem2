@@ -178,7 +178,7 @@ public class NetworkConverter {
 			Node fromNode = nodes.get(fromNodeId);
 			Node toNode = nodes.get(toNodeId);
 			if (fromNode == null || toNode == null) {
-				log.warn(String.format("Link ID %s has missing from/to node, no link generated, can lead to disconnected network issues down the line...", linkId));
+				log.warn(String.format("Link %s has missing from/to node, no link generated, can lead to disconnected network issues down the line...", linkId));
 				continue;
 			}
 			try {

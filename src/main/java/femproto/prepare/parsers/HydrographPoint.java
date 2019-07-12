@@ -1,5 +1,6 @@
 package femproto.prepare.parsers;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.ArrayList;
@@ -8,7 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 public class HydrographPoint {
-	String pointId;
+	private static final Logger log = Logger.getLogger( HydrographPoint.class ) ;
+
+	final String pointId;
 	final Double ALT_AHD;
 	final Coord coord;
 	private Set<String> linkIds = new HashSet<>();

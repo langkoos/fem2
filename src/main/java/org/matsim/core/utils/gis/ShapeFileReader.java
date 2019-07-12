@@ -50,6 +50,9 @@ import java.util.List;
  * @author mrieser // switch to GeoTools 2.7.3
  */
 public class ShapeFileReader implements MatsimSomeReader {
+	// yyyy PF must have put this here.  Tried to remove it, but it is needed on the build server despite the fact that it is in
+	// the matsim jar.  no idea why.  kai, apr'19
+	
     	private static final Logger log = Logger.getLogger(ShapeFileReader.class);
 
 	private SimpleFeatureSource featureSource = null;
@@ -217,7 +220,7 @@ public class ShapeFileReader implements MatsimSomeReader {
 	public Collection<SimpleFeature> getFeatureSet() {
 		return featureSet;
 	}
-	
+
 	public CoordinateReferenceSystem getCoordinateSystem(){
 		return this.crs;
 	}
