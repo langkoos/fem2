@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 public class HydrographPoint {
-	final String pointId;
+	String pointId;
 	final Double ALT_AHD;
 	final Coord coord;
 	private Set<String> linkIds = new HashSet<>();

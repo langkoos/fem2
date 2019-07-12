@@ -3,14 +3,10 @@ package femproto.prepare.parsers;
 import femproto.globals.FEMGlobalConfig;
 import femproto.globals.Gis;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
-import femproto.prepare.evacuationscheduling.EvacuationScheduleFromHydrographData;
-import femproto.prepare.evacuationscheduling.EvacuationScheduleToPopulationDepartures;
-import femproto.prepare.evacuationscheduling.EvacuationScheduleWriter;
 import femproto.prepare.network.NetworkConverter;
 import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
 import femproto.run.FEMConfigGroup;
 import femproto.run.FEMUtils;
-import femproto.run.RunMatsim4FloodEvacuation;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -21,9 +17,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkChangeEvent;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -34,7 +28,6 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -193,7 +186,7 @@ public class HydrographParser {
 
 		removeHydrographPointsWithNoDataOrThatNeverFlood();
 
-		consolidateHydrographPointsByLink();
+		consolidateHydrographPoints();
 
 	}
 
@@ -220,35 +213,40 @@ public class HydrographParser {
 	 * For raising road access flooding, we have to take the maximum flood time
 	 * David et al will remove excess points so that ultimately only a single point is associated with a subsector, which will make this method redundant.
 	 */
-	private void consolidateHydrographPointsByLink() {
+	private void consolidateHydrographPoints() {
 		log.info("Consolidating hydrograph data by link and subsector (it is possible to have multiple associations on both so need to sort out which have priority)");
 		consolidatedHydrographPointMap = new HashMap<>();
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
 			for (String linkId : hydrographPoint.getLinkIds()) {
 				HydrographPoint linkHydroPoint = consolidatedHydrographPointMap.get(linkId);
 				if (linkHydroPoint == null) {
-					linkHydroPoint = new HydrographPoint(linkId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
+					linkHydroPoint = new HydrographPoint(hydrographPoint.pointId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
 					linkHydroPoint.setSubSector(hydrographPoint.getSubSector());
 					linkHydroPoint.addLinkId(linkId);
 					linkHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
 					consolidatedHydrographPointMap.put(linkId, linkHydroPoint);
 				} else {
-					// yoyo set the flood time to the minimum of the existing and new data point
+					//  set the flood time to the minimum of the existing and new data point
 					double currentFloodTime = linkHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
 					if (currentFloodTime > 0 && newFloodTime > 0) {
-						linkHydroPoint.setFloodTime(Math.min(currentFloodTime, newFloodTime));
+						if (newFloodTime < currentFloodTime) {
+							linkHydroPoint.setFloodTime(newFloodTime);
+							linkHydroPoint.pointId = hydrographPoint.pointId;
+						}
 					} else {
-						linkHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
+						if (newFloodTime > currentFloodTime) {
+							linkHydroPoint.setFloodTime(newFloodTime);
+							linkHydroPoint.pointId = hydrographPoint.pointId;
+						}
 					}
-
 				}
 			}
 			if (!hydrographPoint.getSubSector().equals("")) {
 				String subsectorId = hydrographPoint.getSubSector();
 				HydrographPoint subsectorHydroPoint = consolidatedHydrographPointMap.get(subsectorId);
 				if (subsectorHydroPoint == null) {
-					subsectorHydroPoint = new HydrographPoint(subsectorId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
+					subsectorHydroPoint = new HydrographPoint(hydrographPoint.pointId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
 					subsectorHydroPoint.setSubSector(hydrographPoint.getSubSector());
 					subsectorHydroPoint.addLinkId(subsectorId);
 					subsectorHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
@@ -257,8 +255,10 @@ public class HydrographParser {
 					// yoyo set the flood time to the MAXIMUM of the existing and new data point
 					double currentFloodTime = subsectorHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
-
-					subsectorHydroPoint.setFloodTime(Math.max(currentFloodTime, newFloodTime));
+					if (newFloodTime > currentFloodTime) {
+						subsectorHydroPoint.setFloodTime( newFloodTime);
+						subsectorHydroPoint.pointId = hydrographPoint.pointId;
+					}
 
 				}
 			}
@@ -433,7 +433,7 @@ public class HydrographParser {
 				writer.write("ID\tGAUGE_ID\tALT_AHD\n");
 				if (point.mappedToNetworkLink()) {
 					for (String linkId : point.getLinkIds()) {
-						writer.write(String.format("%s\t%d\t%f\n", linkId.toString(), point.pointId, point.ALT_AHD));
+						writer.write(String.format("%s\t%d\t%f\n", linkId.toString(), Integer.parseInt(point.pointId), point.ALT_AHD));
 					}
 				}
 				writer.close();
