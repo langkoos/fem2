@@ -29,7 +29,7 @@ public class RunInputPlansOnlyEvacRoutingTest {
 	public void testA_startWithFullEvacRun() {
 //		Config config = ConfigUtils.createConfig() ;
 //
-		String scenarioBase = "test/input/femproto/run/scenario/";
+		String scenarioBase = "test/input/femproto/scenario/";
 //
 
 //		// ---

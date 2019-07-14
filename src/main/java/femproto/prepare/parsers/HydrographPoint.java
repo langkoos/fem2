@@ -11,7 +11,7 @@ import java.util.Set;
 public class HydrographPoint {
 	private static final Logger log = Logger.getLogger( HydrographPoint.class ) ;
 
-	final String pointId;
+	String pointId;
 	final Double ALT_AHD;
 	final Coord coord;
 	private Set<String> linkIds = new HashSet<>();

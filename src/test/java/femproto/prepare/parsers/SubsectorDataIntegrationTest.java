@@ -27,8 +27,8 @@ public class SubsectorDataIntegrationTest {
 	@Rule
 	public MatsimTestUtils utils = new MatsimTestUtils();
 
-	String inputshapefile = "scenarios/FEM2TestDataOctober18/2016/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp";
-	String networkFile = "scenarios/FEM2TestDataOctober18/testscenario/input_network.xml";
+	String inputshapefile = "test/input/femproto/scenario/source/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp";
+	String networkFile = "test/input/femproto/scenario/input_network.xml";
 
 	{
 		if (FEMUtils.getGlobalConfig() == null)

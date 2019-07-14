@@ -30,16 +30,16 @@ public class RunFromScheduleTest {
 	public void test()  {
 
 
-		String utilsPackageInputDir = utils.getPackageInputDirectory();
+		String scenarioInputDir = utils.getPackageInputDirectory()+"../";
 		String utilsOutputDir = utils.getOutputDirectory();
-		Config config = ConfigUtils.loadConfig(utilsPackageInputDir +"scenario/config_runFromSchedule.xml");
+		Config config = ConfigUtils.loadConfig(scenarioInputDir +"scenario/config_runFromSchedule.xml");
 		config.controler().setOutputDirectory(utilsOutputDir);
 		new RunMatsim4FloodEvacuation(config).run();
 
 
-		Network network = NetworkUtils.readNetwork(utilsPackageInputDir + "scenario/input_network.xml");
+		Network network = NetworkUtils.readNetwork(scenarioInputDir + "scenario/input_network.xml");
 		EvacuationSchedule expectedSchedule = new EvacuationSchedule();
-		new EvacuationScheduleReader(expectedSchedule, network).readFile(utilsPackageInputDir + "scenario/input_evac_plan.csv");
+		new EvacuationScheduleReader(expectedSchedule, network).readFile(scenarioInputDir + "scenario/input_evac_plan.csv");
 		EvacuationSchedule actualSchedule = new EvacuationSchedule();
 		new EvacuationScheduleReader(actualSchedule, network).readFile(utilsOutputDir + "output_output_evacuationSchedule.csv");
 

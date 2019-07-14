@@ -50,11 +50,11 @@ public class DifferentVariantsTestIT {
 //		FEMRunType rt = FEMRunType.runFromSource; //if the test fails then use tis line to pick specific instance
 			for (FEMOptimizationType ot : FEMOptimizationType.values()) {
 				for (FEMEvacuationTimeAdjustment ta : FEMEvacuationTimeAdjustment.values()) {
-					if(rt != FEMRunType.justRunInputPlansFile ) {
+					if (rt != FEMRunType.justRunInputPlansFile) {
 						combos.add(new Object[]{rt, ot, ta, true});
 						combos.add(new Object[]{rt, ot, ta, false});
-					}else {
-						if(ot == FEMOptimizationType.none) {
+					} else {
+						if (ot == FEMOptimizationType.none) {
 							combos.add(new Object[]{rt, ot, ta, true});
 							combos.add(new Object[]{rt, ot, ta, false});
 						}
@@ -73,7 +73,7 @@ public class DifferentVariantsTestIT {
 			// constructed here, this means that otherwise only the last parameterized test output would survive.
 			// There might be a better solution ...   kai, jul'18
 		}
-		
+
 //		String dirExtension = "/" + runType.name() + "_" + optimizationType.name() + "_" + timeAdjustment.name();
 		String dirExtension = "_" + runType.name() + "_" + optimizationType.name() + "_" + timeAdjustment.name();
 		if (timeDepNetwork) {
@@ -84,15 +84,16 @@ public class DifferentVariantsTestIT {
 
 		RunMatsim4FloodEvacuation evac = new RunMatsim4FloodEvacuation();
 
-		Config config = evac.loadConfig(new String[]{utils.getPackageInputDirectory() + "scenario/config_base.xml"});
+		String scenarioInputDirectory = utils.getPackageInputDirectory() + "../";
+		Config config = evac.loadConfig(new String[]{scenarioInputDirectory + "scenario/config_base.xml"});
 
 		config.network().setTimeVariantNetwork(timeDepNetwork);
-		
-		final String outputDirectory = utilsOutputDir.substring( 0,utilsOutputDir.length()-1 ) + dirExtension;
-		log.warn(outputDirectory) ;
-		
-		
-		config.controler().setOutputDirectory( outputDirectory );
+
+		final String outputDirectory = utilsOutputDir.substring(0, utilsOutputDir.length() - 1) + dirExtension;
+		log.warn(outputDirectory);
+
+
+		config.controler().setOutputDirectory(outputDirectory);
 		if (optimizationType != FEMOptimizationType.none) {
 			config.controler().setLastIteration(10);
 		} else {
@@ -108,7 +109,6 @@ public class DifferentVariantsTestIT {
 		femConfig.setSampleSize(0.01);
 
 		evac.run();
-
 
 
 	}

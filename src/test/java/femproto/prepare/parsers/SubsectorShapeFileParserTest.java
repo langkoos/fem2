@@ -15,10 +15,12 @@ public class SubsectorShapeFileParserTest {
 		if (FEMUtils.getGlobalConfig() == null)
 			FEMUtils.setGlobalConfig(FEMGlobalConfig.getDefaultGlobalConfig());
 	}
+
 	@Test
 	public void test() {
-		String inputshapefile = "scenarios/FEM2TestDataOctober18/2016/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp";
-		String networkFile = "scenarios/FEM2TestDataOctober18/testscenario/input_network.xml";
+		String inputDir = "test/input/femproto/scenario/";
+		String inputshapefile = inputDir + "source/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp";
+		String networkFile = inputDir + "input_network.xml";
 
 		EvacuationSchedule evacuationSchedule = new EvacuationSchedule();
 		Network network = NetworkUtils.createNetwork();
