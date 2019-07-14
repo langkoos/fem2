@@ -11,7 +11,7 @@ import java.util.Set;
 public class HydrographPoint {
 	private static final Logger log = Logger.getLogger( HydrographPoint.class ) ;
 
-	String pointId;
+	int pointId;
 	final Double ALT_AHD;
 	final Coord coord;
 	private Set<String> linkIds = new HashSet<>();
@@ -23,7 +23,7 @@ public class HydrographPoint {
 	}
 
 	private double floodTime = -1.0;
-	public HydrographPoint(String pointId, Double alt_ahd, Coord coord) {
+	public HydrographPoint(int pointId, Double alt_ahd, Coord coord) {
 		this.pointId = pointId;
 		ALT_AHD = alt_ahd;
 		this.coord = coord;

@@ -41,11 +41,8 @@ public class HydrographParser {
 		this.evacuationSchedule = evacuationSchedule;
 	}
 
-	public Map<String, HydrographPoint> getHydrographPointMap() {
-		return hydrographPointMap;
-	}
 
-	private Map<String, HydrographPoint> hydrographPointMap;
+	private Map<Integer, HydrographPoint> hydrographPointMap;
 
 	public Map<String, HydrographPoint> getConsolidatedHydrographPointMap() {
 		return consolidatedHydrographPointMap;
@@ -91,7 +88,7 @@ public class HydrographParser {
 		while (iterator.hasNext()) {
 			SimpleFeature feature = iterator.next();
 
-			String pointID = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographPointId()).toString();
+			int pointID = Integer.parseInt(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographPointId()).toString());
 			String linkIDs = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographLinkIds()).toString();
 			String subsector = feature.getAttribute(FEMUtils.getGlobalConfig().getAttribSubsector()).toString();
 			final Double ALT_AHD = Double.valueOf(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString());
@@ -173,7 +170,7 @@ public class HydrographParser {
 		//  note that Peter said the 3rd row of the hydrograph is actually time 0
 		double minTime = columns.get(0).get(2) * 3600;
 		for (int i = 1; i < header.length; i++) {
-			HydrographPoint hydrographPoint = hydrographPointMap.get(header[i]);
+			HydrographPoint hydrographPoint = hydrographPointMap.get(Integer.parseInt(header[i]));
 			if (hydrographPoint != null) {
 				for (int j = 2; j < columns.get(i).size(); j++) {
 					//  it might be better top not have BUFFER_TIME in here and only use in the routing of agents, not in generating network change events
@@ -192,15 +189,15 @@ public class HydrographParser {
 
 
 	private void removeHydrographPointsWithNoDataOrThatNeverFlood() {
-		Set<String> badkeys = new HashSet<>();
+		Set<Integer> badkeys = new HashSet<>();
 		badkeys.addAll(hydrographPointMap.keySet());
 
-		for (Map.Entry<String, HydrographPoint> pointEntry : hydrographPointMap.entrySet()) {
+		for (Map.Entry<Integer, HydrographPoint> pointEntry : hydrographPointMap.entrySet()) {
 			if (pointEntry.getValue().inHydrograph() && pointEntry.getValue().getFloodTime() > 0)
 				badkeys.remove(pointEntry.getKey());
 		}
 
-		for (String badkey : badkeys) {
+		for (int badkey : badkeys) {
 			hydrographPointMap.remove(badkey);
 			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
 		}
@@ -433,7 +430,7 @@ public class HydrographParser {
 				writer.write("ID\tGAUGE_ID\tALT_AHD\n");
 				if (point.mappedToNetworkLink()) {
 					for (String linkId : point.getLinkIds()) {
-						writer.write(String.format("%s\t%d\t%f\n", linkId.toString(), Integer.parseInt(point.pointId), point.ALT_AHD));
+						writer.write(String.format("%s\t%d\t%f\n", linkId.toString(), point.pointId, point.ALT_AHD));
 					}
 				}
 				writer.close();
@@ -444,7 +441,7 @@ public class HydrographParser {
 	}
 
 	/**
-	 * This method is a helper to produce a lookup table of subsectors and eliminate this entire class in the end
+	 * This method is a helper to produce a lookup table of subsectors
 	 */
 	public void writeSubsector2GaugeLookupTable(String outputFileName) {
 		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
