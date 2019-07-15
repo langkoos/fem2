@@ -245,7 +245,6 @@ public class HydrographParser {
 				if (subsectorHydroPoint == null) {
 					subsectorHydroPoint = new HydrographPoint(hydrographPoint.pointId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
 					subsectorHydroPoint.setSubSector(hydrographPoint.getSubSector());
-					subsectorHydroPoint.addLinkId(subsectorId);
 					subsectorHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
 					consolidatedHydrographPointMap.put(subsectorId, subsectorHydroPoint);
 				} else {
@@ -253,7 +252,7 @@ public class HydrographParser {
 					double currentFloodTime = subsectorHydroPoint.getFloodTime();
 					double newFloodTime = hydrographPoint.getFloodTime();
 					if (newFloodTime > currentFloodTime) {
-						subsectorHydroPoint.setFloodTime( newFloodTime);
+						subsectorHydroPoint.setFloodTime(newFloodTime);
 						subsectorHydroPoint.pointId = hydrographPoint.pointId;
 					}
 
@@ -424,19 +423,19 @@ public class HydrographParser {
 	 * This method is a helper to produce a lookup table and eliminate this entire class in the end
 	 */
 	public void writeLink2GaugeLookupTable(String outputFileName) {
-		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
-			BufferedWriter writer = IOUtils.getBufferedWriter(outputFileName);
-			try {
-				writer.write("ID\tGAUGE_ID\tALT_AHD\n");
+		BufferedWriter writer = IOUtils.getBufferedWriter(outputFileName);
+		try {
+			writer.write("ID\tGAUGE_ID\tALT_AHD\n");
+			for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
 				if (point.mappedToNetworkLink()) {
 					for (String linkId : point.getLinkIds()) {
 						writer.write(String.format("%s\t%d\t%f\n", linkId.toString(), point.pointId, point.ALT_AHD));
 					}
 				}
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -444,18 +443,18 @@ public class HydrographParser {
 	 * This method is a helper to produce a lookup table of subsectors
 	 */
 	public void writeSubsector2GaugeLookupTable(String outputFileName) {
-		for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
-			BufferedWriter writer = IOUtils.getBufferedWriter(outputFileName);
-			try {
-				writer.write("SUBSECTOR\tGAUGE_ID\tALT_AHD\n");
-				if (!(point.getSubSector() == null)) {
+		BufferedWriter writer = IOUtils.getBufferedWriter(outputFileName);
+		try {
+			writer.write("SUBSECTOR\tGAUGE_ID\tALT_AHD\n");
+			for (HydrographPoint point : consolidatedHydrographPointMap.values()) {
+				if (!(point.getSubSector().equals(""))) {
 
 					writer.write(String.format("%s\t%d\t%f\n", point.getSubSector(), point.pointId, point.ALT_AHD));
 				}
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

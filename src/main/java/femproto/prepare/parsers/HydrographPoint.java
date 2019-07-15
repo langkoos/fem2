@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class HydrographPoint {
-	private static final Logger log = Logger.getLogger( HydrographPoint.class ) ;
+	private static final Logger log = Logger.getLogger(HydrographPoint.class);
 
 	int pointId;
 	final Double ALT_AHD;
@@ -23,6 +23,7 @@ public class HydrographPoint {
 	}
 
 	private double floodTime = -1.0;
+
 	public HydrographPoint(int pointId, Double alt_ahd, Coord coord) {
 		this.pointId = pointId;
 		ALT_AHD = alt_ahd;
@@ -46,12 +47,13 @@ public class HydrographPoint {
 	}
 
 	public void addLinkId(String linkId) {
-			this.linkIds.add(linkId);
+		this.linkIds.add(linkId);
 	}
 
 	public void addLinkIds(String[] linkIds) {
 		for (String linkId : linkIds) {
-			this.linkIds.add(linkId);
+			if (!linkId.equals(""))
+				this.linkIds.add(linkId);
 		}
 	}
 
@@ -59,18 +61,18 @@ public class HydrographPoint {
 		return data;
 	}
 
-	public boolean inHydrograph(){
+	public boolean inHydrograph() {
 		return data != null;
 	}
 
-	public boolean mappedToNetworkLink(){
+	public boolean mappedToNetworkLink() {
 		return linkIds != null;
 	}
 
-	public void addTimeSeriesData(double time, double level_ahd){
-		if(data == null)
+	public void addTimeSeriesData(double time, double level_ahd) {
+		if (data == null)
 			data = new ArrayList<>();
-		data.add(new HydrographPointData(time,level_ahd));
+		data.add(new HydrographPointData(time, level_ahd));
 	}
 
 	public double getFloodTime() {
@@ -79,16 +81,16 @@ public class HydrographPoint {
 
 
 	public void calculateFloodTimeFromData() {
-			for (HydrographPointData pointDatum : this.getData()) {
-				if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
-					floodTime = pointDatum.getTime();
-					System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
-					break;
-				}
+		for (HydrographPointData pointDatum : this.getData()) {
+			if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
+				floodTime = pointDatum.getTime();
+				System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
+				break;
 			}
+		}
 	}
 
-	public class HydrographPointData{
+	public class HydrographPointData {
 		private final double time;
 		private final double level_ahd;
 
