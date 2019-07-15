@@ -218,8 +218,8 @@ public class HydrographParser {
 				HydrographPoint linkHydroPoint = consolidatedHydrographPointMap.get(linkId);
 				if (linkHydroPoint == null) {
 					linkHydroPoint = new HydrographPoint(hydrographPoint.pointId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
-					linkHydroPoint.setSubSector(hydrographPoint.getSubSector());
 					linkHydroPoint.addLinkId(linkId);
+					linkHydroPoint.setSubSector("");
 					linkHydroPoint.setFloodTime(hydrographPoint.getFloodTime());
 					consolidatedHydrographPointMap.put(linkId, linkHydroPoint);
 				} else {
