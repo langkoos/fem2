@@ -1,164 +1,68 @@
 SUBSECTOR	GAUGE_ID	ALT_AHD
-McGraths Hill	1105	18.640000
+Glossodia	24	33.292984
 Emu Plains North	48	24.805900
-McGraths Hill	1096	16.650000
 South Creek B 11	2039	17.894900
 South Creek B 13	1180	14.290000
-Cranebrook	384	26.272900
+Cranebrook	1257	31.804600
 South Creek B 12	2038	18.752800
-Peach Tree Creek West	1512	24.230000
-Ebenezer	1518	5.959000
-Vineyard	1114	20.900000
-Windsor Downs 12	2051	20.003100
-Londonderry	1161	18.180000
-Londonderry	1157	19.450000
-Emu Heights	1509	20.631000
-Penrith A	433	27.538200
-Emu Heights	1222	26.100000
-Vineyard North 1	1106	18.820000
-Freemans Reach Lowlands	1041	19.342500
-Vineyard	1122	20.430000
-Mulgrave	1089	19.690000
-Box Hill North	504	21.430300
 Pitt Town Bottoms	105	10.719600
-Vineyard North 2	1110	15.600000
-Richmond A Central	281	19.090000
-Agnes Banks	7	21.264900
-South Windsor East	305	18.865300
-Leonay North	787	28.053400
-Peach Tree Creek West	1512	24.230000
-North Richmond	227	17.795300
-Leonay South	806	31.186200
-Ebenezer	1519	12.100000
-Richmond A Central	281	19.090000
-Vineyard North 15	2052	20.954200
-Eastern Creek A 7	1371	11.000000
-Vineyard North 13	2031	20.128000
+Leonay North	1226	35.320000
+North Richmond	230	26.036400
+Leonay South	805	38.915200
 Pitt Town South	702	16.161100
-Agnes Banks Lowlands East	1138	21.480000
-Peach Tree Creek East	317	25.948700
-Hobartville A	192	21.340000
 Pitt Town North	717	16.778000
-Vineyard	1114	20.900000
-Mulgrave	1089	19.690000
-Eastern Creek A 7	1384	12.090000
-Penrith C2	438	29.230000
-Vineyard North 9	1093	20.590000
-Pitt Town Central	1074	17.299400
-Eastern Creek A 7	922	19.431500
-Eastern Creek A 6	923	19.278000
-Eastern Creek A 5	927	20.423000
 Singletons Mill	1520	8.533946
-Eastern Creek A 4	921	18.895300
-Eastern Creek A 3	2010	19.990800
-McGraths Hill	1104	19.140000
-Emu Heights	1449	23.600000
-Eastern Creek A 2	2007	19.362800
-Eastern Creek A 1	1389	13.846700
-Emu Plains Central West	69	27.680000
-Emu Plains East 1	2041	26.910200
-Webbs Creek	558	2.413895
-Londonderry	1157	19.450000
-Agnes Banks Lowlands North	201	15.342900
+Emu Plains East 1	1224	32.940000
+Webbs Creek	551	22.889231
+Agnes Banks Lowlands North	974	16.284500
 Cornwallis	292	14.185800
-Penrith C 1	431	28.451600
-Peach Tree Creek West	837	26.790000
-South Creek A2	1345	19.802400
-South Maroota	1037	13.098993
-Eastern Creek A 7	1384	12.090000
 Mulgoa South	443	25.700000
-South Creek A1	1327	20.692000
-Penrith C2	438	29.230000
-Wisemans Ferry East	563	3.207990
-Hobartville A	192	21.340000
-Agnes Banks South	985	20.316200
 North Windsor	722	9.378900
-Ebenezer	1519	12.100000
-Ebenezer	1518	5.959000
-Bligh Park Central	949	19.727900
-Wisemans Ferry Centre	542	4.665338
-Freemans Reach	246	17.152130
-Vineyard North 2	1107	13.600000
 North Penrith A	336	26.487500
 Pitt Town South East B	1052	12.358800
-Londonderry	1158	21.190000
-Leets Vale North	571	11.820991
+Londonderry	1163	26.740000
 Jamisontown West	816	27.377200
-McGraths Hill	1105	18.640000
 Peach Tree Creek West	837	26.790000
-Agnes Banks Lowlands East	1138	21.480000
-Cattai (West) TBC	524	20.580700
-Wallacia Central	1510	35.130000
-East Kurrajong	163	12.915349
-Vineyard North 2	1108	16.070000
+Cattai (West) TBC	526	26.680600
+East Kurrajong	165	23.343624
 South Creek B 4	2036	16.476300
-South Creek B 1	1441	21.055800
+South Creek B 1	1439	22.414700
 South Creek B 2	2008	15.933300
-Box Hill South	489	21.252400
-Lower Macdonald	642	4.635729
-Penrith D 1	432	27.840000
-Penrith D 2	2055	29.020500
-Vineyard North 9	1093	20.590000
-Vineyard	1122	20.430000
-Glenmore Park	414	30.742400
-Emu Heights	1222	26.100000
-Penrith D 1	432	27.840000
 Windsor Central	732	21.360100
-Emu Plains North	46	23.230000
-Gunderman	1522	1.034492
+Gunderman	1523	2.116785
 South Creek B 7	2054	16.252700
+South Creek B 8	2006	21.920600
 South Creek B 5	2053	18.846600
-South Creek B 13	1466	14.200000
 South Creek B 6	2037	20.220700
-Emu Heights	34	26.888700
-Mulgrave	1089	19.690000
-Central Colo	183	14.927865
-Richmond B	1136	21.410000
-Eastern Creek A 7	1371	11.000000
-South Creek B 13	1466	14.200000
-Emu Heights	1509	20.631000
-Vineyard North 2	1108	16.070000
-Peach Tree Creek West	1508	24.230000
-Agnes Banks Lowlands South	892	15.365300
+Emu Heights	1446	41.914600
+Central Colo	190	35.545367
+Grose Wold	216	25.535000
+Agnes Banks Lowlands South	900	16.629600
 Wisemans Ferry West	582	6.418701
-Ebenezer	158	16.526617
-Mulgoa North	2001	32.769500
+Ebenezer	156	23.762151
+Richmond A East	287	23.316500
 Jamisontown South 1	349	29.050900
-Emu Plains Central West	69	27.680000
-Vineyard North 1	1410	17.320000
-Richmond B	1136	21.410000
-Wallacia East	1239	53.150000
-Jamisontown South 2	347	29.040200
-Londonderry	1160	18.290000
-Lower Portland East	602	7.446105
-Oakville	534	20.934100
-Peach Tree Creek East	313	26.290000
-Emu Heights	1449	23.600000
-Lower Portland North	611	9.685924
+Wallacia East	1237	61.590000
+Jamisontown South 3	1027	30.802200
+Jamisontown South 2	341	29.626600
+Jamisontown South 5	344	32.400400
+Jamisontown South 4	348	31.396900
+Oakville	531	25.039400
 Richmond A Central	281	19.090000
-Bligh Park West	941	19.384400
-Richmond A West	282	20.620100
-Windsor East	957	18.144900
-Vineyard North 1	1410	17.320000
-Peach Tree Creek East	313	26.290000
-Vineyard North 1	1106	18.820000
-Penrith B 1	440	27.744600
-Mulgrave	1101	13.500000
-Agnes Banks Lowlands East	1138	21.480000
-Vineyard North 2	1110	15.600000
-Emu Plains North	46	23.230000
-Penrith D 1	432	27.840000
-Wilberforce	138	19.092500
-Richmond B	1136	21.410000
+Bligh Park West	943	21.543100
+Uni West Syd (UWS)	1150	23.260000
+Agnes Banks Lowlands East	889	22.373700
+Wilberforce	131	26.978418
+Richmond B	1148	24.310000
 Little Cattai	639	16.125114
-Colo Heights	458	6.186315
-Peach Tree Creek West	837	26.790000
-Yarramundi	933	20.141800
+Colo Heights	459	16.796316
+St Albans	661	0.000000
+North Penrith B 6	853	28.579300
 North Penrith B 5	2040	24.259700
-Eastern Creek C	915	20.885300
-Vineyard North 4	1119	19.800000
-Vineyard	1123	21.110000
-Bligh Park East	749	20.948300
+North Penrith B 8	860	29.326700
+North Penrith B 7	852	29.009100
+Eastern Creek C	1211	26.331400
+Wrights Creek	681	0.000000
 Vineyard North 9	2032	20.623600
 Vineyard North 7	2035	17.334700
 Vineyard North 8	2028	18.381800
@@ -166,60 +70,119 @@ Vineyard North 5	1112	19.950000
 Vineyard North 6	1113	19.170000
 Emu Plains South 1	93	26.970600
 Vineyard North 3	1121	18.950600
-Leonay Central	1022	29.381600
-Vineyard North 4	1119	19.800000
+Penrith Lakes Central 1	1202	28.577600
+Vineyard North 4	1120	24.060000
 Penrith Lakes Central 2	1415	23.874000
 Wallacia Weir	1511	33.900000
 Emu Plains South 3	100	27.697700
 Vineyard North 1	1424	19.703200
 Emu Plains South 4	96	28.498800
 Vineyard North 2	1109	16.330000
+Emu Plains South 6	94	30.430000
+Marsden Park North 4	2026	22.988600
+Marsden Park North 3	908	20.729600
+Marsden Park North 2	903	18.922100
+Clarendon	969	22.295600
+Marsden Park North 1	1183	15.870000
+North Penrith B 2	996	25.804100
+North Penrith B 1	854	29.860900
+North Penrith B 4	868	27.246100
+North Penrith B 3	995	26.620600
+Wallacia Central	1250	67.043400
+Regentville E	325	27.440200
+Emu Plains South 7	1017	31.000000
+LeetsVale South	591	5.456619
+Lower Portland West	178	20.109043
+Sackville North	628	27.120109
+Regentville B	330	27.698800
+Regentville C	327	33.674600
+Regentville D	324	27.700000
+Windsor Downs 14	2045	22.007300
+Windsor Downs 16	2046	23.989200
+Windsor Downs 12	2051	20.003100
+Penrith A	433	27.538200
+Freemans Reach Lowlands	1041	19.342500
+Box Hill North	505	26.857700
+Richmond RAAF	14	23.204100
+Agnes Banks	2	25.330000
+South Windsor East	305	18.865300
+Vineyard North 14	1091	22.590000
+Vineyard North 15	472	24.118000
+Vineyard North 12	1095	26.260000
+Vineyard North 13	2031	20.128000
+Vineyard North 10	1055	23.120000
+Vineyard North 11	1115	25.830000
+Peach Tree Creek East	999	26.791400
+Penrith C2	438	29.230000
+Upper Macdonald	671	0.000000
+Pitt Town Central	768	26.963700
+Eastern Creek A 7	1059	22.060500
+Eastern Creek A 6	923	19.278000
+Eastern Creek A 5	1204	27.297500
+Eastern Creek A 4	921	18.895300
+Eastern Creek A 3	2010	19.990800
+McGraths Hill	1104	19.140000
+Eastern Creek A 2	2007	19.362800
+Eastern Creek A 1	925	22.717400
+Penrith C 1	431	28.451600
+South Creek A6	1283	55.774400
+Penrith C 3	439	30.601300
+South Creek A2	1311	39.750000
+South Creek A3	1218	28.320000
+South Creek A4	1293	28.270000
+South Creek A5	1276	39.850000
+South Maroota	633	26.100897
+South Creek A1	1213	25.900900
+Wisemans Ferry East	568	18.606710
+Agnes Banks South	1198	29.900000
+Bligh Park Central	946	22.044500
+Wisemans Ferry Centre	542	4.665338
+Freemans Reach	243	23.086789
+Central Macdonald	651	0.000000
+Leets Vale North	571	11.820991
+Emu Plains West 3	86	29.832800
+Emu Plains West 8	1223	31.480000
+Box Hill South	482	27.509700
+Lower Macdonald	648	10.842038
+Penrith D 1	432	27.840000
+Penrith D 2	2055	29.020500
+Penrith D 3	2056	30.004000
+Penrith D 4	997	30.055300
+Penrith D 5	2029	30.992800
+Glenmore Park	414	30.742400
+Mulgrave	1090	22.140000
+Mulgoa North	2001	32.769500
+Lower Portland East	607	24.986366
+Lower Portland North	617	15.726700
+Richmond A West	1135	22.517000
+Windsor East	957	18.144900
+Penrith B 1	440	27.744600
+Yarramundi	931	28.975500
+Vineyard	1132	27.600000
+Bligh Park East	749	20.948300
+Leonay Central	798	34.570200
 Windsor Downs 9	2044	19.160000
-Llandilo	1430	21.272200
+Llandilo	1190	26.420000
 Windsor Downs 8	2034	17.405100
 Windsor Downs 7	2050	17.987900
 Windsor Downs 6	2043	18.001700
-Marsden Park North 4	905	21.305100
 Windsor Downs 4	2027	17.370900
-Marsden Park North 3	908	20.729600
-Marsden Park North 2	903	18.922100
-Peach Tree Creek West	1508	24.230000
-Clarendon	1409	16.848000
-Marsden Park North 1	1183	15.870000
-North Penrith B 2	864	25.072900
-North Penrith B 1	869	27.227000
-North Penrith B 4	863	27.109700
-North Penrith B 3	995	26.620600
-Wallacia Central	1510	35.130000
-Hobartville A	194	21.469600
-Wallacia Central	1510	35.130000
-Londonderry	1161	18.180000
+Windsor Downs 1	1172	26.157700
+Hobartville A	191	22.060000
+South Windsor West	309	24.965400
 Hobartville B	196	19.907800
-Londonderry	1160	18.290000
-Pitt Town South East	1047	20.037100
-Emu Plains Central West	1221	27.380000
+Pitt Town South East	1066	25.872900
+Emu Plains Central West	67	31.734400
 Cattai	527	20.457800
-Grono's Point	150	17.491400
+Grono's Point	149	24.366700
 Windsor	960	18.473300
-Regentville E	325	27.440200
-Mulgrave	1101	13.500000
-Pitt Town East	756	18.689900
-Vineyard North 6	1113	19.170000
-Penrith C2	438	29.230000
+Pitt Town East	757	24.790800
 Jamisontown East 1	825	26.518100
-Jamisontown East 3	824	28.808500
+Jamisontown East 3	1001	29.096700
 Jamisontown East 2	826	27.857800
-LeetsVale South	591	5.456619
-McGraths Hill	1453	13.500000
-Vineyard North 4	1119	19.800000
-McGraths Hill	1096	16.650000
-Vineyard North 2	1107	13.600000
-North Richmond Lowlands	237	18.427400
-Jamisontown East 4	827	29.605000
-Lower Portland West	177	7.043936
-Vineyard North 6	1113	19.170000
-Sackville North	623	13.419836
-Regentville B	330	27.698800
-Regentville D	324	27.700000
-McGraths Hill	1453	13.500000
-Berkshire Park	364	20.979600
+Jamisontown East 5	430	30.204000
+North Richmond Lowlands	239	22.253300
+Jamisontown East 4	829	29.996300
+Jamisontown East 6	429	30.061800
+Upper Colo	463	18.814803
+Berkshire Park	1467	33.580000
