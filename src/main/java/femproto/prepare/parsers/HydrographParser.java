@@ -478,8 +478,7 @@ public class HydrographParser {
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
 		URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
 		hydrographParser.parseHydrographShapefile(hydrographURL);
-		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
-		hydrographParser.readHydrographData(hydrographDataURL, 54961);
+		hydrographParser.consolidateHydrographPointsForConversion();
 
 		hydrographParser.writeLink2GaugeLookupTable(args[1]);
 		hydrographParser.writeSubsector2GaugeLookupTable(args[2]);
@@ -487,4 +486,49 @@ public class HydrographParser {
 
 	}
 
+
+	private void consolidateHydrographPointsForConversion() {
+		log.info("Consolidating hydrograph data by link and subsector (it is possible to have multiple associations on both so need to sort out which have priority)");
+		consolidatedHydrographPointMap = new HashMap<>();
+		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
+			for (String linkId : hydrographPoint.getLinkIds()) {
+				HydrographPoint linkHydroPoint = consolidatedHydrographPointMap.get(linkId);
+				if (linkHydroPoint == null) {
+					linkHydroPoint = new HydrographPoint(hydrographPoint.pointId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
+					linkHydroPoint.addLinkId(linkId);
+					linkHydroPoint.setSubSector("");
+					consolidatedHydrographPointMap.put(linkId, linkHydroPoint);
+				} else {
+					//  set the ALT_AHD to the minimum of the existing and new data point
+					double current_ALT = linkHydroPoint.ALT_AHD;
+					double new_ALT_AHD = hydrographPoint.ALT_AHD;
+					if (new_ALT_AHD < current_ALT) {
+						linkHydroPoint.setFloodTime(new_ALT_AHD);
+						linkHydroPoint.pointId = hydrographPoint.pointId;
+						linkHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
+					}
+				}
+			}
+			if (!hydrographPoint.getSubSector().equals("")) {
+				String subsectorId = hydrographPoint.getSubSector();
+				HydrographPoint subsectorHydroPoint = consolidatedHydrographPointMap.get(subsectorId);
+				if (subsectorHydroPoint == null) {
+					subsectorHydroPoint = new HydrographPoint(hydrographPoint.pointId, hydrographPoint.getALT_AHD(), hydrographPoint.coord);
+					subsectorHydroPoint.setSubSector(hydrographPoint.getSubSector());
+					consolidatedHydrographPointMap.put(subsectorId, subsectorHydroPoint);
+				} else {
+					// set the ALT_AHD to the maximum of the existing and new data point
+					double current_ALT = subsectorHydroPoint.ALT_AHD;
+					double new_ALT_AHD = hydrographPoint.ALT_AHD;
+					if (new_ALT_AHD > current_ALT) {
+						subsectorHydroPoint.setFloodTime(current_ALT);
+						subsectorHydroPoint.pointId = hydrographPoint.pointId;
+						subsectorHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
+					}
+
+				}
+			}
+		}
+		log.info("Done consolidating hydrograph data by link and subsector");
+	}
 }
