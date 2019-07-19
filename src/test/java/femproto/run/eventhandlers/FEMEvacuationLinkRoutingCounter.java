@@ -2,6 +2,7 @@ package femproto.run.eventhandlers;
 
 import femproto.prepare.network.NetworkConverter;
 import femproto.run.FEMPreferEmergencyLinksTravelDisutility;
+import femproto.run.FEMUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.LinkLeaveEvent;
@@ -43,7 +44,7 @@ public class FEMEvacuationLinkRoutingCounter implements LinkLeaveEventHandler{
 		
 		final Link link = network.getLinks().get(event.getLinkId());
 		Gbl.assertNotNull(link);
-		Boolean isEvacLink = (Boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK);
+		Boolean isEvacLink = (Boolean) link.getAttributes().getAttribute(FEMUtils.getGlobalConfig().getAttribEvacMarker());
 		
 //		log.info( "vehId=" + event.getVehicleId() + "; linkId=" + event.getLinkId() + "; isEvacLink=" + isEvacLink ) ;
 

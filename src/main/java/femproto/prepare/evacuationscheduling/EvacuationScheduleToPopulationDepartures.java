@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
+import static femproto.run.FEMUtils.getGlobalConfig;
 import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 
 /**
@@ -40,7 +40,7 @@ import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 public final class EvacuationScheduleToPopulationDepartures {
 	private Scenario scenario;
 	private EvacuationSchedule evacuationSchedule;
-
+	final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
 
 	public EvacuationScheduleToPopulationDepartures(Scenario scenario, EvacuationSchedule evacuationSchedule) {
 		this.scenario = scenario;

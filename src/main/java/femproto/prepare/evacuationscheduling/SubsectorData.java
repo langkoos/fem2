@@ -21,6 +21,25 @@ public class SubsectorData {
 	private HashMap<Node, LeastCostPathCalculator.Path> lastOpenPathToSafeNode = new HashMap<>(); //maintain insertion order
 	private int vehicleCount;
 
+	public int getGaugeId() {
+		return gaugeId;
+	}
+
+	public void setGaugeId(int gaugeId) {
+		this.gaugeId = gaugeId;
+	}
+
+	public double getAltAHD() {
+		return altAHD;
+	}
+
+	public void setAltAHD(double altAHD) {
+		this.altAHD = altAHD;
+	}
+
+	private int gaugeId;
+	private double altAHD;
+
 	public void setLookAheadTime(double lookAheadTime) {
 		this.lookAheadTime = lookAheadTime;
 	}

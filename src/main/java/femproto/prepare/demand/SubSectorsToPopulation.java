@@ -25,18 +25,21 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.*;
 
-import static femproto.prepare.network.NetworkConverter.EVACUATION_LINK;
+import static femproto.run.FEMUtils.getGlobalConfig;
+
 @Deprecated
 public class SubSectorsToPopulation {
 	private static final Logger log = Logger.getLogger(SubSectorsToPopulation.class) ;
-	
+	final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
 	private final Scenario scenario;
 	private EvacuationToSafeNodeMapping evacuationToSafeNodeMapping;
 
 	private SubSectorsToPopulation() {
 //		log.setLevel(Level.DEBUG);
 		this.scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-		FEMUtils.setGlobalConfig(ConfigUtils.addOrGetModule(scenario.getConfig(),FEMGlobalConfig.class));
+		if(FEMUtils.getGlobalConfig()==null) {
+			FEMUtils.setGlobalConfig(ConfigUtils.addOrGetModule(scenario.getConfig(), FEMGlobalConfig.class));
+		}
 	}
 	
 	public static void main(String[] args) throws IOException {

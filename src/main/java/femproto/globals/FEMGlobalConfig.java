@@ -121,6 +121,22 @@ public final class FEMGlobalConfig extends ReflectiveConfigGroup {
 
 	// ==================================================================
 
+	private String attribGaugeId = "GAUGE_ID";
+	private static final String ATTRIB_GAUGE_ID = "attribGaugeId";
+	private static final String ATTRIB_GAUGE_ID_CMT = "Column name convention identifying hydrograph gauge id as an integer value.";
+
+	@StringGetter(ATTRIB_GAUGE_ID)
+	public String getAttribGaugeId() {
+		return attribGaugeId;
+	}
+
+	@StringSetter(ATTRIB_GAUGE_ID)
+	public void setAttribGaugeId(String attribGaugeId) {
+		this.attribGaugeId = attribLookAheadTime;
+	}
+
+	// ==================================================================
+
 	private String attribHydrographPointId = "ID";
 	private static final String ATTRIB_HYDROGRAPH_POINT_ID_FIELD = "attribHydrographPointId";
 	private static final String ATTRIB_HYDROGRAPH_POINT_ID_FIELD_CMT = "Column name convention identifying hydrograph points in the shapefile (Integer value).";

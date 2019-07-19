@@ -789,11 +789,11 @@ public class RunMatsim4FloodEvacuation {
 		log.info("will write link attributes to " + filename);
 
 		try (BufferedWriter writer = IOUtils.getBufferedWriter(filename)) {
-			writer.write("id\t" + NetworkConverter.EVACUATION_LINK);
+			writer.write("id\t" + FEMUtils.getGlobalConfig().getAttribEvacMarker());
 			writer.newLine();
 			for (Link link : controler.getScenario().getNetwork().getLinks().values()) {
 				writer.write(link.getId().toString() + "\t");
-				writer.write(Boolean.toString((boolean) link.getAttributes().getAttribute(NetworkConverter.EVACUATION_LINK)));
+				writer.write(Boolean.toString((boolean) link.getAttributes().getAttribute(FEMUtils.getGlobalConfig().getAttribEvacMarker())));
 				writer.newLine();
 			}
 		} catch (IOException e) {

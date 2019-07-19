@@ -78,6 +78,17 @@ public class SubsectorShapeFileParser {
 				log.warn("Subsector " + subsector + " had less than zero vehicles to evacuate, setting to zero.");
 				subsectorVehicleCount = 0;
 			}
+
+			try {
+				if(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()) != null) {
+					int gaugeId = (int) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
+					double altAHD = (double) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD());
+					subsectorData.setGaugeId(gaugeId);
+					subsectorData.setAltAHD(altAHD);
+				}
+			}catch (Exception e){
+				throw new RuntimeException("Trouble parsing GAUGE_ID or ALT_AHD for subsector "+ subsector);
+			}
 			subsectorData.setVehicleCount(subsectorVehicleCount);
 			totalVehicleCount += subsectorVehicleCount;
 			double lookAheadTime;

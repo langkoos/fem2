@@ -1,5 +1,7 @@
 package femproto.prepare.demand;
 
+import femproto.globals.FEMGlobalConfig;
+import femproto.run.FEMUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.testcases.MatsimTestUtils;
@@ -10,6 +12,7 @@ public class SubSectorsToPopulationTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 	@Test
 	public void readBadSubSectorsShapeFile() throws Exception {
+		FEMUtils.setGlobalConfig(FEMGlobalConfig.getDefaultGlobalConfig());
 		String dir = utils.getPackageInputDirectory() + "/2016_scenario_1A_v20180706/";
 		final String networkFile = "scenarios/fem2016_v20180706/input_network.xml" ;
 //		final String networkFile = "scenarios/initial-2041-scenario/hn_net_ses_emme_2041_network.xml.gz" ;

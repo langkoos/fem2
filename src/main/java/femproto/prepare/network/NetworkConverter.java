@@ -47,8 +47,8 @@ public class NetworkConverter {
 
 	private static final double MIN_DISTANCE = 5.0;
 
-	public static final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
-	public static final String DESCRIPTION = getGlobalConfig().getAttribDescr();
+	final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
+	final String DESCRIPTION = getGlobalConfig().getAttribDescr();
 	private final URL nodesUrl;
 	private final URL linksUrl;
 
@@ -231,6 +231,17 @@ public class NetworkConverter {
 				// yoyo not critical to network definition, but breaks code when not included in network file
 				if (feature.getAttribute(DESCRIPTION) != null)
 					link.getAttributes().putAttribute(DESCRIPTION, feature.getAttribute(DESCRIPTION).toString());
+
+				if (feature.getAttribute(getGlobalConfig().getAttribGaugeId()) != null) {
+					try {
+						link.getAttributes().putAttribute(getGlobalConfig().getAttribGaugeId(), Integer.parseInt(feature.getAttribute(getGlobalConfig().getAttribGaugeId()).toString()));
+						link.getAttributes().putAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD(), Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString()));
+					}catch (Exception e){
+
+						throw new RuntimeException("Trouble parsing either GAUGE_ID or ALT_AHD for link ID " + linkId);
+					}
+
+				}
 				scenario.getNetwork().addLink(link);
 			} catch (IllegalArgumentException ie) {
 				System.err.println("Duplicate node id " + linkId);
@@ -322,6 +333,9 @@ public class NetworkConverter {
 
 
 	public static void main(String[] args) throws IOException, FactoryException {
+		if (FEMUtils.getGlobalConfig() == null) {
+			FEMUtils.setGlobalConfig(FEMGlobalConfig.getDefaultGlobalConfig());
+		}
 		NetworkConverter nwc = new NetworkConverter(args[0], args[1]);
 		nwc.run();
 		nwc.writeNetwork(args[2]);
