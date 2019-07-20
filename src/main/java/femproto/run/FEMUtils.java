@@ -62,11 +62,12 @@ public class FEMUtils {
 	 */
 	public static void setGlobalConfig(final FEMGlobalConfig globalConfig) {
 		if (globalConfigIsLocked) {
-			throw new RuntimeException("too late");
+			throw new RuntimeException("too late. did you run the tests in separate JVMs?");
 		}
 		if (globalConfig == null) {
 			throw new RuntimeException("too early");
 		}
+		log.info("setting global config") ;
 		FEMUtils.globalConfig = globalConfig;
 		globalConfigIsLocked = true;
 	}
