@@ -37,8 +37,8 @@ public class SubsectorData {
 		this.altAHD = altAHD;
 	}
 
-	private int gaugeId;
-	private double altAHD;
+	private int gaugeId = -1;
+	private double altAHD = -1.0;
 
 	public void setLookAheadTime(double lookAheadTime) {
 		this.lookAheadTime = lookAheadTime;

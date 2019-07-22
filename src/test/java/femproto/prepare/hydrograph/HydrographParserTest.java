@@ -93,7 +93,7 @@ public class HydrographParserTest {
 			}
 		}
 		if (refEventCount != matchedEventCount)
-			throw new RuntimeException("Change veents don't match reference");
+			throw new RuntimeException("Change events don't match reference");
 
 	}
 }

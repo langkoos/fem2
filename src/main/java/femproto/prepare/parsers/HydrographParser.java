@@ -3,6 +3,7 @@ package femproto.prepare.parsers;
 import femproto.globals.FEMGlobalConfig;
 import femproto.globals.Gis;
 import femproto.prepare.evacuationscheduling.EvacuationSchedule;
+import femproto.prepare.evacuationscheduling.SubsectorData;
 import femproto.prepare.network.NetworkConverter;
 import femproto.prepare.parsers.HydrographPoint.HydrographPointData;
 import femproto.run.FEMConfigGroup;
@@ -54,7 +55,7 @@ public class HydrographParser {
 
 	private final EvacuationSchedule evacuationSchedule;
 
-
+	@Deprecated
 	public void parseHydrographShapefile(String shapefile) {
 		parseHydrographShapefile(IOUtils.newUrl(null, shapefile));
 	}
@@ -68,6 +69,7 @@ public class HydrographParser {
 	 *
 	 * @param shapefile
 	 */
+	@Deprecated
 	public void parseHydrographShapefile(URL shapefile) {
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile.getPath());
 		CoordinateTransformation transformation = null;
@@ -143,6 +145,9 @@ public class HydrographParser {
 	 * @param fileName
 	 */
 	public void readHydrographData(URL fileName, int offsetTime) {
+
+		createHydrographPointsFromNetworkLinksAndSubsectors();
+
 		List<List<Double>> columns = new ArrayList<>();
 		String[] header;
 		try (BufferedReader reader = IOUtils.getBufferedReader(fileName.getPath())) {
@@ -183,7 +188,15 @@ public class HydrographParser {
 
 		removeHydrographPointsWithNoDataOrThatNeverFlood();
 
-		consolidateHydrographPoints();
+		//yoyo perhaps not best way to maintain backward compatability
+		if (consolidatedHydrographPointMap.size() == 0)
+			consolidateHydrographPoints();
+		else {
+			for (HydrographPoint hydrographPoint : consolidatedHydrographPointMap.values()) {
+				hydrographPoint.calculateFloodTimeFromData();
+			}
+
+		}
 
 	}
 
@@ -484,6 +497,40 @@ public class HydrographParser {
 		hydrographParser.writeSubsector2GaugeLookupTable(args[2]);
 
 
+	}
+
+	public void createHydrographPointsFromNetworkLinksAndSubsectors() {
+		consolidatedHydrographPointMap = new HashMap<>();
+		String altAHD = FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD();
+		String gaugeId = FEMUtils.getGlobalConfig().getAttribGaugeId();
+		for (Link link : network.getLinks().values()) {
+			Object ahd = link.getAttributes().getAttribute(altAHD);
+			Object gauge = link.getAttributes().getAttribute(gaugeId);
+			if(gauge==null) {
+				continue;
+			}
+			if (hydrographPointMap.get((int) gauge) == null)
+				hydrographPointMap.put((int) gauge, new HydrographPoint((int) gauge, -1.0, null));
+			if (ahd != null) {
+				HydrographPoint linkHydroPoint = new HydrographPoint((int) gauge, (double) ahd, null);
+				linkHydroPoint.addLinkId(link.getId().toString());
+				linkHydroPoint.setReferencePoint(hydrographPointMap.get((int) gauge));
+				linkHydroPoint.setSubSector("");
+				consolidatedHydrographPointMap.put(link.getId().toString(), linkHydroPoint);
+			}
+		}
+		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
+			if (subsectorData.getAltAHD() > 0) {
+				if (subsectorData.getGaugeId() < 0)
+					throw new RuntimeException(String.format("Subsector %s has an ALT_AHD value but no gauge id.", subsectorData.getSubsector()));
+				if (hydrographPointMap.get(subsectorData.getGaugeId()) == null)
+					hydrographPointMap.put(subsectorData.getGaugeId(), new HydrographPoint(subsectorData.getGaugeId(), -1.0, null));
+				HydrographPoint hydrographPoint = new HydrographPoint(subsectorData.getGaugeId(), subsectorData.getAltAHD(), null);
+				hydrographPoint.setReferencePoint(hydrographPointMap.get(subsectorData.getGaugeId()));
+				hydrographPoint.setSubSector(subsectorData.getSubsector());
+				consolidatedHydrographPointMap.put(subsectorData.getSubsector(), hydrographPoint);
+			}
+		}
 	}
 
 

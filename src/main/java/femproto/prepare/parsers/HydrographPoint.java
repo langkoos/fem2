@@ -17,6 +17,7 @@ public class HydrographPoint {
 	private Set<String> linkIds = new HashSet<>();
 	List<HydrographPointData> data;
 	private String subSector;
+	private HydrographPoint referencePoint;
 
 	public void setFloodTime(double floodTime) {
 		this.floodTime = floodTime;
@@ -81,13 +82,28 @@ public class HydrographPoint {
 
 
 	public void calculateFloodTimeFromData() {
-		for (HydrographPointData pointDatum : this.getData()) {
-			if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
-				floodTime = pointDatum.getTime();
-				System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
-				break;
-			}
+		if (this.getData() == null) {
+			if (referencePoint != null)
+				this.data = referencePoint.data;
 		}
+		try {
+			for (HydrographPointData pointDatum : this.getData()) {
+				if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
+					floodTime = pointDatum.getTime();
+					System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
+					break;
+				}
+			}
+		} catch (NullPointerException ne) {
+			if (referencePoint == null)
+				throw new RuntimeException(String.format("Hydrograph point %d has no flooding data associated with it.", this.pointId));
+			else
+				throw new RuntimeException(String.format("Hydrograph point %d is associated with point %d which has no flooding data associated with it.", this.pointId, this.referencePoint.pointId));
+		}
+	}
+
+	public void setReferencePoint(HydrographPoint referencePoint) {
+		this.referencePoint = referencePoint;
 	}
 
 	public class HydrographPointData {
