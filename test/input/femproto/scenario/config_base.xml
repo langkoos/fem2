@@ -14,11 +14,11 @@
             ALT_AHD 	 Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded. -->
 		<param name="hydrographShapeFile" value="source/wma_ref_points_1_to_2056_link_V12_nodes_2016/wma_ref_points_1_to_2056_link_nodesV12_2016.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkLinksShapefile" value="source/FEM2__TEST_Links_Scenrio1A_2016/FEM2__TEST_Links_Scenrio1A_2016.shp" />
+		<param name="inputNetworkLinksShapefile" value="source/FEM2__TEST_Links_Scenrio1A_2016_01/FEM2__TEST_Links_Scenrio1A_2016.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
 		<param name="inputNetworkNodesShapefile" value="source/FEM2_TEST_Nodes_2016/FEM2_TEST_Nodes_2016.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="source/FEM2_Test_Subsectorvehicles_2016/FEM2_Test_Subsectorvehicles_2016.shp" />
+		<param name="inputSubsectorsShapefile" value="source/FEM2_Test_Subsectorvehicles_2016_01/FEM2_Test_Subsectorvehicles_2016.shp" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 	</module>
 
