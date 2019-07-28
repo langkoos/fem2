@@ -90,15 +90,15 @@ public class HydrographPoint {
 			for (HydrographPointData pointDatum : this.getData()) {
 				if (pointDatum.getLevel_ahd() - this.getALT_AHD() > 0) {
 					floodTime = pointDatum.getTime();
-					System.out.println("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
+					log.info("flooding subsector " + this.getSubSector() + " starts flooding at " + pointDatum.getTime());
 					break;
 				}
 			}
 		} catch (NullPointerException ne) {
 			if (referencePoint == null)
 				throw new RuntimeException(String.format("Hydrograph point %d has no flooding data associated with it.", this.pointId));
-			else
-				throw new RuntimeException(String.format("Hydrograph point %d is associated with point %d which has no flooding data associated with it.", this.pointId, this.referencePoint.pointId));
+//			else
+//				throw new RuntimeException(String.format("Hydrograph point %d is associated with point %d which has no flooding data associated with it.", this.pointId, this.referencePoint.pointId));
 		}
 	}
 

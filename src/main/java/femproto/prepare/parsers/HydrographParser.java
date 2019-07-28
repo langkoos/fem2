@@ -43,7 +43,7 @@ public class HydrographParser {
 	}
 
 
-	private Map<Integer, HydrographPoint> hydrographPointMap;
+	private Map<Integer, HydrographPoint> hydrographPointMap = new HashMap<>();
 
 	public Map<String, HydrographPoint> getConsolidatedHydrographPointMap() {
 		return consolidatedHydrographPointMap;
@@ -133,8 +133,8 @@ public class HydrographParser {
 	}
 
 
-	public void readHydrographData(String fileName, int offsetTime) {
-		readHydrographData(IOUtils.newUrl(null, fileName), offsetTime);
+	public void readHydrographData(String fileName, int offsetTime, boolean removeNonFloodingAndConsolidateToLinksAndSubsectors) {
+		readHydrographData(IOUtils.newUrl(null, fileName), offsetTime, removeNonFloodingAndConsolidateToLinksAndSubsectors);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class HydrographParser {
 	 *
 	 * @param fileName
 	 */
-	public void readHydrographData(URL fileName, int offsetTime) {
+	public void readHydrographData(URL fileName, int offsetTime, boolean removeNonFloodingAndConsolidateToLinksAndSubsectors) {
 
 		createHydrographPointsFromNetworkLinksAndSubsectors();
 
@@ -185,17 +185,18 @@ public class HydrographParser {
 			}
 		}
 
+		if (removeNonFloodingAndConsolidateToLinksAndSubsectors) {
+			//yoyo perhaps not best way to maintain backward compatability
+			if (consolidatedHydrographPointMap.size() == 0) {
+				removeHydrographPointsWithNoDataOrThatNeverFlood();
+				consolidateHydrographPoints();
+			} else {
+				for (HydrographPoint hydrographPoint : consolidatedHydrographPointMap.values()) {
+					hydrographPoint.calculateFloodTimeFromData();
+				}
+				removeNewHydrographPointsWithNoDataOrThatNeverFlood();
 
-		removeHydrographPointsWithNoDataOrThatNeverFlood();
-
-		//yoyo perhaps not best way to maintain backward compatability
-		if (consolidatedHydrographPointMap.size() == 0)
-			consolidateHydrographPoints();
-		else {
-			for (HydrographPoint hydrographPoint : consolidatedHydrographPointMap.values()) {
-				hydrographPoint.calculateFloodTimeFromData();
 			}
-
 		}
 
 	}
@@ -212,6 +213,22 @@ public class HydrographParser {
 
 		for (int badkey : badkeys) {
 			hydrographPointMap.remove(badkey);
+			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
+		}
+		log.info("Done removing bad hydrograph points...");
+	}
+
+	private void removeNewHydrographPointsWithNoDataOrThatNeverFlood() {
+		Set<String> badkeys = new HashSet<>();
+		badkeys.addAll(consolidatedHydrographPointMap.keySet());
+
+		for (Map.Entry<String, HydrographPoint> pointEntry : consolidatedHydrographPointMap.entrySet()) {
+			if (pointEntry.getValue().inHydrograph() && pointEntry.getValue().getFloodTime() > 0)
+				badkeys.remove(pointEntry.getKey());
+		}
+
+		for (String badkey : badkeys) {
+			consolidatedHydrographPointMap.remove(badkey);
 			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
 		}
 		log.info("Done removing bad hydrograph points...");
@@ -491,6 +508,8 @@ public class HydrographParser {
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
 		URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
 		hydrographParser.parseHydrographShapefile(hydrographURL);
+		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
+		hydrographParser.readHydrographData(hydrographDataURL, 54961,false);
 		hydrographParser.consolidateHydrographPointsForConversion();
 
 		hydrographParser.writeLink2GaugeLookupTable(args[1]);
@@ -506,7 +525,7 @@ public class HydrographParser {
 		for (Link link : network.getLinks().values()) {
 			Object ahd = link.getAttributes().getAttribute(altAHD);
 			Object gauge = link.getAttributes().getAttribute(gaugeId);
-			if(gauge==null) {
+			if (gauge == null) {
 				continue;
 			}
 			if (hydrographPointMap.get((int) gauge) == null)
@@ -538,6 +557,13 @@ public class HydrographParser {
 		log.info("Consolidating hydrograph data by link and subsector (it is possible to have multiple associations on both so need to sort out which have priority)");
 		consolidatedHydrographPointMap = new HashMap<>();
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
+			if (!hydrographPoint.inHydrograph()) {
+				System.out.println("removing hydrograph point as it does not appear in the hydrograph dataset: "+ hydrographPoint.pointId);
+				if(hydrographPoint.getLinkIds().length>0)
+					Arrays.stream(hydrographPoint.getLinkIds()).forEach(System.out::println);
+				System.out.println(hydrographPoint.getSubSector());
+				continue;
+			}
 			for (String linkId : hydrographPoint.getLinkIds()) {
 				HydrographPoint linkHydroPoint = consolidatedHydrographPointMap.get(linkId);
 				if (linkHydroPoint == null) {
@@ -550,7 +576,6 @@ public class HydrographParser {
 					double current_ALT = linkHydroPoint.ALT_AHD;
 					double new_ALT_AHD = hydrographPoint.ALT_AHD;
 					if (new_ALT_AHD < current_ALT) {
-						linkHydroPoint.setFloodTime(new_ALT_AHD);
 						linkHydroPoint.pointId = hydrographPoint.pointId;
 						linkHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
 					}
@@ -568,7 +593,6 @@ public class HydrographParser {
 					double current_ALT = subsectorHydroPoint.ALT_AHD;
 					double new_ALT_AHD = hydrographPoint.ALT_AHD;
 					if (new_ALT_AHD > current_ALT) {
-						subsectorHydroPoint.setFloodTime(current_ALT);
 						subsectorHydroPoint.pointId = hydrographPoint.pointId;
 						subsectorHydroPoint.ALT_AHD = hydrographPoint.ALT_AHD;
 					}

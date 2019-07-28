@@ -425,7 +425,7 @@ public class RunMatsim4FloodEvacuation {
 				hydrographParser.parseHydrographShapefile(hydrographURL);
 
 				URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfig.getHydrographData());
-				hydrographParser.readHydrographData(hydrographDataURL, 54961);
+				hydrographParser.readHydrographData(hydrographDataURL, 54961, true);
 
 				if (config.network().isTimeVariantNetwork()) {
 					List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork());

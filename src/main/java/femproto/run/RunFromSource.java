@@ -67,7 +67,7 @@ public class RunFromSource {
 		hydrographParser.parseHydrographShapefile(hydrographURL);
 		// yoyoyo this forces the first network change event to be synchronised wioth the 2016 NICTA reference results
 		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
-		hydrographParser.readHydrographData(hydrographDataURL, 54961);
+		hydrographParser.readHydrographData(hydrographDataURL, 54961, true);
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt");
 
@@ -141,7 +141,7 @@ public class RunFromSource {
 		hydrographParser.parseHydrographShapefile(hydrographURL);
 		// yoyoyo this forces the first network change evnt to be synchronised wioth the 2016 NICTA reference results
 		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
-		hydrographParser.readHydrographData(hydrographDataURL, 54961);
+		hydrographParser.readHydrographData(hydrographDataURL, 54961,true);
 		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt");
 
