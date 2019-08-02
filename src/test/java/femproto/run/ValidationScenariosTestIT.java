@@ -28,7 +28,6 @@ public class ValidationScenariosTestIT {
 	private static final Logger log = Logger.getLogger(RunInputPlansOnlyEvacRoutingTest.class);
 	private final Config config;
 	private final int iters;
-	private final String year;
 	private final int runId;
 
 	@Rule
@@ -36,7 +35,7 @@ public class ValidationScenariosTestIT {
 	static final Map<Integer, String> runIdToFloodEvent = new HashMap<>();
 
 	static {
-		runIdToFloodEvent.put(3, "d00229_H_TS");
+//		runIdToFloodEvent.put(3, "d00229_H_TS");
 		runIdToFloodEvent.put(8, "d00938_H_TS");
 		runIdToFloodEvent.put(13, "d01889_H_TS");
 		runIdToFloodEvent.put(45, "d09644_H_TS");
@@ -46,32 +45,29 @@ public class ValidationScenariosTestIT {
 
 	private String utilsOutputDir;
 
-	public ValidationScenariosTestIT(FEMOptimizationType optimizationType, String year, int iters, int runId) {
+	public ValidationScenariosTestIT(FEMOptimizationType optimizationType,  int iters, int runId) {
 		this.optimizationType = optimizationType;
-		this.config = ConfigUtils.loadConfig("scenarios/FEM2TestDataOctober18/config_" + year + ".xml");
+		this.config = ConfigUtils.loadConfig("scenarios/EIS_July2019/config_A0.xml");
 		this.iters = iters;
-		this.year = year;
 		this.runId = runId;
 	}
 
 	@Parameters(name = "{index}: {0} | {1} | iters={2} | runId={3} ") // the "name" entry is just for the test output
 	public static Collection<Object[]> abc() { // the name of this method does not matter as long as it is correctly annotated
 		List<Object[]> combos = new ArrayList<>();
-//		int[] maxIters = new int[]{40};
-		int[] maxIters = new int[]{20, 40};
-		String[] years = new String[]{"2016", "2026"};
+		int[] maxIters = new int[]{20};
+//		int[] maxIters = new int[]{20, 40};
 
 
 		for (FEMOptimizationType ot : FEMOptimizationType.values()) {
-			for (String year : years) {
 				for (Integer runId : runIdToFloodEvent.keySet()) {
 					for (int maxIter : maxIters) {
-						if (ot == FEMOptimizationType.optimizeLikeNICTA || ot == FEMOptimizationType.userEquilibriumDecongestion) {
-							combos.add(new Object[]{ot, year, maxIter, runId});
+//						if (ot == FEMOptimizationType.optimizeLikeNICTA || ot == FEMOptimizationType.userEquilibriumDecongestion) {
+						if (ot == FEMOptimizationType.userEquilibriumDecongestion) {
+							combos.add(new Object[]{ot,  maxIter, runId});
 						}
 					}
 				}
-			}
 		}
 		return combos;
 	}
@@ -82,7 +78,7 @@ public class ValidationScenariosTestIT {
 			utilsOutputDir = utils.getOutputDirectory();
 		}
 
-		String dirExtension = "_" + optimizationType.name() + "_" + year + "_" + runId + "_" + iters;
+		String dirExtension = "_" + optimizationType.name() + "_" + runId + "_" + iters;
 
 
 		final String outputDirectory = utilsOutputDir.substring(0, utilsOutputDir.length() - 1) + dirExtension;
@@ -94,7 +90,7 @@ public class ValidationScenariosTestIT {
 
 		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
 		femConfig.setFemOptimizationType(optimizationType);
-		femConfig.setHydrographData("wma-flood-events/Exg/" + runIdToFloodEvent.get(runId) + ".csv");
+		femConfig.setHydrographData("../wma-flood-events/Exg/" + runIdToFloodEvent.get(runId) + ".csv");
 		femConfig.setSampleSize(1.0);
 
 		RunFromSource.standardFullSizeOptimization(config);
