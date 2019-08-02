@@ -8,18 +8,18 @@
 		<param name="FEMRunType" value="runFromSource" />
 		<param name="evacuationScheduleFile" value="null" />
 		<!-- CSV file containing hydrograph data. First column is time in hours, subsequent columns have the ID of the associated hydrograph point in the first line and floating point values in subsequent lines denoting water level in AHD. -->
-		<param name="hydrographData" value="../FEM2TestDataOctober18/wma-flood-events/Exg/d00229_H_TS.csv" />
+		<param name="hydrographData" value="../wma-flood-events/Exg/d00229_H_TS.csv" />
 		<!-- Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields: 
             ID 		 Integer unique id of point            links_ids 	 [sic, this typo now sticks] String referring to EMME link ids.
             SUBSECTOR 	 String of the subsector name, needs to match exactly in other files.
             ALT_AHD 	 Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded. -->
-		<param name="hydrographShapeFile" value="ScenarioA0/FEM2_wma_ref_points_00_16_nodes.shp" />
+		<!--<param name="hydrographShapeFile" value="ScenarioA0/FEM2_wma_ref_points_00_16_nodes.shp" />-->
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
 		<param name="inputNetworkLinksShapefile" value="ScenarioA0/FEM2_ScenarioA0_links.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
 		<param name="inputNetworkNodesShapefile" value="ScenarioA0/FEM2_ScenarioA0_nodes.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="ScenarioA0/FEM2_Subsectorvehicles_A0_2016.shp" />
+		<param name="inputSubsectorsShapefile" value="ScenarioA0/FEM2_Subsectorvehicles_A0_2016_rev_1.shp" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
 		<param name="sampleSize" value="1.0" />
