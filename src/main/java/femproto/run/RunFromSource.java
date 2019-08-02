@@ -12,6 +12,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
+import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
@@ -117,6 +118,7 @@ public class RunFromSource {
 	}
 
 	public static void standardFullSizeOptimization(Config config) {
+		OutputDirectoryLogging.catchLogEntries();
 		config.network().setTimeVariantNetwork(true);
 		String outputDirectory = config.controler().getOutputDirectory();
 		new File(outputDirectory).mkdirs();
@@ -137,12 +139,15 @@ public class RunFromSource {
 		new SubsectorShapeFileParser(evacuationSchedule, scenario.getNetwork()).readSubSectorsShapeFile(subsectorURL);
 
 		HydrographParser hydrographParser = new HydrographParser(scenario.getNetwork(), evacuationSchedule);
-		URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
-		hydrographParser.parseHydrographShapefile(hydrographURL);
+		if (femConfigGroup.getHydrographShapeFile() != null) {
+			URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
+			hydrographParser.parseHydrographShapefile(hydrographURL);
+		}
 		// yoyoyo this forces the first network change evnt to be synchronised wioth the 2016 NICTA reference results
 		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
-		hydrographParser.readHydrographData(hydrographDataURL, 54961,true);
-		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
+		hydrographParser.readHydrographData(hydrographDataURL, 54961, true);
+		// not using this anymore as we are now getting the hydrograph points in the subsectors and network shapefiles
+//		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt");
 
 		List<NetworkChangeEvent> networkChangeEvents = hydrographParser.networkChangeEventsFromConsolidatedHydrographFloodTimes(scenario.getNetwork());

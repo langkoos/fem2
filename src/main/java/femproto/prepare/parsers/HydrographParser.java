@@ -36,6 +36,7 @@ import java.util.*;
 public class HydrographParser {
 
 	Logger log = Logger.getLogger(HydrographParser.class);
+	boolean shapefileDriven = false;
 
 	public HydrographParser(Network network, EvacuationSchedule evacuationSchedule) {
 		this.network = network;
@@ -71,6 +72,7 @@ public class HydrographParser {
 	 */
 	@Deprecated
 	public void parseHydrographShapefile(URL shapefile) {
+		shapefileDriven = true;
 		Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(shapefile.getPath());
 		CoordinateTransformation transformation = null;
 		// coordinate transformation:
@@ -145,8 +147,9 @@ public class HydrographParser {
 	 * @param fileName
 	 */
 	public void readHydrographData(URL fileName, int offsetTime, boolean removeNonFloodingAndConsolidateToLinksAndSubsectors) {
-
-		createHydrographPointsFromNetworkLinksAndSubsectors();
+		if (!shapefileDriven) {
+			createHydrographPointsFromNetworkLinksAndSubsectors();
+		}
 
 		List<List<Double>> columns = new ArrayList<>();
 		String[] header;
@@ -187,7 +190,7 @@ public class HydrographParser {
 
 		if (removeNonFloodingAndConsolidateToLinksAndSubsectors) {
 			//yoyo perhaps not best way to maintain backward compatability
-			if (consolidatedHydrographPointMap.size() == 0) {
+			if (shapefileDriven) {
 				removeHydrographPointsWithNoDataOrThatNeverFlood();
 				consolidateHydrographPoints();
 			} else {
@@ -509,7 +512,7 @@ public class HydrographParser {
 		URL hydrographURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographShapeFile());
 		hydrographParser.parseHydrographShapefile(hydrographURL);
 		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
-		hydrographParser.readHydrographData(hydrographDataURL, 54961,false);
+		hydrographParser.readHydrographData(hydrographDataURL, 54961, false);
 		hydrographParser.consolidateHydrographPointsForConversion();
 
 		hydrographParser.writeLink2GaugeLookupTable(args[1]);
@@ -558,8 +561,8 @@ public class HydrographParser {
 		consolidatedHydrographPointMap = new HashMap<>();
 		for (HydrographPoint hydrographPoint : hydrographPointMap.values()) {
 			if (!hydrographPoint.inHydrograph()) {
-				System.out.println("removing hydrograph point as it does not appear in the hydrograph dataset: "+ hydrographPoint.pointId);
-				if(hydrographPoint.getLinkIds().length>0)
+				System.out.println("removing hydrograph point as it does not appear in the hydrograph dataset: " + hydrographPoint.pointId);
+				if (hydrographPoint.getLinkIds().length > 0)
 					Arrays.stream(hydrographPoint.getLinkIds()).forEach(System.out::println);
 				System.out.println(hydrographPoint.getSubSector());
 				continue;

@@ -3,10 +3,8 @@ package femproto.prepare.parsers;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BinaryOperator;
 
 public class HydrographPoint {
 	private static final Logger log = Logger.getLogger(HydrographPoint.class);
@@ -95,15 +93,32 @@ public class HydrographPoint {
 				}
 			}
 		} catch (NullPointerException ne) {
-			if (referencePoint == null)
-				throw new RuntimeException(String.format("Hydrograph point %d has no flooding data associated with it.", this.pointId));
-//			else
-//				throw new RuntimeException(String.format("Hydrograph point %d is associated with point %d which has no flooding data associated with it.", this.pointId, this.referencePoint.pointId));
+			if (referencePoint == null || referencePoint.getData() == null) {
+				String message = String.format("Hydrograph point %d has no flooding data associated with it", this.pointId);
+				log.error(message);
+				log.error(this.toString());
+				throw new RuntimeException(message);
+			}
 		}
 	}
 
 	public void setReferencePoint(HydrographPoint referencePoint) {
 		this.referencePoint = referencePoint;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("ID: " + (referencePoint == null ? this.pointId : this.referencePoint.pointId) + "\n");
+		sb.append("Links: " + Arrays.stream(this.getLinkIds()).reduce("", new BinaryOperator<String>() {
+			@Override
+			public String apply(String s, String s2) {
+				return s+" "+s2;
+			}
+		}) + "\n");
+		sb.append("Subsector: " + this.getSubSector());
+
+		return sb.toString();
 	}
 
 	public class HydrographPointData {

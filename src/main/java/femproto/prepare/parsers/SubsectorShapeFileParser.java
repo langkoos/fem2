@@ -81,7 +81,7 @@ public class SubsectorShapeFileParser {
 
 			try {
 				if(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()) != null) {
-					int gaugeId = (int) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
+					int gaugeId = (int) (long) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
 					double altAHD = (double) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD());
 					subsectorData.setGaugeId(gaugeId);
 					subsectorData.setAltAHD(altAHD);
