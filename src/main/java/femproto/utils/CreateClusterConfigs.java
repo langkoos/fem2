@@ -8,9 +8,7 @@ import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.utils.io.IOUtils;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.matsim.core.config.ConfigWriter.Verbosity.minimal;
 
@@ -22,7 +20,7 @@ import static org.matsim.core.config.ConfigWriter.Verbosity.minimal;
  */
 public class CreateClusterConfigs {
 	public static void main(String[] args) throws IOException {
-		Set<String> scenarios = new HashSet<>();
+		Set<File> scenarios = new HashSet<>();
 		File folder = new File("./");
 		File[] folders = folder.listFiles(new FilenameFilter() {
 			@Override
@@ -31,13 +29,19 @@ public class CreateClusterConfigs {
 			}
 		});
 		for (File file : folders) {
-			scenarios.add(file.getName());
+			scenarios.add(file);
 		}
 
 
 //		scenarios.addAll(Arrays.asList(new String[]{"A0", "A1", "A2"}));
-		Set<String> damScenarios = new HashSet<>();
-		folder = new File("./wma-flood-events/");
+		List<String> damScenarios = new ArrayList<>();
+		List<File[]> floodEventFiles = new ArrayList<>();
+		folder = folder.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return dir.isDirectory() && name.toLowerCase().contains("events");
+			}
+		})[0];
 		folders = folder.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
@@ -46,14 +50,35 @@ public class CreateClusterConfigs {
 		});
 		for (File file : folders) {
 			damScenarios.add(file.getName());
+			floodEventFiles.add(file.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith("csv");
+				}
+			}));
 		}
+
 //		damScenarios.addAll(Arrays.asList(new String[]{"Exg", "FSL-5", "D_14m", "D_20m"}));
 		BufferedWriter bufferedWriter = IOUtils.getBufferedWriter("cluster/runids.csv");
 		bufferedWriter.write(String.format("%s,%s,%s,%s\n", "runId", "scenario", "damScenario", "floodEvent"));
 		int runId = 0;
-		Config config = ConfigUtils.loadConfig("template_config.xml");
+		Config config = ConfigUtils.loadConfig("./template_config.xml");
 		FEMConfigGroup femConfigGroup = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
-		for (String scenario : scenarios) {
+		for (File scenario : scenarios) {
+			File[] inputFiles = scenario.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith("shp");
+				}
+			});
+			for (File inputFile : inputFiles) {
+				if (inputFile.getName().toLowerCase().contains("link"))
+					femConfigGroup.setInputNetworkLinksShapefile(inputFile.getPath().toString());
+				if (inputFile.getName().toLowerCase().contains("subsector"))
+					femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
+				if (inputFile.getName().toLowerCase().contains("nodes"))
+					femConfigGroup.setInputSubsectorsShapefile(inputFile.getPath().toString());
+			}
 
 
 //			config.planCalcScore().getActivityParams("car interaction").setTypicalDuration(1);
@@ -79,17 +104,17 @@ public class CreateClusterConfigs {
 				});
 				for (File file : files) {
 					femConfigGroup.setHydrographData(file.getPath().toString());
-					new ConfigWriter(config, minimal).write(String.format("clusterConfigs/configtemp_%d.xml", runId));
-					bufferedWriter.write(String.format("%d,%s,%s,%s\n", runId, scenario, damScenario, file.getName()));
-					BufferedReader bufferedReader = IOUtils.getBufferedReader(String.format("clusterConfigs/configtemp_%d.xml", runId));
-					BufferedWriter writer = IOUtils.getBufferedWriter(String.format("clusterConfigs/config_%d.xml", runId));
+					new ConfigWriter(config, minimal).write(String.format("cluster/configtemp_%d.xml", runId));
+					bufferedWriter.write(String.format("%d,%s,%s,%s\n", runId, scenario.getName(), damScenario, file.getName().split("\\.")[0]));
+					BufferedReader bufferedReader = IOUtils.getBufferedReader(String.format("cluster/configtemp_%d.xml", runId));
+					BufferedWriter writer = IOUtils.getBufferedWriter(String.format("cluster/config_%d.xml", runId));
 					//yoyo this cuts out unnecessary stuff from the config that causes run to fail
-					for (int i = 0; i < 61; i++) {
+					for (int i = 0; i < 58; i++) {
 						writer.write(bufferedReader.readLine() + "\n");
 					}
 					writer.write("</config>");
 					writer.close();
-					FileUtils.forceDelete(new File(String.format("clusterConfigs/configtemp_%d.xml", runId)));
+					FileUtils.forceDelete(new File(String.format("cluster/configtemp_%d.xml", runId)));
 					runId++;
 				}
 			}

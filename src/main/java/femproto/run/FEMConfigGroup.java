@@ -217,9 +217,10 @@ public final class FEMConfigGroup extends ReflectiveConfigGroup {
 		this.hydrographShapeFile = filename;
 	}
 
-	private static final String HYDROGRAPH_SHAPE_FILE_CMT = "Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields: \n" +
-			"            ID \t\t Integer unique id of point" +
-			"            links_ids \t [sic, this typo now sticks] String referring to EMME link ids.\n" +
-			"            SUBSECTOR \t String of the subsector name, needs to match exactly in other files.\n" +
-			"            ALT_AHD \t Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded.";
+//	private static final String HYDROGRAPH_SHAPE_FILE_CMT = "Hydrograph shapefile. This file is assumed to be projection EPSG:28356 and requires the following fields: \n" +
+//			"            ID \t\t Integer unique id of point" +
+//			"            links_ids \t [sic, this typo now sticks] String referring to EMME link ids.\n" +
+//			"            SUBSECTOR \t String of the subsector name, needs to match exactly in other files.\n" +
+//			"            ALT_AHD \t Floating point value, when hydrograph at this coordinate is greater than this value, link/subsector is assumed to be flooded.";
+	private static final String HYDROGRAPH_SHAPE_FILE_CMT = "DEPRECATED!!!! Hydrograph shapefile. Not to be used anymore, but keprt for backward compatibility";
 }
