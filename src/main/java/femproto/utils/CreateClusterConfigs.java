@@ -74,9 +74,9 @@ public class CreateClusterConfigs {
 			for (File inputFile : inputFiles) {
 				if (inputFile.getName().toLowerCase().contains("link"))
 					femConfigGroup.setInputNetworkLinksShapefile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("subsector"))
-					femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
 				if (inputFile.getName().toLowerCase().contains("nodes"))
+					femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
+				if (inputFile.getName().toLowerCase().contains("subsector"))
 					femConfigGroup.setInputSubsectorsShapefile(inputFile.getPath().toString());
 			}
 

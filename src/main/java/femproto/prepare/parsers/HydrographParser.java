@@ -232,13 +232,13 @@ public class HydrographParser {
 
 		for (String badkey : badkeys) {
 			consolidatedHydrographPointMap.remove(badkey);
-			log.warn(String.format("Removed hydrograph point id %s from consideration as it has no hydrograph data associated with it.", badkey));
+			log.warn(String.format("Removed hydrograph point id %s from consideration as it never floods.", badkey));
 		}
 		log.info("Done removing bad hydrograph points...");
 	}
 
 	/**
-	 * For now this consolidates hyrograph data for many points associated with a link into a single one, taking the minimum of the recprded flood times as its value, except when its associated with a
+	 * For now this consolidates hydrograph data for many points associated with a link into a single one, taking the minimum of the recprded flood times as its value, except when its associated with a
 	 * subsector loop link, indicating that its only for raising road access flooding (subsector flooding, not link flooding).
 	 * For raising road access flooding, we have to take the maximum flood time
 	 * David et al will remove excess points so that ultimately only a single point is associated with a subsector, which will make this method redundant.

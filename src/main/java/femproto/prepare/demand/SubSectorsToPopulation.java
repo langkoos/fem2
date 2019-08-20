@@ -202,5 +202,5 @@ public class SubSectorsToPopulation {
 		}
 	}
 	
-	
+	//yoyoyo dont stop parsing when there is no demand in subsector, just raise a warning
 }

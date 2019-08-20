@@ -186,9 +186,10 @@ public class NetworkConverter {
 				// yo if euclidean distance is substantially different then raise error
 				double length = Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribNetworkLinksLength()).toString());
 				if (length <= 0.001) {
-					String message = String.format("Link %s has length of only %f km, will likely cause Dijkstra to lock up", linkId, length);
+					String message = String.format("Link %s has length of only %f km, will likely cause Dijkstra to lock up. Using Euclidean for now, but should be fixed", linkId, length);
 					log.error(message);
-					throw new RuntimeException(message);
+					length = NetworkUtils.getEuclideanDistance(fromNode.getCoord(), toNode.getCoord()) / 1000;
+//					throw new RuntimeException(message);
 				}
 
 				link.setLength(length * 1000);
@@ -232,11 +233,16 @@ public class NetworkConverter {
 				if (feature.getAttribute(DESCRIPTION) != null)
 					link.getAttributes().putAttribute(DESCRIPTION, feature.getAttribute(DESCRIPTION).toString());
 
-				if (feature.getAttribute(getGlobalConfig().getAttribGaugeId()) != null) {
+				String gaugeId = getGlobalConfig().getAttribGaugeId();
+				Object gaugeAttribute = feature.getAttribute(gaugeId);
+				if (gaugeAttribute != null) {
 					try {
-						link.getAttributes().putAttribute(getGlobalConfig().getAttribGaugeId(), Integer.parseInt(feature.getAttribute(getGlobalConfig().getAttribGaugeId()).toString()));
-						link.getAttributes().putAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD(), Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString()));
-					}catch (Exception e){
+						int gaugeValue = Integer.parseInt(gaugeAttribute.toString());
+						if (gaugeValue > 0) {
+							link.getAttributes().putAttribute(gaugeId, gaugeValue);
+							link.getAttributes().putAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD(), Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString()));
+						}
+					} catch (Exception e) {
 
 						throw new RuntimeException("Trouble parsing either GAUGE_ID or ALT_AHD for link ID " + linkId);
 					}

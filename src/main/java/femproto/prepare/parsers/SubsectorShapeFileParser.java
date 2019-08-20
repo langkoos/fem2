@@ -20,7 +20,7 @@ import java.util.Iterator;
 /**
  * I am trying to break the demand generation process up into subsector data parsing,
  * contained in a schedule that interprets subsector data to have departures from evacuation to safe nodes.
- *
+ * <p>
  * Such a schedule can then be used to be re-organised into a new schedule, or to produce a plans file
  */
 public class SubsectorShapeFileParser {
@@ -63,7 +63,7 @@ public class SubsectorShapeFileParser {
 				String totalvehic = FEMUtils.getGlobalConfig().getAttribTotalVehiclesForSubsector();
 				try {
 					subsectorVehicleCount = (int) feature.getAttribute(totalvehic);
-				}catch(ClassCastException e){
+				} catch (ClassCastException e) {
 					subsectorVehicleCount = (int) (double) feature.getAttribute(totalvehic);
 				}
 				log.info("Subsector " + subsector + " contains " + subsectorVehicleCount + " vehicles.");
@@ -80,19 +80,21 @@ public class SubsectorShapeFileParser {
 			}
 
 			try {
-				if(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()) != null) {
+				if (feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()) != null) {
 					int gaugeId;
 					try {
 						gaugeId = (int) (long) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
-					}catch (ClassCastException e){
+					} catch (ClassCastException e) {
 						gaugeId = (int) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
 					}
-					double altAHD = (double) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD());
-					subsectorData.setGaugeId(gaugeId);
-					subsectorData.setAltAHD(altAHD);
+					if (gaugeId > 0) {
+						double altAHD = (double) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD());
+						subsectorData.setGaugeId(gaugeId);
+						subsectorData.setAltAHD(altAHD);
+					}
 				}
-			}catch (Exception e){
-				throw new RuntimeException("Trouble parsing GAUGE_ID or ALT_AHD for subsector "+ subsector);
+			} catch (Exception e) {
+				throw new RuntimeException("Trouble parsing GAUGE_ID or ALT_AHD for subsector " + subsector);
 			}
 			subsectorData.setVehicleCount(subsectorVehicleCount);
 			totalVehicleCount += subsectorVehicleCount;
