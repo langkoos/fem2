@@ -35,7 +35,7 @@ public class RunFromSourceTest {
 	public MatsimTestUtils utils = new MatsimTestUtils();
 
 	@Test
-	public void test() {
+	public void testOld() {
 //		Config config = ConfigUtils.loadConfig(utils.getPackageInputDirectory()+"scenario/config_runFromSource_optimizeLikeNICTA.xml");
 //
 //		config.controler().setOutputDirectory(utils.getOutputDirectory());
@@ -46,6 +46,48 @@ public class RunFromSourceTest {
 //		new RunMatsim4FloodEvacuation(config).run();
 		String scenarioInputDir = utils.getPackageInputDirectory()+"../";
 		Config config = ConfigUtils.loadConfig(scenarioInputDir + "scenario/config_runFromSource_optimizeLikeNICTA.xml");
+		String utilsOutputDir = utils.getOutputDirectory();
+		config.controler().setOutputDirectory(utilsOutputDir);
+		RunFromSource.standardFullSizeOptimization(config);
+
+		//yoyo this breaks because of time steps, even though the evacuations look the same
+//		String expected = scenarioInputDir + "scenario/output_events.xml.gz";
+//		String actual = utilsOutputDir +  "output/output_events.xml.gz";
+//		EventsFileComparator.Result result = compare(expected, actual);
+//		Assert.assertEquals(EventsFileComparator.Result.FILES_ARE_EQUAL, result);
+
+		Network network = NetworkUtils.readNetwork(scenarioInputDir + "scenario/input_network.xml");
+		EvacuationSchedule expectedSchedule = new EvacuationSchedule();
+		new EvacuationScheduleReader(expectedSchedule, network).readFile(scenarioInputDir + "scenario/input_evac_plan.csv");
+		EvacuationSchedule actualSchedule = new EvacuationSchedule();
+		new EvacuationScheduleReader(actualSchedule, network).readFile(utilsOutputDir + "output/output_output_evacuationSchedule.csv");
+
+		Iterator<SafeNodeAllocation> expectedIterator = expectedSchedule.getSubsectorsByEvacuationTime().iterator();
+
+		while (expectedIterator.hasNext()) {
+			SafeNodeAllocation expected = expectedIterator.next();
+			SubsectorData actualData = actualSchedule.getSubsectorDataMap().get(expected.getContainer().getSubsector());
+			SafeNodeAllocation actual = actualData.getSafeNodesByTime().iterator().next();
+			Assert.assertEquals(expected.getStartTime(), actual.getStartTime(), 1.0);
+			Assert.assertEquals(expected.getStartTime(), actual.getEndTime(), 1.0);
+			Assert.assertEquals(expected.getVehicles(), actual.getVehicles());
+		}
+
+
+	}
+
+	@Test
+	public void testNew() {
+//		Config config = ConfigUtils.loadConfig(utils.getPackageInputDirectory()+"scenario/config_runFromSource_optimizeLikeNICTA.xml");
+//
+//		config.controler().setOutputDirectory(utils.getOutputDirectory());
+
+//		final FEMConfigGroup femConfig = ConfigUtils.addOrGetModule( config, FEMConfigGroup.class );
+//		femConfig.setSampleSize( 1. );
+
+//		new RunMatsim4FloodEvacuation(config).run();
+		String scenarioInputDir = utils.getPackageInputDirectory()+"../";
+		Config config = ConfigUtils.loadConfig(scenarioInputDir + "scenario/config_runFromSource_newdata.xml");
 		String utilsOutputDir = utils.getOutputDirectory();
 		config.controler().setOutputDirectory(utilsOutputDir);
 		RunFromSource.standardFullSizeOptimization(config);
