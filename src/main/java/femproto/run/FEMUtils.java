@@ -49,16 +49,16 @@ public class FEMUtils {
 
 	private static EvacuationSchedule evacuationSchedule;
 	private static boolean evacuationScheduleIsLocked = false;
-	
+
 	/**
-	 *  this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.
+	 * this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.
 	 */
 	public static FEMGlobalConfig getGlobalConfig() {
 		return globalConfig;
 	}
-	
+
 	/**
-	 *  this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.
+	 * this is so that the global config is also available before we have injection.  E.g. for all the upstream data preparation.
 	 */
 	public static void setGlobalConfig(final FEMGlobalConfig globalConfig) {
 		if (globalConfigIsLocked) {
@@ -67,7 +67,7 @@ public class FEMUtils {
 		if (globalConfig == null) {
 			throw new RuntimeException("too early");
 		}
-		log.info("setting global config") ;
+		log.info("setting global config");
 		FEMUtils.globalConfig = globalConfig;
 		globalConfigIsLocked = true;
 	}
@@ -199,7 +199,7 @@ public class FEMUtils {
 				log.info("going into the sampling with first rnd=" + rnd);
 			}
 			// yoyoyo this will ensure at least one person per subsector when sampling down
-			if (!subsectors.contains(FEMUtils.getSubsectorName(person))){
+			if (!subsectors.contains(FEMUtils.getSubsectorName(person))) {
 				subsectors.add(FEMUtils.getSubsectorName(person));
 				continue;
 			}
@@ -212,8 +212,8 @@ public class FEMUtils {
 			scenario.getPopulation().removePerson(toBeRemoved);
 		}
 		scenario.getConfig().qsim().setFlowCapFactor(sample);
-			scenario.getConfig().qsim().setStorageCapFactor(sample);
-			//yoyo I am not increasing storageCapFactor here as it's probably a good ting if the network behaves more congested
+		scenario.getConfig().qsim().setStorageCapFactor(sample);
+		//yoyo I am not increasing storageCapFactor here as it's probably a good ting if the network behaves more congested
 //		if (sample > 0.1)
 //		if (sample <= 0.1)
 //			scenario.getConfig().qsim().setStorageCapFactor(2 * sample);
@@ -301,25 +301,25 @@ public class FEMUtils {
 		Node node = scenario.getNetwork().getNodes().get(Id.createNodeId(defaultSafeNode));
 		Gbl.assertNotNull(node);
 		FEMGlobalConfig globalConfig = ConfigUtils.addOrGetModule(scenario.getConfig(), FEMGlobalConfig.class);
-
+		endLink = scenario.getNetwork().getLinks().get(Id.createLinkId(node.getId().toString()));
 		// yoyo find an incoming link, preferably an EVAC_SES one.
 		// these links should really preferable be on the shortest path between evac and safe node, and tested for such
-		for (Link link : node.getInLinks().values()) {
-			if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(globalConfig.getAttribEvacMarker())) {
-				endLink = link;
-			}
-		}
-		if (endLink == null) {
-			String msg = "There seems to be no incoming car mode evac link for SAFE node " + defaultSafeNode + ". Defaulting to the highest capacity car link.";
-			log.warn(msg);
-			double maxCap = Double.NEGATIVE_INFINITY;
-			for (Link link : node.getInLinks().values()) {
-				if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
-					maxCap = link.getCapacity();
-					endLink = link;
-				}
-			}
-		}
+//		for (Link link : node.getInLinks().values()) {
+//			if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(globalConfig.getAttribEvacMarker())) {
+//				endLink = link;
+//			}
+//		}
+//		if (endLink == null) {
+//			String msg = "There seems to be no incoming car mode evac link for SAFE node " + defaultSafeNode + ". Defaulting to the highest capacity car link.";
+//			log.warn(msg);
+//			double maxCap = Double.NEGATIVE_INFINITY;
+//			for (Link link : node.getInLinks().values()) {
+//				if (link.getAllowedModes().contains(TransportMode.car) && link.getCapacity() > maxCap) {
+//					maxCap = link.getCapacity();
+//					endLink = link;
+//				}
+//			}
+//		}
 		return endLink;
 	}
 
