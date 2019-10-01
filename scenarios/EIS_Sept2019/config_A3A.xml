@@ -14,9 +14,9 @@
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
 		<param name="inputNetworkLinksShapefile" value="./ScenarioA3/FEM_ScenarioA3_links.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkNodesShapefile" value="./ScenarioA3/FEM2_ScenarioA3_nodes.shp" />
+		<param name="inputNetworkNodesShapefile" value="./ScenarioA3A/FEM2_ScenarioA3_nodes.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="./ScenarioA3/FEM2_Subsectorvehicles_A3_2018.shp" />
+		<param name="inputSubsectorsShapefile" value="./ScenarioA3A/FEM2_Subsectorvehicles_A3_2018.shp" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
 		<param name="sampleSize" value="1.0" />
@@ -47,7 +47,7 @@
 	<module name="controler" >
 		<!-- Default=1000;  -->
 		<param name="lastIteration" value="20" />
-		<param name="outputDirectory" value="output" />
+		<param name="outputDirectory" value="outputA3A" />
 		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
 		<param name="writeEventsInterval" value="20" />
 		<!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->
