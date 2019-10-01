@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import static femproto.run.FEMUtils.getGlobalConfig;
+import static femproto.run.FEMUtils.getLinkFromSafeNode;
 import static org.matsim.contrib.analysis.vsp.qgis.RuleBasedRenderer.log;
 
 /**
@@ -122,12 +123,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 				Node safeNode = safeNodeAllocation.getNode();
 				LeastCostPathCalculator.Path safePath = subsectorData.getLastOpenPathToSafeNode(safeNode);
 
-				Link safeLink = null;
-				for (Link link : safeNode.getInLinks().values()) {
-					if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(FEMUtils.getGlobalConfig().getAttribEvacMarker())) {
-						safeLink = link;
-					}
-				}
+				Link safeLink = getLinkFromSafeNode(safeNode.getId().toString(), scenario);
 				if (safeLink == null) {
 					String msg = "There seems to be no incoming car mode EVAC link for SAFE node " + evacuationNode + ". Defaulting to the highest capacity car link.";
 					log.warn(msg);
@@ -175,12 +171,12 @@ public final class EvacuationScheduleToPopulationDepartures {
 							linkIds.add(link.getId());
 						}
 						//drop the last link id if it is the same as the safelink
-						if(linkIds.getLast().equals(safeLink.getId())) {
+						if (linkIds.getLast().equals(safeLink.getId())) {
 							linkIds.removeLast();
 						}
 
 //						NetworkRoute route = RouteUtils.createNetworkRoute(linkIds, scenario.getNetwork());
-						NetworkRoute route = RouteUtils.createLinkNetworkRouteImpl(startLink.getId(),linkIds,safeLink.getId());
+						NetworkRoute route = RouteUtils.createLinkNetworkRouteImpl(startLink.getId(), linkIds, safeLink.getId());
 						evacLeg.setRoute(route);
 					}
 
@@ -254,12 +250,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 						throw new RuntimeException(msg);
 					}
 
-					Link safeLink = null;
-					for (Link link : safeNode.getInLinks().values()) {
-						if (link.getAllowedModes().contains(TransportMode.car) && (boolean) link.getAttributes().getAttribute(EVACUATION_LINK)) {
-							safeLink = link;
-						}
-					}
+					Link safeLink = getLinkFromSafeNode(safeNode.getId().toString(), scenario);
 					if (safeLink == null) {
 						String msg = "There seems to be no incoming car mode EVAC link for SAFE node " + evacuationNode + ". Defaulting to the highest capacity car link.";
 						log.warn(msg);
@@ -290,12 +281,12 @@ public final class EvacuationScheduleToPopulationDepartures {
 							linkIds.add(link.getId());
 						}
 						//drop the last link id if it is the same as the safelink
-						if(linkIds.getLast().equals(safeLink.getId())) {
+						if (linkIds.getLast().equals(safeLink.getId())) {
 							linkIds.removeLast();
 						}
 
 //						NetworkRoute route = RouteUtils.createNetworkRoute(linkIds, scenario.getNetwork());
-						NetworkRoute route = RouteUtils.createLinkNetworkRouteImpl(startLink.getId(),linkIds,safeLink.getId());
+						NetworkRoute route = RouteUtils.createLinkNetworkRouteImpl(startLink.getId(), linkIds, safeLink.getId());
 						evacLeg.setRoute(route);
 					}
 

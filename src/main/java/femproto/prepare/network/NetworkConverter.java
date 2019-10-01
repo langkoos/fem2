@@ -21,11 +21,17 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.IOUtils;
+import org.matsim.utils.gis.matsim2esri.network.CapacityBasedWidthCalculator;
+import org.matsim.utils.gis.matsim2esri.network.FeatureGeneratorBuilderImpl;
+import org.matsim.utils.gis.matsim2esri.network.Links2ESRIShape;
+import org.matsim.utils.gis.matsim2esri.network.PolygonFeatureGenerator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -48,6 +54,7 @@ public class NetworkConverter {
 	private static final double MIN_DISTANCE = 5.0;
 
 	final String EVACUATION_LINK = getGlobalConfig().getAttribEvacMarker();
+	final String SAFE_LINK = "SAFE_SES";
 	final String DESCRIPTION = getGlobalConfig().getAttribDescr();
 	private final URL nodesUrl;
 	private final URL linksUrl;
@@ -117,7 +124,9 @@ public class NetworkConverter {
 			// yoyo after discussion with DP, decided that we will not use randdom incoming link to evac node, but rather loop link
 			// in case random link leg start interferes with traffic
 			int evacValue;
+			int safeValue;
 			String attribEvacMarker = getGlobalConfig().getAttribEvacMarker();
+			String attribSafeMarker = "SAFE_SES";
 
 			try {
 				evacValue = (int) feature.getAttribute(attribEvacMarker);
@@ -144,7 +153,45 @@ public class NetworkConverter {
 					}
 				}
 			}
+			try {
+				safeValue= (int) feature.getAttribute(attribSafeMarker);
+			} catch (ClassCastException e) {
+				try {
+					safeValue= (int) (long) feature.getAttribute(attribSafeMarker);
+					if (!warned) {
+						String message = String.format("Column %s in nodes shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribSafeMarker);
+						log.warn(message);
+						warned = true;
+					}
+				} catch (ClassCastException e2) {
+					try {
+						safeValue= (int) (double) feature.getAttribute(attribSafeMarker);
+						if (!warned) {
+							String message = String.format("Column %s in nodes shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribSafeMarker);
+							log.warn(message);
+							warned = true;
+						}
+					} catch (ClassCastException e3) {
+						String message = String.format("Cannot convert %s in nodes shapefile to the appropriate data type (0-1 integer). Aborting.", attribSafeMarker);
+						log.error(message);
+						throw new RuntimeException(message);
+					}
+				}
+			}
 			if (evacValue == 1) {
+				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
+				link.setLength(1);
+				link.setNumberOfLanes(1);
+				link.setFreespeed(17);
+				link.setCapacity(getGlobalConfig().getEvacuationRate());
+				HashSet<String> modes = new HashSet<>();
+				modes.add(TransportMode.car);
+				link.setAllowedModes(modes);
+				link.getAttributes().putAttribute(EVACUATION_LINK, true);
+				link.getAttributes().putAttribute(DESCRIPTION, "dummy");
+				scenario.getNetwork().addLink(link);
+			}
+			if (safeValue == 1) {
 				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
 				link.setLength(1);
 				link.setNumberOfLanes(1);
@@ -287,6 +334,13 @@ public class NetworkConverter {
 		String fileNameNoXML = fileName.split(".xml")[0];
 		log.info("Writing before and after NetworkCleaner versions of the network. Check for missing nodes and links if there are issues down the line... ");
 		new NetworkWriter(scenario.getNetwork()).write(fileName);
+		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(scenario.getNetwork(), Gis.EPSG28356);
+		builder.setWidthCoefficient((double)(-0.05D));
+		builder.setFeatureGeneratorPrototype(PolygonFeatureGenerator.class);
+		builder.setWidthCalculatorPrototype(CapacityBasedWidthCalculator.class);
+		CoordinateReferenceSystem crs = MGC.getCRS(Gis.EPSG28356);
+		builder.setCoordinateReferenceSystem(crs);
+		new Links2ESRIShape(scenario.getNetwork(),fileNameNoXML + "_dirty.shp", builder).write();
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(fileName);
 		NetworkUtils.runNetworkCleaner(network);
@@ -312,6 +366,7 @@ public class NetworkConverter {
 			}
 		}
 
+		new Links2ESRIShape(network,fileNameNoXML + "_clean.shp", builder).write();
 		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
 		Set<Id<Link>> linkIds = new HashSet<>();
 		linkIds.addAll(network.getLinks().keySet());
@@ -329,7 +384,6 @@ public class NetworkConverter {
 		}
 
 
-//		new Links2ESRIShape(scenario.getNetwork(),fileName + ".shp", Gis.EPSG28356).write();
 		//  original input network is given in emme format.  we write shp as a service, but modifying it there will not have an effect onto the simulation.  is this the workflow that we want?  kai, aug'18
 		// The emme files come as shapefiles, so this is a different set of shapefiles to be able to compare.
 		// But that output shapefile produces different columns.  So better not write it.
