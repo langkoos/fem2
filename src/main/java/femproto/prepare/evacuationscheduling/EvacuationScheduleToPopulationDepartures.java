@@ -201,7 +201,10 @@ public final class EvacuationScheduleToPopulationDepartures {
 		for (SubsectorData subsectorData : evacuationSchedule.getSubsectorDataMap().values()) {
 
 			subsectorData.completeAllocations();
-
+			if (!subsectorData.isNeedsEvacuation()) {
+				log.warn(String.format("Subsector %s needs no evacuation.", subsectorData.getSubsector()));
+				continue;
+			}
 			if (subsectorData.getVehicleCount() <= 0) {
 				log.warn(String.format("Subsector %s has no vehicles associated with it.", subsectorData.getSubsector()));
 				continue;

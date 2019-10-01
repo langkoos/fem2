@@ -39,6 +39,7 @@ public class SubsectorData {
 
 	private int gaugeId = -1;
 	private double altAHD = -1.0;
+	private boolean needsEvacuation = true;
 
 	public void setLookAheadTime(double lookAheadTime) {
 		this.lookAheadTime = lookAheadTime;
@@ -212,5 +213,13 @@ public class SubsectorData {
 
 	public double getLookAheadTime() {
 		return lookAheadTime;
+	}
+
+	public boolean isNeedsEvacuation() {
+		return needsEvacuation;
+	}
+
+	public void setNeedsEvacuation(boolean needsEvacuation) {
+		this.needsEvacuation = needsEvacuation;
 	}
 }

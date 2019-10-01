@@ -157,6 +157,7 @@ public final class EvacuationScheduleFromHydrographData {
 			if (prioritySubsectors.contains(subsectorData.getSubsector()))
 				continue;
 			subsectorData.setVehicleCount(0);
+			subsectorData.setNeedsEvacuation(false);
 //			evacuationSchedule.removeSubSectorData(subsectorData);
 		}
 		evacuationSchedule.createSchedule();
