@@ -5,7 +5,15 @@ b='.xml'
 c="$a$AWS_BATCH_JOB_ARRAY_INDEX$b"
 echo $c
 mkdir data
-aws s3 cp s3://urap-fem2/data data/ --recursive
+d='s3://urap-fem2/'
+e='/data'
+out='/output/output'
+f="$d$DATADIR$e"
+echo $f
+g="$d$DATADIR$out$AWS_BATCH_JOB_ARRAY_INDEX"
+echo $g
+
+aws s3 cp $f data/ --recursive
 mv $c data/config.xml
 ls data
 #aws s3 cp data/config.xml s3://urap-fem2/output$AWS_BATCH_JOB_ARRAY_INDEX  --recursive
@@ -15,4 +23,4 @@ gzip output/output/*.log
 gzip output/output/*.txt
 gzip output/output/*.csv
 
-aws s3 cp output/output s3://urap-fem2/output/output$AWS_BATCH_JOB_ARRAY_INDEX  --recursive
+aws s3 cp output/output $g --recursive

@@ -77,5 +77,8 @@
 	<module name="network" >
 		<param name="timeVariantNetwork" value="true" />
 	</module>
+	<module name="global" >
+		<param name="numberOfThreads" value="1" />
+	</module>
 
 </config>

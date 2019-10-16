@@ -42,10 +42,10 @@ public class CreateClusterConfigs {
 				return dir.isDirectory() && name.toLowerCase().contains("events");
 			}
 		})[0];
-		folders = folder.listFiles(new FilenameFilter() {
+		folders = folder.listFiles(new FileFilter() {
 			@Override
-			public boolean accept(File dir, String name) {
-				return dir.isDirectory() ;
+			public boolean accept(File dir) {
+				return dir.isDirectory();
 			}
 		});
 		for (File file : folders) {
@@ -74,8 +74,10 @@ public class CreateClusterConfigs {
 			for (File inputFile : inputFiles) {
 				if (inputFile.getName().toLowerCase().contains("link"))
 					femConfigGroup.setInputNetworkLinksShapefile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("nodes"))
+				if (inputFile.getName().toLowerCase().contains("nodes")&&!inputFile.getName().toLowerCase().contains("wma"))
 					femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
+				if (inputFile.getName().toLowerCase().contains("wma"))
+					femConfigGroup.setHydrographShapeFile(inputFile.getPath().toString());
 				if (inputFile.getName().toLowerCase().contains("subsector"))
 					femConfigGroup.setInputSubsectorsShapefile(inputFile.getPath().toString());
 			}
@@ -109,9 +111,12 @@ public class CreateClusterConfigs {
 					BufferedReader bufferedReader = IOUtils.getBufferedReader(String.format("cluster/configtemp_%d.xml", runId));
 					BufferedWriter writer = IOUtils.getBufferedWriter(String.format("cluster/config_%d.xml", runId));
 					//yoyo this cuts out unnecessary stuff from the config that causes run to fail
-					for (int i = 0; i < 58; i++) {
+					for (int i = 0; i < 62; i++) {
 						writer.write(bufferedReader.readLine() + "\n");
 					}
+					writer.write("<module name=\"qsim\" >\n");
+					writer.write("<param name=\"numberOfThreads\" value=\"1\" />\n");
+					writer.write("</module>\n");
 					writer.write("</config>");
 					writer.close();
 					FileUtils.forceDelete(new File(String.format("cluster/configtemp_%d.xml", runId)));
