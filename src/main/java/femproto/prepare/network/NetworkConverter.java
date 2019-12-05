@@ -129,7 +129,7 @@ public class NetworkConverter {
 			String attribSafeMarker = "SAFE_SES";
 
 			try {
-				evacValue = (int) feature.getAttribute(attribEvacMarker);
+				evacValue = (int) Double.parseDouble(feature.getAttribute(attribEvacMarker).toString());
 			} catch (ClassCastException e) {
 				try {
 					evacValue = (int) (long) feature.getAttribute(attribEvacMarker);
@@ -154,10 +154,10 @@ public class NetworkConverter {
 				}
 			}
 			try {
-				safeValue= (int) feature.getAttribute(attribSafeMarker);
+				safeValue =  (int) Double.parseDouble(feature.getAttribute(attribEvacMarker).toString());
 			} catch (ClassCastException e) {
 				try {
-					safeValue= (int) (long) feature.getAttribute(attribSafeMarker);
+					safeValue = (int) (long) feature.getAttribute(attribSafeMarker);
 					if (!warned) {
 						String message = String.format("Column %s in nodes shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribSafeMarker);
 						log.warn(message);
@@ -165,7 +165,7 @@ public class NetworkConverter {
 					}
 				} catch (ClassCastException e2) {
 					try {
-						safeValue= (int) (double) feature.getAttribute(attribSafeMarker);
+						safeValue = (int) (double) feature.getAttribute(attribSafeMarker);
 						if (!warned) {
 							String message = String.format("Column %s in nodes shapefile is a big integer or long value. Converting it but expecting a small integer for consistency.", attribSafeMarker);
 							log.warn(message);
@@ -267,7 +267,13 @@ public class NetworkConverter {
 					}
 				}
 				// yoyo a cheat to identify evac links in via without having to load object attributes
-				boolean evacSES = feature.getAttribute(getGlobalConfig().getAttribEvacMarker()).toString().trim().equals("1");
+				boolean evacSES;
+				try {
+					evacSES = Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribEvacMarker()).toString().trim()) > 0;
+				} catch (Exception e) {
+					log.error(String.format("%s is not an integer value.", getGlobalConfig().getAttribEvacMarker()));
+					throw new RuntimeException();
+				}
 				if (evacSES) {
 					modes.add("evac");
 					if (!modes.contains(TransportMode.car)) {
@@ -284,7 +290,7 @@ public class NetworkConverter {
 				Object gaugeAttribute = feature.getAttribute(gaugeId);
 				if (gaugeAttribute != null) {
 					try {
-						int gaugeValue = Integer.parseInt(gaugeAttribute.toString());
+						int gaugeValue = (int) Double.parseDouble(gaugeAttribute.toString());
 						if (gaugeValue > 0) {
 							link.getAttributes().putAttribute(gaugeId, gaugeValue);
 							link.getAttributes().putAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD(), Double.parseDouble(feature.getAttribute(getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString()));
@@ -335,12 +341,12 @@ public class NetworkConverter {
 		log.info("Writing before and after NetworkCleaner versions of the network. Check for missing nodes and links if there are issues down the line... ");
 		new NetworkWriter(scenario.getNetwork()).write(fileName);
 		FeatureGeneratorBuilderImpl builder = new FeatureGeneratorBuilderImpl(scenario.getNetwork(), Gis.EPSG28356);
-		builder.setWidthCoefficient((double)(-0.05D));
+		builder.setWidthCoefficient((double) (-0.05D));
 		builder.setFeatureGeneratorPrototype(PolygonFeatureGenerator.class);
 		builder.setWidthCalculatorPrototype(CapacityBasedWidthCalculator.class);
 		CoordinateReferenceSystem crs = MGC.getCRS(Gis.EPSG28356);
 		builder.setCoordinateReferenceSystem(crs);
-		new Links2ESRIShape(scenario.getNetwork(),fileNameNoXML + "_dirty.shp", builder).write();
+		new Links2ESRIShape(scenario.getNetwork(), fileNameNoXML + "_dirty.shp", builder).write();
 		Network network = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(network).readFile(fileName);
 		NetworkUtils.runNetworkCleaner(network);
@@ -366,7 +372,7 @@ public class NetworkConverter {
 			}
 		}
 
-		new Links2ESRIShape(network,fileNameNoXML + "_clean.shp", builder).write();
+		new Links2ESRIShape(network, fileNameNoXML + "_clean.shp", builder).write();
 		new NetworkWriter(network).write(fileNameNoXML + "_clean.xml");
 		Set<Id<Link>> linkIds = new HashSet<>();
 		linkIds.addAll(network.getLinks().keySet());

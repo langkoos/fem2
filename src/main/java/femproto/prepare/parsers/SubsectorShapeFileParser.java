@@ -81,14 +81,14 @@ public class SubsectorShapeFileParser {
 
 			try {
 				if (feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()) != null) {
-					int gaugeId;
+					int gaugeId = 0;
 					try {
-						gaugeId = (int) (long) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
+						gaugeId = (int) Double.parseDouble(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()).toString());
 					} catch (ClassCastException e) {
-						gaugeId = (int) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId());
+						log.error(String.format("Could not convert %s to integer while parsing subsector shapefile. Aborting", FEMUtils.getGlobalConfig().getAttribGaugeId()));
 					}
 					if (gaugeId > 0) {
-						double altAHD = (double) feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD());
+						double altAHD = (double) Double.parseDouble(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString());
 						subsectorData.setGaugeId(gaugeId);
 						subsectorData.setAltAHD(altAHD);
 					}
@@ -108,18 +108,18 @@ public class SubsectorShapeFileParser {
 				throw new RuntimeException(message);
 			}
 
-			String evacNodeFromShp;
-			String evacNodeIdForSubsector = FEMUtils.getGlobalConfig().getAttribEvacNodeIdForSubsector();
+			long evacNodeId;
+			String evacNodeIdAttrib = FEMUtils.getGlobalConfig().getAttribEvacNodeIdForSubsector();
 			try {
-				evacNodeFromShp = feature.getAttribute(evacNodeIdForSubsector).toString();
+				evacNodeId = (long) Double.parseDouble(feature.getAttribute(evacNodeIdAttrib).toString());
 			} catch (NullPointerException ne) {
-				String message = "Subsector " + subsector + " has no " + evacNodeIdForSubsector + " attribute.";
+				String message = "Subsector " + subsector + " has no " + evacNodeIdAttrib + " attribute.";
 				log.warn(message);
 				throw new RuntimeException(message);
 			}
-			Node node = network.getNodes().get(Id.createNodeId(evacNodeFromShp));
+			Node node = network.getNodes().get(Id.createNodeId(evacNodeId));
 			if (node == null) {
-				String msg = String.format("Did not find evacuation node %s for subsector %s in matsim network. ", evacNodeFromShp, subsector);
+				String msg = String.format("Did not find evacuation node %s for subsector %s in matsim network. ", evacNodeId, subsector);
 				log.warn(msg);
 				throw new RuntimeException(msg);
 			}

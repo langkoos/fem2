@@ -69,7 +69,7 @@ class NonevacLinksPenalizerV2 implements SumScoringFunction.ArbitraryEventScorin
 			departureTime = event.getTime();
 		}
 		if (event instanceof PersonLeavesVehicleEvent) {
-			if (event.getTime() - departureTime > FEMUtils.getGlobalConfig().getLongestAllowedEvacuationTime() * 60) {
+			if ((event.getTime() - departureTime) > FEMUtils.getGlobalConfig().getLongestAllowedEvacuationTime() * 60) {
 				score -= 100000.;
 			}
 		}
