@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+	<module name="FEM" >
+		<!-- Optimization process for routing, safe node allocation, timing, etc. Options: optimizeSafeNodesByPerson optimizeSafeNodesBySubsector optimizeLikeNICTA followTheLeader userEquilibriumDecongestion none  -->
+		<param name="FEMOptimizationType" value="userEquilibriumDecongestion" />
+		<!-- FEM run type.  Options: justRunInputPlansFile runFromEvacuationSchedule runFromSource  -->
+		<param name="FEMRunType" value="runFromSource" />
+		<param name="evacuationScheduleFile" value="null" />
+		<!-- CSV file containing hydrograph data. First column is time in hours, subsequent columns have the ID of the associated hydrograph point in the first line and floating point values in subsequent lines denoting water level in AHD. -->
+		<param name="hydrographData" value="./wma-flood-events/Existing_Translated/Rd08338.csv" />
+		<!-- DEPRECATED!!!! Hydrograph shapefile. Not to be used anymore, but keprt for backward compatibility -->
+		<param name="hydrographShapeFile" value="null" />
+		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputNetworkLinksShapefile" value="./ScenarioA3A/FEM2_ScenarioA3A_links.shp" />
+		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputNetworkNodesShapefile" value="./ScenarioA3A/FEM2_ScenarioA3A_nodes.shp" />
+		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
+		<param name="inputSubsectorsShapefile" value="./ScenarioA3A/FEM2_ScenarioA3A_Subsectorvehicles_2018.shp" />
+		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
+		<!-- Re-routing can probably be done at 0.01 sample size. -->
+		<param name="sampleSize" value="1.0" />
+	</module>
+	<module name="FEMGlobal" >
+		<param name="attribDescr" value="T_DES" />
+		<!-- Column name convention identifying LINKS AND NODES for evacuation (Integer value, 0 or 1). -->
+		<param name="attribEvacMarker" value="EVAC_SES" />
+		<!-- Column name convention identifying evacuation node ID for a subsector in the suibsector shapefile (Integer value). -->
+		<param name="attribEvacNodeIdForSubsector" value="EVAC_NODE" />
+		<param name="attribGaugeId" value="GAUGE_ID" />
+		<!-- Column name convention identifying links associated with hydrograph point (String value, comma-separated, no spaces) -->
+		<param name="attribHydrographLinkIds" value="LINK_IDS" />
+		<!-- Column name convention identifying hydrograph points in the shapefile (Integer value). -->
+		<param name="attribHydrographPointId" value="ID" />
+		<!-- Column name convention identifying the chosen field identifying the ground level for flooding (Floating point value, assumed to be positive). -->
+		<param name="attribHydrographSelectedAltAHD" value="ALT_AHD" />
+		<!-- Column name convention identifying buffer time before flooding (Floating point value, hours). -->
+		<param name="attribLookAheadTime" value="LOOK_AHEAD" />
+		<!-- Column name convention identifying TOTAL link evacuation capacity PER MINUTE  in links shapefile (Floating point, positive value). -->
+		<param name="attribNetworkLinksCapSES" value="CAP_SES" />
+		<!-- Column name convention identifying 'to' node foreign key in links shapefile (Integer value). -->
+		<param name="attribNetworkLinksINode" value="INODE" />
+		<!-- Column name convention identifying 'to' node foreign key in links shapefile (Integer value). -->
+		<param name="attribNetworkLinksJNode" value="JNODE" />
+		<!-- Column name convention identifying number of lanes in links shapefile (Floating point, positive value). -->
+		<param name="attribNetworkLinksLanes" value="LANES" />
+		<!-- Column name convention identifying link length in links shapefile (Floating point, positive value in kilometres). -->
+		<param name="attribNetworkLinksLength" value="LENGTH" />
+		<!-- Column name convention identifying allowed modes in links shapefile (lowercase String values, no separating characters: w(alk) c(ar) b(us) r(ail). -->
+		<param name="attribNetworkLinksModes" value="MODES" />
+		<!-- Column name convention identifying link speed (km/h) in links shapefile (Floating point, positive value in km/h). -->
+		<param name="attribNetworkLinksSpeed" value="SPEED" />
+		<!-- Column name convention identifying safe node IDs for a subsector in the subsector shapefile (Comma-separated integer values). -->
+		<param name="attribSafeNodeIdsForSubsector" value="SAFE_NODES" />
+		<!-- Column name convention identifying subsectors (String value, spaces allowed but no leading or trailing spaces). -->
+		<param name="attribSubsector" value="SUBSECTOR" />
+		<!-- Column name convention identifying number of vehicles per subsector in the subsector shapefile (Integer). -->
+		<param name="attribTotalVehiclesForSubsector" value="TOTAL_VEH" />
+		<!-- Model convention for the naming of the activity for agents departing from an evacuation node. -->
+		<param name="evacuationActivity" value="evac" />
+		<!-- The default rate at which agents are allowed to depart from the evacuation node (Floating point value, positive). -->
+		<param name="evacuationRate" value="600.0" />
+		<!-- If an agent takes longer than this time, they are marked as unevacuated in the model, and a better solution will be sought (Floating point value in minutes, positive). -->
+		<param name="longestAllowedEvacuationTime" value="600.0" />
+		<!-- Model convention for the naming of the activity for agents arriving at a safe node. -->
+		<param name="safeActivity" value="safe" />
+	</module>
+	<module name="controler" >
+		<!-- Default=1000;  -->
+		<param name="lastIteration" value="2" />
+		<param name="outputDirectory" value="outputA3A/output" />
+		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
+		<param name="writeEventsInterval" value="2" />
+		<!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->
+		<param name="writePlansInterval" value="2" />
+	</module>
+	<module name="network" >
+		<param name="inputChangeEventsFile" value="input_change_events.xml.gz" />
+		<param name="inputNetworkFile" value="input_network.xml" />
+		<param name="timeVariantNetwork" value="true" />
+	</module>
+	<module name="planCalcScore" >
+		<parameterset type="scoringParameters" >
+			<parameterset type="activityParams" >
+				<param name="activityType" value="dummy" />
+				<!-- typical duration of activity.  needs to be defined and non-zero.  in sec. -->
+				<param name="typicalDuration" value="02:00:00" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="car interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="pt interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="bike interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="other interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="activityParams" >
+				<param name="activityType" value="walk interaction" />
+				<param name="typicalDuration" value="undefined" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="car" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="pt" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="walk" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="bike" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="ride" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="mode" value="other" />
+			</parameterset>
+		</parameterset>
+	</module>
+	<module name="plans" >
+		<param name="inputPlansFile" value="input_population.xml.gz" />
+	</module>
+	<module name="planscalcroute" >
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="bike" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="walk" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="access_walk" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="egress_walk" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="undefined" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="ride" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="mode" value="pt" />
+		</parameterset>
+	</module>
+
+</config>
