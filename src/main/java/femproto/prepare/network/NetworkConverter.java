@@ -154,7 +154,7 @@ public class NetworkConverter {
 				}
 			}
 			try {
-				safeValue =  (int) Double.parseDouble(feature.getAttribute(attribEvacMarker).toString());
+				safeValue = (int) Double.parseDouble(feature.getAttribute(attribSafeMarker).toString());
 			} catch (ClassCastException e) {
 				try {
 					safeValue = (int) (long) feature.getAttribute(attribSafeMarker);
@@ -178,31 +178,38 @@ public class NetworkConverter {
 					}
 				}
 			}
+			Id<Link> linkId = Id.createLinkId(node.getId().toString());
 			if (evacValue == 1) {
-				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
-				link.setLength(1);
-				link.setNumberOfLanes(1);
-				link.setFreespeed(17);
-				link.setCapacity(getGlobalConfig().getEvacuationRate());
-				HashSet<String> modes = new HashSet<>();
-				modes.add(TransportMode.car);
-				link.setAllowedModes(modes);
-				link.getAttributes().putAttribute(EVACUATION_LINK, true);
-				link.getAttributes().putAttribute(DESCRIPTION, "dummy");
-				scenario.getNetwork().addLink(link);
+				Link link = scenario.getNetwork().getLinks().get(linkId);
+				if (link == null) {
+					link = networkFactory.createLink(linkId, node, node);
+					link.setLength(1);
+					link.setNumberOfLanes(1);
+					link.setFreespeed(17);
+					link.setCapacity(getGlobalConfig().getEvacuationRate());
+					HashSet<String> modes = new HashSet<>();
+					modes.add(TransportMode.car);
+					link.setAllowedModes(modes);
+					link.getAttributes().putAttribute(EVACUATION_LINK, true);
+					link.getAttributes().putAttribute(DESCRIPTION, "dummy");
+					scenario.getNetwork().addLink(link);
+				}
 			}
 			if (safeValue == 1) {
-				Link link = networkFactory.createLink(Id.createLinkId(node.getId().toString()), node, node);
-				link.setLength(1);
-				link.setNumberOfLanes(1);
-				link.setFreespeed(17);
-				link.setCapacity(getGlobalConfig().getEvacuationRate());
-				HashSet<String> modes = new HashSet<>();
-				modes.add(TransportMode.car);
-				link.setAllowedModes(modes);
-				link.getAttributes().putAttribute(EVACUATION_LINK, true);
-				link.getAttributes().putAttribute(DESCRIPTION, "dummy");
-				scenario.getNetwork().addLink(link);
+				Link link = scenario.getNetwork().getLinks().get(linkId);
+				if (link == null) {
+					link = networkFactory.createLink(linkId, node, node);
+					link.setLength(1);
+					link.setNumberOfLanes(1);
+					link.setFreespeed(17);
+					link.setCapacity(getGlobalConfig().getEvacuationRate());
+					HashSet<String> modes = new HashSet<>();
+					modes.add(TransportMode.car);
+					link.setAllowedModes(modes);
+					link.getAttributes().putAttribute(EVACUATION_LINK, true);
+					link.getAttributes().putAttribute(DESCRIPTION, "dummy");
+					scenario.getNetwork().addLink(link);
+				}
 			}
 
 		}

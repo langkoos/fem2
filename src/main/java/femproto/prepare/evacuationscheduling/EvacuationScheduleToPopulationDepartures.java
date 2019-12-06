@@ -255,7 +255,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 					Link safeLink = getLinkFromSafeNode(safeNode.getId().toString(), scenario);
 					if (safeLink == null) {
-						String msg = "There seems to be no incoming car mode EVAC link for SAFE node " + evacuationNode + ". Defaulting to the highest capacity car link.";
+						String msg = "There seems to be no incoming car mode EVAC link for SAFE node " + safeNode + ". Defaulting to the highest capacity car link.";
 						log.warn(msg);
 						double maxCap = Double.NEGATIVE_INFINITY;
 						for (Link link : safeNode.getInLinks().values()) {
