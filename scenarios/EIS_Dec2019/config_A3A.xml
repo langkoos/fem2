@@ -16,7 +16,7 @@
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
 		<param name="inputNetworkNodesShapefile" value="./ScenarioA3A/FEM2_Scenario_A3A_Rev5_nodes.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="./ScenarioA3A/FEM2_Subsectorvehicles_A3A_Rev5_2018.shp" />
+		<param name="inputSubsectorsShapefile" value="./ScenarioA3A/FEM2_Subsectorvehicles_A3A_Rev6_2018.shp" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
 		<param name="sampleSize" value="1.0" />

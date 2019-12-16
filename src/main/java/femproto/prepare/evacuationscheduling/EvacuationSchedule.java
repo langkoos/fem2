@@ -12,7 +12,7 @@ public final class EvacuationSchedule {
 	 * organising subsectors by evacuation time will allow for overall scheduling.
 	 * And nothing prevents a subsector from appearing twice; then the time also acts as a key to extract the correct evacuation information.
 	 */
-	private Set<SafeNodeAllocation> subsectorsByEvacuationTime = new TreeSet<>();
+	private TreeSet<SafeNodeAllocation> subsectorsByEvacuationTime = new TreeSet<>();
 	/**
 	 * Likely will need to access a subsector's information directly.
 	 */
@@ -46,7 +46,7 @@ public final class EvacuationSchedule {
 	public Map<String, SubsectorData> getSubsectorDataMap() {
 		return subsectorDataMap;
 	}
-	public Set<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
+	public TreeSet<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
 		return subsectorsByEvacuationTime;
 	}
 	
