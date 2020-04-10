@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 // yoyo this is the entry point for D61, so keeping it
 public class RunFromSource {
 	static Logger log = Logger.getLogger(RunFromSource.class);
+
 	public static void main(String[] args) {
 		Config config = ConfigUtils.loadConfig(args[0]);
 		standardFullSizeOptimization(config);
@@ -123,12 +124,25 @@ public class RunFromSource {
 		OutputDirectoryLogging.catchLogEntries();
 		config.network().setTimeVariantNetwork(true);
 		int lastIteration = config.controler().getLastIteration();
-		if(lastIteration == 1000){
+		if (lastIteration == 1000) {
 			log.info("No final iteration specified. defaulting to 40.");
 			config.controler().setLastIteration(40);
-		}else if(lastIteration != 40) {
+			config.controler().setWritePlansInterval(1000);
+		} else if (lastIteration != 40) {
 			log.warn(String.format("The config has a controler/lastIteration value of %d which does not correspond to the agreed default value of 40.", lastIteration));
 		}
+		if (config.controler().getWriteEventsInterval() != lastIteration) {
+			log.warn("Forcing controler/writeEventsInterval only for the last iteration");
+			config.controler().setWriteEventsInterval(config.controler().getLastIteration());
+
+		}
+		if (config.controler().getWritePlansInterval() != lastIteration) {
+
+			log.warn("Forcing controler/writePlansInterval only for the last iteration");
+			config.controler().setWritePlansInterval(config.controler().getLastIteration());
+
+		}
+
 		String outputDirectory = config.controler().getOutputDirectory();
 		new File(outputDirectory).mkdirs();
 		Scenario scenario = ScenarioUtils.createScenario(config);
