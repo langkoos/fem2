@@ -6,6 +6,7 @@ import femproto.prepare.network.NetworkConverter;
 import femproto.prepare.parsers.HydrographParser;
 import femproto.prepare.parsers.SubsectorShapeFileParser;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Person;
@@ -30,6 +31,7 @@ import java.util.concurrent.Executors;
 
 // yoyo this is the entry point for D61, so keeping it
 public class RunFromSource {
+	static Logger log = Logger.getLogger(RunFromSource.class);
 	public static void main(String[] args) {
 		Config config = ConfigUtils.loadConfig(args[0]);
 		standardFullSizeOptimization(config);
@@ -120,6 +122,13 @@ public class RunFromSource {
 	public static void standardFullSizeOptimization(Config config) {
 		OutputDirectoryLogging.catchLogEntries();
 		config.network().setTimeVariantNetwork(true);
+		int lastIteration = config.controler().getLastIteration();
+		if(lastIteration == 1000){
+			log.info("No final iteration specified. defaulting to 40.");
+			config.controler().setLastIteration(40);
+		}else if(lastIteration != 40) {
+			log.warn(String.format("The config has a controler/lastIteration value of %d which does not correspond to the agreed default value of 40.", lastIteration));
+		}
 		String outputDirectory = config.controler().getOutputDirectory();
 		new File(outputDirectory).mkdirs();
 		Scenario scenario = ScenarioUtils.createScenario(config);
