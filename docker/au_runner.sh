@@ -17,7 +17,7 @@ aws s3 cp $f data/ --recursive
 mv $c data/config.xml
 ls data
 #aws s3 cp data/config.xml s3://urap-fem2/output$AWS_BATCH_JOB_ARRAY_INDEX  --recursive
-java -Xmx1800m -Djava.awt.headless=true -cp /usr/local/bin/app.jar femproto.run.RunFromSource data/config.xml
+java -Xmx4g -Djava.awt.headless=true -cp /usr/local/bin/app.jar femproto.run.RunFromSource data/config.xml
 rm -rf output/output/ITERS
 gzip output/output/*.log
 gzip output/output/*.txt

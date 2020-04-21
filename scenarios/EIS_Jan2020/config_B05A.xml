@@ -8,15 +8,15 @@
 		<param name="FEMRunType" value="runFromSource" />
 		<param name="evacuationScheduleFile" value="null" />
 		<!-- CSV file containing hydrograph data. First column is time in hours, subsequent columns have the ID of the associated hydrograph point in the first line and floating point values in subsequent lines denoting water level in AHD. -->
-		<param name="hydrographData" value="./wma-flood-events/Existing_Translated/Rd08338.csv" />
+		<param name="hydrographData" value="wma-flood-events/Existing_Translated/Rd09188.csv" />
 		<!-- DEPRECATED!!!! Hydrograph shapefile. Not to be used anymore, but keprt for backward compatibility -->
 		<param name="hydrographShapeFile" value="null" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkLinksShapefile" value="./ScenarioA3A/FEM_Scenario_A3_Rev5_links.shp" />
+		<param name="inputNetworkLinksShapefile" value="./ScenarioB05A/FEM2_Scenario_B05A_Rev2_link.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkNodesShapefile" value="./ScenarioA3A/FEM2_Scenario_A3A_Rev5_nodes.shp" />
+		<param name="inputNetworkNodesShapefile" value="./ScenarioB05A/FEM2_Scenario_B05A_Rev2_nodes.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="./ScenarioA3A/FEM2_Subsectorvehicles_A3A_Rev 6_2018.shp" />
+		<param name="inputSubsectorsShapefile" value="./ScenarioB05A/FEM2_ScenarioB05A_Subsectorvehicles_Rev0_2026.shp" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
 		<param name="sampleSize" value="1.0" />
@@ -47,13 +47,20 @@
 	<module name="controler" >
 		<!-- Default=1000;  -->
 		<param name="lastIteration" value="2" />
-		<param name="outputDirectory" value="outputA3A" />
+		<param name="outputDirectory" value="outputb05a" />
 		<!-- iterationNumber % writeEventsInterval == 0 defines in which iterations events are written to a file. `0' disables events writing completely. -->
 		<param name="writeEventsInterval" value="2" />
 		<!-- iterationNumber % writePlansInterval == 0 defines (hopefully) in which iterations plans are written to a file. `0' disables plans writing completely.  Some plans in early iterations are always written -->
 		<param name="writePlansInterval" value="2" />
 	</module>
+	<module name="global" >
+		<!-- "global" number of threads.  This number is used, e.g., for replanning, but NOT in the mobsim.  This can typically be set to as many cores as you have available, or possibly even slightly more. -->
+		<param name="numberOfThreads" value="1" />
+	</module>
 	<module name="network" >
 		<param name="timeVariantNetwork" value="true" />
 	</module>
+<module name="qsim" >
+<param name="numberOfThreads" value="1" />
+</module>
 </config>
