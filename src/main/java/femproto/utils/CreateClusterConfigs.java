@@ -65,22 +65,36 @@ public class CreateClusterConfigs {
 		Config config = ConfigUtils.loadConfig("./template_config.xml");
 		FEMConfigGroup femConfigGroup = ConfigUtils.addOrGetModule(config, FEMConfigGroup.class);
 		for (File scenario : scenarios) {
+
 			File[] inputFiles = scenario.listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
 					return name.endsWith("shp");
 				}
 			});
-			for (File inputFile : inputFiles) {
-				if (inputFile.getName().toLowerCase().contains("link"))
-					femConfigGroup.setInputNetworkLinksShapefile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("node")&&!inputFile.getName().toLowerCase().contains("wma"))
-					femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("wma"))
-					femConfigGroup.setHydrographShapeFile(inputFile.getPath().toString());
-				if (inputFile.getName().toLowerCase().contains("vehicle"))
-					femConfigGroup.setInputSubsectorsShapefile(inputFile.getPath().toString());
-			}
+			if (inputFiles.length == 0) {
+				folders = scenario.listFiles(new FileFilter() {
+					@Override
+					public boolean accept(File dir) {
+						return dir.isDirectory();
+					}
+				});
+				for (File innerfolder : folders) {
+					inputFiles = innerfolder.listFiles(new FilenameFilter() {
+						@Override
+						public boolean accept(File dir, String name) {
+							return name.endsWith("shp");
+						}
+					});
+					for (File inputFile : inputFiles) {
+						configure(femConfigGroup, inputFile);
+					}
+				}
+
+			} else
+				for (File inputFile : inputFiles) {
+					configure(femConfigGroup, inputFile);
+				}
 
 
 //			config.planCalcScore().getActivityParams("car interaction").setTypicalDuration(1);
@@ -97,6 +111,14 @@ public class CreateClusterConfigs {
 			config.plansCalcRoute().removeModeRoutingParams("pt");
 			config.controler().setOutputDirectory("output");
 			for (String damScenario : damScenarios) {
+//				if(scenario.getName().contains("A3")||scenario.getName().contains("B05")) {
+//					if (damScenario.contains("2015"))
+//						continue;
+//				}else {
+//					if (damScenario.contains("2019"))
+//						continue;
+//				}
+
 				folder = new File("wma-flood-events/" + damScenario);
 				File[] files = folder.listFiles(new FilenameFilter() {
 					@Override
@@ -127,5 +149,16 @@ public class CreateClusterConfigs {
 		}
 		bufferedWriter.close();
 
+	}
+
+	private static void configure(FEMConfigGroup femConfigGroup, File inputFile) {
+		if (inputFile.getName().toLowerCase().contains("link"))
+			femConfigGroup.setInputNetworkLinksShapefile(inputFile.getPath().toString());
+		if (inputFile.getName().toLowerCase().contains("node") && !inputFile.getName().toLowerCase().contains("wma"))
+			femConfigGroup.setInputNetworkNodesShapefile(inputFile.getPath().toString());
+		if (inputFile.getName().toLowerCase().contains("wma"))
+			femConfigGroup.setHydrographShapeFile(inputFile.getPath().toString());
+		if (inputFile.getName().toLowerCase().contains("vehicle")|inputFile.getName().toLowerCase().contains("subsector"))
+			femConfigGroup.setInputSubsectorsShapefile(inputFile.getPath().toString());
 	}
 }
