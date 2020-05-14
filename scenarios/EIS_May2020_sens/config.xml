@@ -12,11 +12,11 @@
 		<!-- DEPRECATED!!!! Hydrograph shapefile. Not to be used anymore, but keprt for backward compatibility -->
 		<param name="hydrographShapeFile" value="null" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkLinksShapefile" value="./ScenarioA2_1/FEM2_ScenarioA2_1_Rev0_links/FEM2_ScenarioA2_1_Rev0_links.shp" />
+		<param name="inputNetworkLinksShapefile" value="./ScenarioA2_3/FEM2_ScenarioA2_1_Rev0_links/FEM2_ScenarioA2_1_Rev0_links.shp" />
 		<!-- EMME nodes in a shapefile. Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputNetworkNodesShapefile" value="./ScenarioA2_1/FEM2_ScenarioA2_1_Rev0_nodes/FEM2_ScenarioA2_1_Rev0_nodes.shp" />
+		<param name="inputNetworkNodesShapefile" value="./ScenarioA2_3/FEM2_ScenarioA2_1_Rev0_nodes/FEM2_ScenarioA2_1_Rev0_nodes.shp" />
 		<!-- Shapefile that contains the subsector shapes, and the number of vehicles per subsector.  Also contains connection to a network node, although MATSim would not really need that. -->
-		<param name="inputSubsectorsShapefile" value="./ScenarioA2_1/FEM2_ScenarioA2_1_Subsectors_Rev0_2016/FEM2_ScenarioA2_1_Subsectors_Rev0_2016.shp" />
+		<param name="inputSubsectorsShapefile" value="./ScenarioA2_3/FEM2_Scenario_A2_2_Subsectors_Rev0_2016/FEM2_Scenario_A2_2_Subsectors_Rev0_2016.shp" />
 		<param name="inputSubsectorsToSafeNodesMappingsFile" value="null" />
 		<!-- Re-routing can probably be done at 0.01 sample size. -->
 		<param name="sampleSize" value="1.0" />
