@@ -58,13 +58,15 @@ public class SubsectorShapeFileParser {
 
 			SubsectorData subsectorData = evacuationSchedule.getOrCreateSubsectorData(subsector);
 
-			int subsectorVehicleCount;
+			int subsectorVehicleCount = 0;
 			try {
 				String totalvehic = FEMUtils.getGlobalConfig().getAttribTotalVehiclesForSubsector();
 				try {
-					subsectorVehicleCount = (int) feature.getAttribute(totalvehic);
+					subsectorVehicleCount = (int) Double.parseDouble(feature.getAttribute(totalvehic).toString());
 				} catch (ClassCastException e) {
-					subsectorVehicleCount = (int) (double) feature.getAttribute(totalvehic);
+					String message = String.format("Could not convert %s to integer while parsing subsector shapefile. Aborting", totalvehic);
+					log.error(message);
+					throw new RuntimeException(message);
 				}
 				log.info("Subsector " + subsector + " contains " + subsectorVehicleCount + " vehicles.");
 			} catch (NullPointerException ne) {
@@ -72,7 +74,7 @@ public class SubsectorShapeFileParser {
 				log.warn("Subsector " + subsector + " had null vehicles to evacuate, setting to zero.");
 			}
 			if (subsectorVehicleCount == 0) {
-				log.warn("Subsector " + subsector + " sad zero vehicles to evacuate.");
+				log.warn("Subsector " + subsector + " had zero vehicles to evacuate.");
 			}
 			if (subsectorVehicleCount < 0) {
 				log.warn("Subsector " + subsector + " had less than zero vehicles to evacuate, setting to zero.");
@@ -80,12 +82,16 @@ public class SubsectorShapeFileParser {
 			}
 
 			try {
-				if (feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()) != null) {
+				String attribGaugeId = FEMUtils.getGlobalConfig().getAttribGaugeId();
+				if (feature.getAttribute(attribGaugeId) != null) {
 					int gaugeId = 0;
 					try {
-						gaugeId = (int) Double.parseDouble(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribGaugeId()).toString());
+						gaugeId = (int) Double.parseDouble(feature.getAttribute(attribGaugeId).toString());
 					} catch (ClassCastException e) {
-						log.error(String.format("Could not convert %s to integer while parsing subsector shapefile. Aborting", FEMUtils.getGlobalConfig().getAttribGaugeId()));
+						String message = String.format("Could not convert %s to integer while parsing subsector shapefile. Aborting", attribGaugeId);
+						log.error(message);
+						throw new RuntimeException(message);
+
 					}
 					if (gaugeId > 0) {
 						double altAHD = (double) Double.parseDouble(feature.getAttribute(FEMUtils.getGlobalConfig().getAttribHydrographSelectedAltAHD()).toString());
