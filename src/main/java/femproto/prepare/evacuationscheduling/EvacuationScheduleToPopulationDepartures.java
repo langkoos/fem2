@@ -202,7 +202,7 @@ public final class EvacuationScheduleToPopulationDepartures {
 
 			subsectorData.completeAllocations();
 			if (!subsectorData.isNeedsEvacuation()) {
-				log.warn(String.format("Subsector %s needs no evacuation.", subsectorData.getSubsector()));
+				log.info(String.format("Subsector %s needs no evacuation.", subsectorData.getSubsector()));
 				continue;
 			}
 			if (subsectorData.getVehicleCount() <= 0) {

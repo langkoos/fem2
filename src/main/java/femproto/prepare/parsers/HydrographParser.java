@@ -232,7 +232,7 @@ public class HydrographParser {
 
 		for (String badkey : badkeys) {
 			consolidatedHydrographPointMap.remove(badkey);
-			log.warn(String.format("Removed hydrograph point id %s from consideration as it never floods.", badkey));
+			log.info(String.format("Removed hydrograph point id %s from consideration as it never floods.", badkey));
 		}
 		log.info("Done removing bad hydrograph points...");
 	}

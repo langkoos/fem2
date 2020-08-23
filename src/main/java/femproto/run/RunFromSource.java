@@ -168,7 +168,7 @@ public class RunFromSource {
 		}
 		// yoyoyo this forces the first network change evnt to be synchronised wioth the 2016 NICTA reference results
 		URL hydrographDataURL = IOUtils.newUrl(scenario.getConfig().getContext(), femConfigGroup.getHydrographData());
-		hydrographParser.readHydrographData(hydrographDataURL, 54961, true);
+		hydrographParser.readHydrographData(hydrographDataURL, Math.max(evacuationSchedule.getLongestLookAheadTime(), 54961), true);
 		// not using this anymore as we are now getting the hydrograph points in the subsectors and network shapefiles
 //		hydrographParser.hydrographToViaXY(outputDirectory + "/hydrograph_XY_time.txt");
 		hydrographParser.hydrographToViaLinkAttributesFromLinkData(outputDirectory + "/hydrograph_linkID_time.txt");

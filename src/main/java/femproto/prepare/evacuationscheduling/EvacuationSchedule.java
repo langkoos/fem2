@@ -49,8 +49,12 @@ public final class EvacuationSchedule {
 	public TreeSet<SafeNodeAllocation> getSubsectorsByEvacuationTime() {
 		return subsectorsByEvacuationTime;
 	}
-	
-	
+
+	public int getLongestLookAheadTime() {
+		return (int) subsectorDataMap.values().stream().reduce((subsectorData, subsectorData2) ->
+				subsectorData.getLookAheadTime() > subsectorData2.getLookAheadTime() ? subsectorData : subsectorData2).get().getLookAheadTime();
+
+	}
 	
 }
 

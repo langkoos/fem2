@@ -74,7 +74,7 @@ public class SubsectorShapeFileParser {
 				log.warn("Subsector " + subsector + " had null vehicles to evacuate, setting to zero.");
 			}
 			if (subsectorVehicleCount == 0) {
-				log.warn("Subsector " + subsector + " had zero vehicles to evacuate.");
+				log.info("Subsector " + subsector + " had zero vehicles to evacuate.");
 			}
 			if (subsectorVehicleCount < 0) {
 				log.warn("Subsector " + subsector + " had less than zero vehicles to evacuate, setting to zero.");
